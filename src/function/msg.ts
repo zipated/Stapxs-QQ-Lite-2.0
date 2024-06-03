@@ -12,7 +12,7 @@
 import qed from '@/assets/qed.txt'
 
 import app from '@/main'
-import Option, { run } from './option'
+import Option from './option'
 import xss from 'xss'
 import pinyin from 'pinyin'
 
