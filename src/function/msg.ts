@@ -1094,6 +1094,7 @@ const baseRuntime = {
         msgType: BotMsgType.JSON,
         isElectron: false,
         platform: undefined,
+        release: undefined,
         connectSsl: false,
         classes: []
     },

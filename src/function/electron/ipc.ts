@@ -17,6 +17,9 @@ export function regIpcListener() {
     ipcMain.handle('sys:getPlatform', () => {
         return process.platform
     })
+    ipcMain.handle('sys:getRelease', () => {
+        return os.release()
+    })
     // 关闭窗口
     ipcMain.on('win:close', () => {
         if(win) win.close()

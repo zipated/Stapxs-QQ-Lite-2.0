@@ -30,16 +30,11 @@ input::placeholder {
     width: 100%;
     z-index: 99;
 }
-.top-bar > svg,
-.top-bar > img {
-    margin: 10px 15px;
-    height: 20px;
-}
-.top-bar > span {
-    color: var(--color-font);
-    font-weight: bold;
-    font-size: 0.9rem;
-    line-height: 40px;
+.top-bar > div.bar-button {
+    -webkit-app-region: no-drag;
+    cursor: pointer;
+    height: 40px;
+    width: 55px;
 }
 .top-bar > div.space {
     flex: 1;
@@ -49,6 +44,7 @@ input::placeholder {
     display: flex;
 }
 .top-bar > div.controller > div {
+    cursor: pointer;
     transition: background .2s;
     justify-content: center;
     border-radius: 7px;
@@ -59,9 +55,6 @@ input::placeholder {
 }
 .top-bar > div.controller > div.min > svg {
     transform: scale(0.9);
-}
-.top-bar > div.controller > div.max > svg {
-    transform: scale(0.7);
 }
 .top-bar > div.controller > div.reflush > svg {
     transform: scale(0.9);
@@ -81,51 +74,6 @@ input::placeholder {
 }
 .top-bar > div.controller > div.close:hover > svg {
     color: #fff;
-}
-.top-bar > div.controller.mac {
-    align-items: center;
-}
-.top-bar > div.controller.mac > div {
-    border-radius: 100%;
-    height: 15px;
-    width: 15px;
-    padding: 0;
-}
-.top-bar > div.controller.mac > div {
-    align-items: center;
-    margin-right: 4px;
-    margin-left: 5px;
-    display: flex;
-}
-.top-bar > div.controller.mac > div {
-    background: var(--color-main);
-}
-.top-bar > div.controller.mac > div:nth-child(1) {
-    background: #ff5e57;
-    margin-left: 15px;
-}
-.top-bar > div.controller.mac > div:nth-child(2) {
-    background: #febc2e;
-}
-.top-bar > div.controller.mac > div:nth-child(3) {
-    background: #25c83f;
-}
-.top-bar > div.controller.mac > div > svg {
-    transition: opacity .2s;
-    cursor: pointer;
-    height: 8px;
-    color: #000;
-    opacity: 0;
-}
-.top-bar > div.controller.mac:hover > div > svg {
-    color: #000 !important;
-    opacity: 1;
-}
-.top-bar > span.mac {
-    pointer-events: none;
-    position: absolute;
-    text-align: center;
-    width: 100%;
 }
 
 #app, #base-app {

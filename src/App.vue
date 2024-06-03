@@ -1,15 +1,9 @@
 <template>
     <div class="top-bar" name="appbar" v-if="runtimeData.sysConfig.opt_no_window">
-        <img src="img/icons/icon.svg">
-        <span>
-            Stapxs QQ Lite
-            {{ dev ? '(Dev)' : '' }}
-        </span>
+        <div class="bar-button" @click="barMainClick()"></div>
         <div class="space"></div>
         <div class="controller">
-            <div @click="flushPage" v-if="dev" class="reflush"><font-awesome-icon :icon="['fas', 'rotate-right']" /></div>
             <div @click="controllWin('minimize')" class="min"><font-awesome-icon :icon="['fas', 'minus']" /></div>
-            <div @click="controllWin('maximize')" class="max"><font-awesome-icon :icon="['far', 'square']" /></div>
             <div @click="controllWin('close')" class="close"><font-awesome-icon :icon="['fas', 'xmark']" /></div>
         </div>
     </div>
@@ -242,13 +236,6 @@ export default defineComponent({
                 runtimeData.reader.send('win:' + name)
             }
         },
-
-        /**
-         * 刷新页面
-         */
-        flushPage() {
-            window.location.reload()
-        },
         
         /**
          * 发起连接
@@ -268,6 +255,14 @@ export default defineComponent({
             Umami.trackPageView('/' + view)
             this.tags.showChat = !show
             this.tags.page = view
+        },
+        barMainClick() {
+            console.log(1111)
+            if(loginInfo.status) {
+                this.changeTab('信息', 'Messages', false)
+            } else {
+                this.changeTab('主页', 'Home', true)
+            }
         },
 
         /**
@@ -418,6 +413,7 @@ export default defineComponent({
             runtimeData.reader = reader
             if (reader) {
                 runtimeData.tags.platform = await reader.invoke('sys:getPlatform')
+                runtimeData.tags.release = await reader.invoke('sys:getRelease')
             }
             app.config.globalProperties.$viewer = this.viewerBody
             // 初始化波浪动画

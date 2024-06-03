@@ -265,7 +265,7 @@ export default defineComponent({
             info += `Backend Info:\n`
             info += `    Bot Info Name    -> ${runtimeData.botInfo.app_name}\n`
             info += `    Bot Info Version -> ${runtimeData.botInfo.app_version !== undefined ? runtimeData.botInfo.app_version : runtimeData.botInfo.version}\n`
-            info += `    Loaded Config    -> ${runtimeData.jsonMap.name}\n`
+            info += `    Loaded Config    -> ${runtimeData.jsonMap?.name}\n`
 
             info += `View Info:\n`
             info += `    Doc Width        -> ${document.getElementById('app')?.offsetWidth} px\n`
