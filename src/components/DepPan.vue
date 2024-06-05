@@ -175,11 +175,14 @@ export default defineComponent({
         margin-right: 0;
         margin-bottom: 20px;
     }
+    .main > div:first-child {
+        display: none;
+    }
     .power-by > img {
         width: 60%;
     }
     .dept {
-        height: 20vh;
+        height: 40vh;
     }
 }
 </style>

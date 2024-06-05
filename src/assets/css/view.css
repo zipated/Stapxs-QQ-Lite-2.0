@@ -79,6 +79,12 @@ input::placeholder {
 #app, #base-app {
     height: 100%;
 }
+#base-app {
+    transition: transform .2s;
+}
+#base-app.no-touch {
+    transform: rotate(180deg);
+}
 #base-app.withBar {
     height: calc(100% - 40px);
     padding-top: 40px;
@@ -1019,16 +1025,17 @@ input::placeholder {
         min-width: 100% !important;
         z-index: 20;
     }
-    .main-body > ul > li {
-        margin: 0 !important;
-    }
-    .side-bar-space {
-        display: none;
-    }
     .hiden-home {
         margin-top: calc(100% + 5px) !important;
         transform: translateY(0) !important;
         margin-left: -70px;
+    }
+    .main-body > ul > li {
+        margin-top: 0;
+        margin-bottom: 0 !important;
+    }
+    .side-bar-space {
+        display: none;
     }
     /* 二级侧栏 */
     .friend-list {
@@ -1164,12 +1171,6 @@ input::placeholder {
         overflow: hidden;
         width: 0;
     }
-}
-
-
-/* 其他覆盖样式 */
-.layui-tab-bar {
-    display: none;
 }
 
 /* 全局淡入淡出动画 */

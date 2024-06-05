@@ -155,6 +155,19 @@
                     <span :style="`color: var(--color-font${fsAdaptationShow / 50 > 0.5 ? '-r' : ''})`">{{ fsAdaptationShow }} px</span>
                 </div>
             </div>
+            <div class="opt-item">
+                <font-awesome-icon :icon="['fas', 'arrows-rotate']" />
+                <div>
+                    <span>{{ $t('option_view_dont_touch') }}</span>
+                    <span>{{ $t('option_view_dont_touch_tip') }}</span>
+                </div>
+                <label class="ss-switch">
+                    <input type="checkbox" @change="modifyTouch">
+                    <div>
+                        <div></div>
+                    </div>
+                </label>
+            </div>
         </div>
     </div>
 </template>
@@ -209,6 +222,19 @@ export default defineComponent({
         
         isMobile() {
             return getDeviceType() === 'Android' || getDeviceType() === 'iOS'
+        },
+
+        modifyTouch(event: Event) {
+            const sender = event.target as HTMLInputElement
+            const baseApp = document.getElementById('base-app')
+            if(baseApp && sender.checked == true) {
+                if(baseApp.classList.contains('no-touch')) {
+                    baseApp.classList.remove('no-touch')
+                    sender.checked = false
+                } else {
+                    baseApp.classList.add('no-touch')
+                }
+            }
         }
     },
     mounted() {
