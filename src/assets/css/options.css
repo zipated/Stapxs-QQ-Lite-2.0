@@ -57,6 +57,9 @@
 .logo-card>svg {
     width: 25%;
 }
+.logo-card>svg>path:first-child {
+    fill: var(--color-main);
+}
 
 .logo-card>a {
     color: var(--color-font-1);

@@ -178,6 +178,16 @@ export function regIpcListener() {
             })
         }
     })
+    // 运行命令
+    ipcMain.handle('sys:runCommand', async (event, cmd) => {
+        try {
+            const info = await runCommand(cmd)
+            const str = info.stdout as string
+            return { success: true, message: str }
+        } catch(ex) {
+            return { success: false, message: (ex as Error).message }
+        }
+    })
 
     // Windows：闪烁状态栏图标
     ipcMain.on('win:flashWindow', () => {

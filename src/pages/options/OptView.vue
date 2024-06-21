@@ -133,7 +133,7 @@
         </div>
         <div class="ss-card">
             <header>{{ $t('option_view_view') }}</header>
-            <div class="opt-item">
+            <div class="opt-item" v-if="isMobile()">
                 <font-awesome-icon :icon="['fas', 'up-down-left-right']" />
                 <div>
                     <span>{{ $t('option_view_initial_scale') }}</span>
