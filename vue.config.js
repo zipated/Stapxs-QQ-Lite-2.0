@@ -81,7 +81,6 @@ module.exports = {
                 appId: 'com.stapxs.qqweb',
                 productName: 'Stapxs QQ Lite',
                 copyright: 'Copyright © 2022-2024 Stapx Steve [林槐]',
-                // buildDependenciesFromSource: true,
 
                 directories: {
                     output: 'dist_electron/out'
@@ -123,6 +122,8 @@ module.exports = {
                     target: [
                         {
                             target: 'portable',
+                            // Windows 同时打包多个架构会融合在一个 exe 中，体积巨大
+                            // 所以这儿只打了更常用 的 x64
                             arch: 'x64'
                         }
                     ],

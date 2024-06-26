@@ -861,7 +861,8 @@ function newMsg(data: any) {
                         `https://p.qlogo.cn/gh/${id}/${id}/0`:
                         `https://q1.qlogo.cn/g?b=qq&s=0&nk=${id}`,
                     image: undefined as any,
-                    type: data.group_id ? 'group' : 'user'
+                    type: data.group_id ? 'group' : 'user',
+                    is_important: isImportant
                 }
                 data.message.forEach((item: MsgItemElem) => {
                     // 如果消息有图片，追加第一张图片
@@ -899,6 +900,15 @@ function newMsg(data: any) {
                             sendNotice(msgInfo)
                         }
                     }
+                }
+                // MacOS：刷新 touchbar
+                if (runtimeData.tags.isElectron && runtimeData.reader) {
+                    runtimeData.reader.send('sys:newMessage', {
+                        id: id,
+                        image: msgInfo.icon,
+                        name: msgInfo.title,
+                        msg: raw
+                    })
                 }
             }
             // 如果发送者不在消息列表里，将它添加到消息列表里

@@ -1382,8 +1382,8 @@ export default defineComponent({
             // =================== 首次加载消息 ===================
 
             if(oldLength == 0 && newLength > 0) {
-                const name = runtimeData.jsonMap.set_message_read.private_name
-                let private_name = runtimeData.jsonMap.set_message_read.private_name
+                const name = runtimeData.jsonMap.set_message_read?.name ?? undefined
+                let private_name = runtimeData.jsonMap.set_message_read?.private_name ?? name
                 if(!private_name) private_name = name
                 // 设置最后一条消息以上都为已读
                 if(runtimeData.chatInfo.show.type == 'group') {

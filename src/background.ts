@@ -1,16 +1,15 @@
 'use strict'
 
-import Store from 'electron-store'
-import windowStateKeeper from 'electron-window-state'
-import { noticeList, regIpcListener } from './function/electron/ipc'
 import path from 'path'
-import { version as appVersion } from '../package.json'
-
+import Store from 'electron-store'
 import installExtension from 'electron-devtools-installer'
 
-import { Menu, session } from 'electron'
-import { app, protocol, BrowserWindow } from 'electron'
+import windowStateKeeper from 'electron-window-state'
+import { noticeList, regIpcListener } from './function/electron/ipc'
+import { version as appVersion } from '../package.json'
+import { Menu, session, app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { touchBar } from './function/electron/touchbar'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const isPrimary = app.requestSingleInstanceLock()
@@ -20,6 +19,7 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 export let win = undefined as BrowserWindow | undefined
+export let touchBarInstance = undefined as touchBar | undefined
 
 async function createWindow() {
     console.log('')
@@ -90,6 +90,8 @@ async function createWindow() {
     console.log('Create main window to complete.')
     // 注册 IPC 事务
     regIpcListener()
+    // macOS：创建 TouchBar
+    touchBarInstance = new touchBar(win)
     // 加载应用
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)

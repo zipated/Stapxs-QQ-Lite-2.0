@@ -2,11 +2,10 @@ import Store from 'electron-store'
 import path from 'path'
 import os from 'os'
 
-import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions } from "electron"
+import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions, Notification as ELNotification } from "electron"
 import { GtkTheme, GtkData } from '@jakejarrett/gtk-theme'
 import { queryKeys, runCommand } from './util'
-import { win } from '@/background'
-import { Notification as ELNotification } from 'electron'
+import { win, touchBarInstance } from '@/background'
 
 const store = new Store()
 let template = [] as any[]
@@ -194,25 +193,15 @@ export function regIpcListener() {
         if(win) win.flashFrame(true)
     })
     // Winodws：通过注册表获取系统主题色
-    ipcMain.handle('sys:getWinColor', async () => {
+    ipcMain.handle('sys:getWinColor', () => {
         // 订阅颜色修改事件
-        systemPreferences.addListener('accent-color-changed', async () => {
+        systemPreferences.addListener('accent-color-changed', () => {
             if(win) {
-                win.webContents.send('sys:WinColorChanged', await getWinSysColor())
+                win.webContents.send('sys:WinColorChanged', systemPreferences.getAccentColor())
             }
         })
-        return getWinSysColor()
+        return systemPreferences.getAccentColor()
     })
-    async function getWinSysColor() {
-        const keyPath = 'HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\DWM\\'
-        try {
-            const info = await queryKeys(keyPath, 'AccentColor')
-            const color = info.stdout.substring(info.stdout.lastIndexOf('0xff') + 4)
-            return { color: [parseInt('0x' + color.substring(4, 6)), parseInt('0x' + color.substring(2, 4)), parseInt('0x' + color.substring(0, 2))] }
-        } catch(ex) {
-            return { err: (ex as Error).message }
-        }
-    }
 
     // Linux：获取 GTK 主题 CSS
     ipcMain.handle('sys:getGTKTheme', () => {
@@ -354,4 +343,16 @@ export function regIpcListener() {
             }
         }
     }
+    // MacOS：刷新 touchBar 消息列表
+    ipcMain.on('sys:flushTouchBar', (event, list) => {
+        if(touchBarInstance) {
+            touchBarInstance.flush(list)
+        }
+    })
+    // MacOS：新消息，刷新 touchBar
+    ipcMain.on('sys:newMessage', (event, data) => {
+        if(touchBarInstance) {
+            touchBarInstance.newMessage(data)
+        }
+    })
 }
