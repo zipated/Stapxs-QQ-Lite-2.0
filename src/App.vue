@@ -223,7 +223,7 @@ export default defineComponent({
                 isSavePwdClick: false,
                 savePassword: false
             },
-            viewerOpt: { inline: false, button: false, title: false, toolbar: { prev: true, rotateLeft: true, reset: true, rotateRight: true, next: true } },
+            viewerOpt: { inline: false, button: false, title: false, navbar: false, toolbar: { prev: true, rotateLeft: true, reset: true, rotateRight: true, next: true } },
             viewerBody: undefined as HTMLDivElement | undefined
         }
     },

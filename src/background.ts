@@ -45,6 +45,8 @@ async function createWindow() {
         y: mainWindowState.y,
         width: mainWindowState.width,
         height: mainWindowState.height,
+        minWidth: 350,
+        minHeight: 450,
         icon: path.join(__dirname,'./public/img/icons/icon.png'),
         webPreferences: {
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -79,8 +81,7 @@ async function createWindow() {
         windowConfig = {
             ...windowConfig,
             transparent: true,
-            frame: false,
-            icon: path.join(__dirname,'./public/img/icons/icon.png')
+            frame: false
         }
         store.set('opt_no_window', 'true')
     }

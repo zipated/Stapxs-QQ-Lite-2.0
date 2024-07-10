@@ -256,11 +256,17 @@
         <div :class="'msg-menu' + (runtimeData.sysConfig.opt_no_window ? ' withBar': '')">
             <div v-show="tags.showMsgMenu" class="msg-menu-bg" @click="closeMsgMenu"></div>
             <div :class="tags.showMsgMenu ? 'ss-card msg-menu-body show' : 'ss-card msg-menu-body'" id="msgMenu">
-                <div v-if="runtimeData.chatInfo.show.type == 'group'" :class="'ss-card respond' + (tags.menuDisplay.respond ? ' open': '')">
+                <div v-if="runtimeData.chatInfo.show.type == 'group'"
+                    v-show="tags.menuDisplay.showRespond"
+                    :class="'ss-card respond' + (tags.menuDisplay.respond ? ' open': '')">
                     <template v-for="(num, index) in respondIds" :key="'respond-' + num">
                         <img v-if="getFace(num) != false" @click="sendRespond(num)" loading="lazy" :src="(getFace(num) as any)">
                         <font-awesome-icon  v-if="index == 4" @click="tags.menuDisplay.respond = true" :icon="['fas', 'angle-up']" />
                     </template>
+                </div>
+                <div @click="forwardSelf()" v-show="tags.menuDisplay.add">
+                    <div><font-awesome-icon :icon="['fas', 'plus']" /></div>
+                    <a>{{ $t('chat_msg_menu_plus') }}</a>
                 </div>
                 <div @click="replyMsg(true)" v-show="tags.menuDisplay.relpy">
                     <div><font-awesome-icon :icon="['fas', 'message']" /></div>
@@ -411,6 +417,7 @@ export default defineComponent({
                 isJinLoading: false,
                 onAtFind: false,
                 menuDisplay: {
+                    add: true,
                     relpy: true,
                     forward: true,
                     select: false,
@@ -421,7 +428,8 @@ export default defineComponent({
                     revoke: false,
                     at: true,
                     remove: false,
-                    respond: false
+                    respond: false,
+                    showRespond: true
                 },
                 msgTouch: {
                     x: -1,
@@ -703,6 +711,7 @@ export default defineComponent({
                     Object.keys(this.tags.menuDisplay).forEach((name: string) => {
                         (this.tags.menuDisplay as any)[name] = false
                     })
+                    this.tags.menuDisplay.showRespond = false
                     this.tags.menuDisplay.at = true
                     this.tags.menuDisplay.remove = true
                     if(runtimeData.chatInfo.show.type != 'group' ||
@@ -762,6 +771,7 @@ export default defineComponent({
                         if(nList.indexOf(item.type as string) > 0) {
                             // 如果包含以上消息类型，不能转发
                             this.tags.menuDisplay.forward = false
+                            this.tags.menuDisplay.add = false
                         }
                     })
                     if(data.message[0].type == 'mface') {
@@ -814,6 +824,7 @@ export default defineComponent({
          */
         initMenuDisplay () {
             this.tags.menuDisplay = {
+                add: true,
                 relpy: true,
                 forward: true,
                 select: false,
@@ -824,7 +835,8 @@ export default defineComponent({
                 revoke: false,
                 at: false,
                 remove: false,
-                respond: false
+                respond: false,
+                showRespond: true
             }
         },
 
@@ -894,6 +906,14 @@ export default defineComponent({
                 }
             })
             runtimeData.onMsgList.reverse()
+        },
+
+        forwardSelf() {
+                if (this.selectedMsg) {
+                const msg = this.selectedMsg
+                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg.message)
+            }
+            this.closeMsgMenu()
         },
 
         /**

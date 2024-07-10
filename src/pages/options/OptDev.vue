@@ -8,6 +8,49 @@
 <template>
     <div class="opt-page">
         <div class="ss-card">
+            <header>{{ $t('option_dev_connect') }}</header>
+            <div class="tip">
+                {{ $t('option_dev_connect_tip') }}
+            </div>
+            <div class="opt-item">
+                <font-awesome-icon :icon="['fas', 'heart']" />
+                <div>
+                    <span>{{ $t('option_dev_connect_beat') }}</span>
+                    <span>{{ $t('option_dev_connect_beat_tip') }}</span>
+                </div>
+                <label class="ss-switch">
+                    <input type="checkbox" @change="save" name="connect_beat" v-model="runtimeData.sysConfig.connect_beat">
+                    <div>
+                        <div></div>
+                    </div>
+                </label>
+            </div>
+            <div class="opt-item">
+                <font-awesome-icon :icon="['fas', 'table-columns']" />
+                <div>
+                    <span>{{ $t('option_dev_chatview_name') }}</span>
+                    <span>{{ $t('option_dev_chatview_name_tip') }}</span>
+                </div>
+                <select @change="save" name="chatview_name" title="chatview_name" v-model="chatview_name">
+                    <option value="">{{ $t('option_dev_chatview_name_none') }}</option>
+                    <option v-for="item in getAppendChatView()" :value="item" :key="item">{{ item }}</option>
+                </select>
+            </div>
+            <div class="opt-item">
+                <font-awesome-icon :icon="['fas', 'clipboard-list']" />
+                <div>
+                    <span>{{ $t('option_dev_msg_type') }}</span>
+                    <span>{{ $t('option_dev_msg_type_tip') }}</span>
+                </div>
+                <select @change="save" name="msg_type" title="msg_type" v-model="runtimeData.tags.msgType">
+                    <option value="">{{ $t('option_dev_msg_type_auto') }}</option>
+                    <option v-for="item in BotMsgType" v-show="(typeof item == 'number')" :value="item" :key="item">{{
+                        BotMsgType[item] }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="ss-card">
             <header>{{ $t('option_dev_dev') }}</header>
             <div class="opt-item">
                 <font-awesome-icon :icon="['fas', 'book']" />
@@ -34,46 +77,6 @@
                         <div></div>
                     </div>
                 </label>
-            </div>
-        </div>
-        <div class="ss-card">
-            <header>{{ $t('option_dev_connect') }}</header>
-            <div class="tip">
-                {{ $t('option_dev_connect_tip') }}
-            </div>
-            <div class="opt-item">
-                <font-awesome-icon :icon="['fas', 'heart']" />
-                <div>
-                    <span>{{ $t('option_dev_connect_beat') }}</span>
-                    <span>{{ $t('option_dev_connect_beat_tip') }}</span>
-                </div>
-                <label class="ss-switch">
-                    <input type="checkbox" @change="save" name="connect_beat" v-model="runtimeData.sysConfig.connect_beat">
-                    <div>
-                        <div></div>
-                    </div>
-                </label>
-            </div>
-            <div class="opt-item">
-                <font-awesome-icon :icon="['fas', 'table-columns']" />
-                <div>
-                    <span>{{ $t('option_dev_chatview_name') }}</span>
-                    <span>{{ $t('option_dev_chatview_name_tip') }}</span>
-                </div>
-                <input class="ss-input" style="width:150px" type="text" v-model="chatview_name"
-                    @keyup="saveWName($event, 'chatview_name')">
-            </div>
-            <div class="opt-item">
-                <font-awesome-icon :icon="['fas', 'clipboard-list']" />
-                <div>
-                    <span>{{ $t('option_dev_msg_type') }}</span>
-                    <span>{{ $t('option_dev_msg_type_tip') }}</span>
-                </div>
-                <select @change="save" name="msg_type" title="msg_type" v-model="runtimeData.tags.msgType">
-                    <option value="">{{ $t('option_dev_msg_type_auto') }}</option>
-                    <option v-for="item in BotMsgType" v-show="(typeof item == 'number')" :value="item" :key="item">{{
-                        BotMsgType[item] }}</option>
-                </select>
             </div>
         </div>
         <div class="ss-card">
@@ -428,6 +431,18 @@ export default defineComponent({
             if (runtimeData.reader) {
                 runtimeData.reader.send('win:relaunch')
             }
+        },
+        getAppendChatView() {
+            // 获取附加的聊天视图，它放置在项目 src/pages/chat-view 下
+            const chatView = require.context('@/pages/chat-view', true, /\.vue$/)
+            const chatViewList: string[] = []
+            chatView.keys().forEach((key: string) => {
+                const name = key.split('/').pop()?.split('.')[0]
+                if (name && name.startsWith('Chat')) {
+                    chatViewList.push(name)
+                }
+            })
+            return chatViewList
         }
     },
     mounted() {

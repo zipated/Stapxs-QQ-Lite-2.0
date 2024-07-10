@@ -1104,7 +1104,7 @@ const baseRuntime = {
         canLoadHistory: true,
         openSideBar: false,
         viewer: { index: 0 },
-        msgType: BotMsgType.JSON,
+        msgType: BotMsgType.Array,
         isElectron: false,
         platform: undefined,
         release: undefined,

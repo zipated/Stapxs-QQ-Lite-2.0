@@ -4,7 +4,7 @@ import os from 'os'
 
 import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions, Notification as ELNotification } from "electron"
 import { GtkTheme, GtkData } from '@jakejarrett/gtk-theme'
-import { queryKeys, runCommand } from './util'
+import { runCommand } from './util'
 import { win, touchBarInstance } from '@/background'
 
 const store = new Store()
@@ -140,6 +140,14 @@ export function regIpcListener() {
                             activationType="protocol"/>
                     </actions>
                 </toast>`
+            }
+        }
+        if(process.platform === 'linux') {
+            if(data.is_important) {
+                showData = {
+                    ...showData,
+                    urgency: 'critical'
+                }
             }
         }
         const notification = new ELNotification(showData)

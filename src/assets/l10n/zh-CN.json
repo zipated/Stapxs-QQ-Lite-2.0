@@ -315,6 +315,8 @@
   "option_account_gologin": "去连接",
   "option_view_dont_touch": "不要点这个",
   "option_view_dont_touch_tip": "啊吧啊吧（智慧）",
+  "option_dev_chatview_name_none": "默认",
+  "chat_msg_menu_plus": "+ 1",
 
   "menu_about": "关于",
   "menu_update": "检查更新…",
