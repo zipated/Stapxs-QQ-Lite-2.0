@@ -11,8 +11,8 @@
 
 <template>
     <div
-        :style="`background-image: url(${runtimeData.sysConfig.chat_background})`"
         :class="'chat-pan' + (runtimeData.tags.openSideBar ? ' open': '') + (runtimeData.sysConfig.opt_no_window ? ' withBar': '')"
+        :style="`background-image: url(${runtimeData.sysConfig.chat_background});` + (Option.get('fs_adaptation') > 0 ? ('--append-fs-adaptation:' + Option.get('fs_adaptation') + 'px') : '--append-fs-adaptation:0px')"
         id="chat-pan">        
         <!-- 聊天基本信息 -->
         <div class="info">
@@ -909,7 +909,7 @@ export default defineComponent({
         },
 
         forwardSelf() {
-                if (this.selectedMsg) {
+            if (this.selectedMsg) {
                 const msg = this.selectedMsg
                 sendMsgRaw(this.chat.show.id, this.chat.show.type, msg.message)
             }
@@ -994,7 +994,7 @@ export default defineComponent({
                 const msgId = msg.message_id
                 Connector.send(runtimeData.jsonMap.send_respond.name, {
                     'message_id': msgId,
-                    'emoji_id': num
+                    'emoji_id': String(num)
                 }, 'SendRespondBack')
             }
             this.closeMsgMenu()

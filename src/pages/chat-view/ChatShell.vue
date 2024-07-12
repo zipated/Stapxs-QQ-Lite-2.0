@@ -88,6 +88,7 @@ import { runtimeData, appendMsg } from '@/function/msg'
 import { getTrueLang } from '@/function/utils/systemUtil'
 import { MsgItemElem, SQCodeElem, UserFriendElem, UserGroupElem } from '@/function/elements/information'
 import { Logger, LogType, PopInfo, popList, PopType } from '@/function/base'
+import { sendMsgRaw } from '@/function/utils/msgUtil'
 
 export default defineComponent({
     name: 'ChatShell',
@@ -420,12 +421,11 @@ export default defineComponent({
                         // 发送消息
                         case 'send': {
                             const rawMsg = raw.substring(raw.indexOf('send') + 5)
-                            let msg = SendUtil .parseMsg(rawMsg, this.sendCache, this.imgCache)
-                            if (msg !== undefined && msg.length > 0) {
-                                switch (this.chat.show.type) {
-                                    case 'group': Connector.send('send_group_msg', { 'group_id': this.chat.show.id, 'message': msg }, 'sendMsgBack'); break
-                                    case 'user': Connector.send('send_private_msg', { 'user_id': this.chat.show.id, 'message': msg }, 'sendMsgBack'); break
-                                }
+                            let msg = SendUtil.parseMsg(rawMsg, this.sendCache, this.imgCache)
+                            if(this.chat.show.temp) {
+                                sendMsgRaw(this.chat.show.id + '/' + this.chat.show.temp, this.chat.show.type, msg)
+                            } else {
+                                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg)
                             }
                             // 发送后处理
                             this.sendCache = []
@@ -615,17 +615,13 @@ export default defineComponent({
 </script>
 
 <style>
-a {
+.shell-pan a, .shell-pan span {
     font-family: "FiraCode Nerd Font";
     color: var(--color-font);
     white-space:pre-wrap;
 }
-a:hover {
+.shell-pan a:hover {
     color: var(--color-font);
-}
-span {
-    font-family: "FiraCode Nerd Font";
-    white-space: pre-wrap;
 }
 
 .line-head {
@@ -662,8 +658,8 @@ span {
     color: greenyellow;
 }
 
-
 .shell-pan {
+    margin-top: 20px;
     padding: 20px;
     pointer-events: all;
     overflow-y: scroll;

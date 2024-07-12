@@ -6,6 +6,8 @@ input {
 }
 
 .chat-pan {
+    --append-fs-adaptation: 0px;
+    
     background-color: var(--color-card);
     background-repeat: no-repeat;
     background-position: center;
@@ -1395,7 +1397,7 @@ input {
 @media (max-width: 700px) {
     /* 消息面板 */
     .chat-pan {
-        height: calc(100% - 75px);
+        height: calc(100% - 75px - var(--append-fs-adaptation));
         left: 80px !important;
     }
     .chat-pan.withBar {

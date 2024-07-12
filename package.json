@@ -16,6 +16,7 @@
   "dependencies": {
     "@jakejarrett/gtk-theme": "^2.0.1",
     "@stapxs/umami-logger-typescript": "^1.0.12",
+    "axios": "^1.7.2",
     "browser-image-compression": "^2.0.0",
     "char-dust": "^0.1.0",
     "core-js": "^3.8.3",

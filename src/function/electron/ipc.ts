@@ -1,6 +1,7 @@
 import Store from 'electron-store'
 import path from 'path'
 import os from 'os'
+import axios from 'axios'
 
 import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions, Notification as ELNotification } from "electron"
 import { GtkTheme, GtkData } from '@jakejarrett/gtk-theme'
@@ -18,6 +19,33 @@ export function regIpcListener() {
     })
     ipcMain.handle('sys:getRelease', () => {
         return os.release()
+    })
+    // 代理请求 HTTP
+    ipcMain.on('sys:requestHttp', (event, args) => {
+        console.log(args)
+
+        const cookies = JSON.parse(args.cookies)
+        console.log(cookies)
+        const cookieStrs = Object.keys(cookies).map((key) => {
+            return key + '=' + cookies[key]
+        })
+        console.log(cookieStrs.join('; '))
+        // 异步请求，不需要立即返回
+        axios({
+            method: args.type,
+            url: args.url,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cookie': cookieStrs.join('; '),
+            },
+            data: args.data
+        }).then((res) => {
+            // res.data
+            console.log(res.data)
+        }).catch((err) => {
+            // err
+            console.error(err)
+        })
     })
     // 关闭窗口
     ipcMain.on('win:close', () => {
@@ -118,6 +146,12 @@ export function regIpcListener() {
                 ...showData,
                 replyPlaceholder: '快速回复……',
                 hasReply: true
+            }
+            if(data.is_important) {
+                showData = {
+                    ...showData,
+                    sound: 'resources/tri-tone.aif'
+                }
             }
         }
         if(process.platform === 'win32') {

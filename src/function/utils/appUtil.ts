@@ -140,6 +140,10 @@ export function reloadUsers() {
     }
 }
 
+export function reloadCookies() {
+    Connector.send('get_cookies', { 'domain': 'qun.qq.com' }, 'getCookies_qun.qq.com')
+}
+
 /**
  * 通过用户和消息 ID 跳转到对应的消息
  * @param id 
@@ -703,4 +707,16 @@ export function checkNotice() {
                 }
             })
         })
+}
+
+export function BackendRequest(type: 'GET' | 'POST', url: string, cookies: string[], data: any = undefined) {
+    if (runtimeData.reader) {
+        console.log(type, url, cookies, data)
+        runtimeData.reader.send('sys:requestHttp', {
+            type: type,
+            url: url,
+            cookies: JSON.stringify(cookies),
+            data: data
+        })
+    }
 }

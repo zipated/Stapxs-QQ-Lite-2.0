@@ -20,7 +20,7 @@ import Umami from '@stapxs/umami-logger-typescript'
 
 import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt } from '@/function/utils/msgUtil'
 import { getViewTime, htmlDecodeByRegExp, randomNum } from '@/function/utils/systemUtil'
-import { reloadUsers, downloadFile, updateMenu, jumpToChat } from '@/function/utils/appUtil'
+import { reloadUsers, reloadCookies, downloadFile, updateMenu, jumpToChat } from '@/function/utils/appUtil'
 import { reactive, markRaw, defineAsyncComponent } from 'vue'
 import { PopInfo, PopType, Logger, LogType } from './base'
 import { Connector, login } from './connect'
@@ -75,12 +75,14 @@ export function parse(str: string) {
                 case 'setGroupAdd'              : updateSysInfo(head); break
                 case 'loadFileBase'             : loadFileBase(echoList, msg); break
                 case 'getClassInfo'             : saveClassInfo(msg); break
+
+                case 'getCookies'               : saveCookie(msg, echoList); break
             }
         }
     } else {
         switch (msg.post_type) {
             // 心跳包
-            case 'meta_event'           : livePackage(msg); break
+            case 'meta_event'           : break
             // go-cqhttp：自动发送的消息回调和其他消息有区分
             case 'message_sent':
             case 'message'              : newMsg(msg); break
@@ -188,6 +190,7 @@ function saveLoginInfo(msg: { [key: string]: any }) {
         )
         // 加载列表消息
         reloadUsers()
+        reloadCookies()
     }
 }
 
@@ -592,7 +595,6 @@ function revokeMsg(msg: any) {
         const userId = Number(tag.split('/')[0])
         return userId == chatId
     })
-    console.log(notificationIndex)
     if (notificationIndex != -1) {
         const notification = notificationList[notificationIndex]
         // PS：使用 close 方法关闭通知也会触发关闭事件，所以这儿需要先移除再关闭
@@ -1044,15 +1046,6 @@ function readMemberMessage(data: any) {
 }
 
 /**
- * 心跳包处理
- * @param msg 
- */
-function livePackage(msg: any) {
-    // TODO: 还没写这个功能
-    msg
-}
-
-/**
  * 刷新系统通知和其他内容，给系统通知响应用的
  */
 function updateSysInfo(type: string) {
@@ -1094,6 +1087,29 @@ function friendNotice(msg: any) {
             break
         }
     }
+}
+
+function saveCookie(data: any, echoList: string[]) {
+    // 拆分 cookie
+    const cookieObject = {} as { [key: string]: string }
+    data.data.cookies.split('; ').forEach((item: string) => {
+        const key = item.split('=')[0]
+        const value = item.split('=')[1]
+        cookieObject[key] = value
+    })
+    // 计算 bkn
+    const skey = cookieObject['skey'] || ''
+    let hash = 5381
+    
+    for (let i = 0; i < skey.length; i++) {
+        hash += (hash << 5) + skey.charCodeAt(i)
+    }
+    // 保存 cookie 和 bkn
+    const domain = echoList[1]
+    if(!runtimeData.loginInfo.webapi) runtimeData.loginInfo.webapi = {}
+    if(!runtimeData.loginInfo.webapi[domain]) runtimeData.loginInfo.webapi[domain] = {}
+    runtimeData.loginInfo.webapi[domain].cookie = cookieObject
+    runtimeData.loginInfo.webapi[domain].bkn = (hash & 0x7FFFFFFF).toString()
 }
 
 // ==============================================================

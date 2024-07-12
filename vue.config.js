@@ -142,7 +142,11 @@ module.exports = {
                     ],
                     category: 'public.app-category.social-networking',
                     icon: 'public/img/icons/icon-client-mac.icns',
-                    darkModeSupport: true
+                    darkModeSupport: true,
+                    extraResources: [{
+                        from: 'resources/tri-tone.aif',
+                        to: 'tir-tone.aif'
+                    }]
                 },
                 dmg: {
                     background: 'public/img/dmg-bg.png',
