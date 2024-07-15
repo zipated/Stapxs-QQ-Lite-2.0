@@ -69,7 +69,7 @@ function updateGTKColor(value: boolean) {
 
 function setMsgType(value: any) {
     if(value) {
-        runtimeData.tags.msgType = value
+        runtimeData.tags.msgType = Number(value)
     }
 }
 

@@ -347,38 +347,34 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
         runtimeData.messageList = runtimeData.messageList.concat([showMsg])
     }
     // 检查消息体是否需要处理
-    const messageType = runtimeData.jsonMap.message_list.type.split('|')[0]
-    switch (messageType) {
-        case 'json_with_data': {
-            const map = runtimeData.jsonMap.message_list.type.split('|')[1]
-            const path = jp.parse(map)
-            const keys = [] as string[]
-            path.forEach((item) => {
-                if (item.expression.value != '*' && item.expression.value != '$') {
-                    keys.push(item.expression.value)
-                }
-            })
-            if(msg && typeof msg != 'string') {
-                const newMsg = [] as any
-                msg.forEach((item) => {
-                    const result = {} as any
-                    keys.reduce((acc, key, index) => {
-                        if (index === keys.length - 1) {
-                            acc[key] = item
-                        } else {
-                            acc[key] = {}
-                        }
-                        return acc[key]
-                    }, result)
-                    const newResult = {} as {[key: string]: any}
-                    newResult.type = item.type
-                    newResult.data = item
-                    delete newResult.data.type
-                    newMsg.push(newResult)
-                })
-                msg = newMsg
+    if (runtimeData.tags.msgType == BotMsgType.Array) {
+        const map = runtimeData.jsonMap.message_list.type
+        const path = jp.parse(map)
+        const keys = [] as string[]
+        path.forEach((item) => {
+            if (item.expression.value != '*' && item.expression.value != '$') {
+                keys.push(item.expression.value)
             }
-            break
+        })
+        if (msg && typeof msg != 'string') {
+            const newMsg = [] as any
+            msg.forEach((item) => {
+                const result = {} as any
+                keys.reduce((acc, key, index) => {
+                    if (index === keys.length - 1) {
+                        acc[key] = item
+                    } else {
+                        acc[key] = {}
+                    }
+                    return acc[key]
+                }, result)
+                const newResult = {} as { [key: string]: any }
+                newResult.type = item.type
+                newResult.data = item
+                delete newResult.data.type
+                newMsg.push(newResult)
+            })
+            msg = newMsg
         }
     }
     if (msg !== undefined && msg.length > 0) {
