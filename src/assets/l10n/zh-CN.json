@@ -317,6 +317,8 @@
   "option_view_dont_touch_tip": "啊吧啊吧（智慧）",
   "option_dev_chatview_name_none": "默认",
   "chat_msg_menu_plus": "+ 1",
+  "option_dev_chat_respond": "关闭回应功能",
+  "option_dev_chat_respond_tip": "如果你不想用它或者 bot 不支持，可以关闭这个功能",
 
   "menu_about": "关于",
   "menu_update": "检查更新…",

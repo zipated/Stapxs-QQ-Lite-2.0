@@ -39,7 +39,7 @@ export function parseMsg(msg: string, cache: MsgItemElem[], img: string[]) {
     }
     // 处理消息
     let back = undefined
-    if (runtimeData.tags.msgType === undefined || runtimeData.tags.msgType === BotMsgType.Array) {
+    if (runtimeData.tags.msgType === BotMsgType.Array) {
         back = parseMsgToJSON(msg, cache)
     } else if (runtimeData.tags.msgType === BotMsgType.CQCode) {
         back = parseMsgToCQ(msg, cache)

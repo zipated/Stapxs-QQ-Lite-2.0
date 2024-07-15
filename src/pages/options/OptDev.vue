@@ -42,10 +42,9 @@
                     <span>{{ $t('option_dev_msg_type') }}</span>
                     <span>{{ $t('option_dev_msg_type_tip') }}</span>
                 </div>
-                <select @change="save" name="msg_type" title="msg_type" v-model="runtimeData.tags.msgType">
-                    <option value="">{{ $t('option_dev_msg_type_auto') }}</option>
+                <select @change="save" name="msg_type" title="msg_type" v-model="runtimeData.sysConfig.msgType">
                     <option v-for="item in BotMsgType" v-show="(typeof item == 'number')" :value="item" :key="item">{{
-                        BotMsgType[item] }}</option>
+                        botMsgTypeName[item] }}</option>
                 </select>
             </div>
         </div>
@@ -188,7 +187,7 @@ import { runtimeData } from '@/function/msg'
 import app from '@/main'
 import { BrowserInfo, detect } from 'detect-browser'
 import packageInfo from '../../../package.json'
-import { BotMsgType } from '@/function/elements/information'
+import { BotMsgType, botMsgTypeName } from '@/function/elements/information'
 import { uptime } from '@/main'
 
 export default defineComponent({
@@ -196,6 +195,7 @@ export default defineComponent({
     data () {
         return {
             BotMsgType: BotMsgType,
+            botMsgTypeName: botMsgTypeName,
             runtimeData: runtimeData,
             save: save,
             ws_text: '',
@@ -262,11 +262,15 @@ export default defineComponent({
             if(runtimeData.tags.isElectron && runtimeData.reader && runtimeData.tags.release) {
                 switch(process.platform) {
                     case 'darwin': {
-                        // homebrew
-                        const brewInfo = await runtimeData.reader.invoke('sys:runCommand', 'brew list --cask stapxs-qq-lite')
-                        if(brewInfo.success) {
-                            info += `    Install Type     -> homebrew\n`
-                        }
+                        // PS：在 macOS 下因为严格的进程权限，子线程环境无法获取到 brew 信息
+                        // 暂时注释掉，没有找到解决方案
+                    //     // homebrew
+                    //     const brewInfo = await runtimeData.reader.invoke('sys:runCommand', '$SHELL -c "brew list --cask stapxs-qq-lite"')
+                    //     if(brewInfo.success) {
+                    //         info += `    Install Type     -> homebrew\n`
+                    //     } else {
+                    //         logger.error('获取 homebrew 信息失败：' + brewInfo.message)
+                    //     }
                         break;
                     }
                     case 'linux': {
@@ -285,14 +289,11 @@ export default defineComponent({
                         }
                         break;
                     }
-                    default: {
-                        info += `    Install Type     -> raw\n`
-                    }
                 }
             }
 
             info += `Application Info:\n`
-            info += `    Uptime           -> ${new Date().getTime() - uptime} ms\n` 
+            info += `    Uptime           -> ${Math.floor((new Date().getTime() - uptime) / 1000 * 100) / 100} s\n` 
             info += `    Package Version  -> ${packageInfo.version}\n`
             info += `    Runtime env      -> ${process.env.NODE_ENV}\n`
             info += `    Service Work     -> ${runtimeData.tags.sw}\n`

@@ -348,6 +348,7 @@ textarea:focus {
 }
 .friend-list > div:first-child label > input {
     background: transparent;
+    font-size: 0.8rem;
     padding: 0 15px;
     height: 100%;
     width: 100%;

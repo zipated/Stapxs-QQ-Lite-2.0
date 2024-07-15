@@ -16,7 +16,7 @@
         id="chat-pan">        
         <!-- 聊天基本信息 -->
         <div class="info">
-            <font-awesome-icon @click="openLeftBar" icon="fa-solid fa-bars-staggered"/><img :src="chat.show.avatar">
+            <font-awesome-icon @click="openLeftBar" :icon="['fas', 'bars-staggered']"/><img :src="chat.show.avatar">
             <div class="info">
                 <p>{{ chat.show.name }}</p>
                 <span v-if="chat.show.temp">
@@ -33,7 +33,7 @@
             </div>
             <div class="space"></div>
             <div class="more">
-                <font-awesome-icon @click="openChatInfoPan" icon="fa-solid fa-ellipsis-vertical"/>
+                <font-awesome-icon @click="openChatInfoPan" :icon="['fas', 'ellipsis-vertical']"/>
             </div>
         </div>
         <!-- 加载中指示器 -->
@@ -372,7 +372,7 @@
 <script lang="ts">
 import app from '@/main'
 import SendUtil from '@/function/sender'
-import Option from '@/function/option'
+import Option, { get } from '@/function/option'
 import Info from '@/pages/Info.vue'
 import MsgBody from '@/components/MsgBody.vue'
 import NoticeBody from '@/components/NoticeBody.vue'
@@ -706,6 +706,10 @@ export default defineComponent({
                 msg = this.tags.openedMenuMsg.msg
             }
             if(menu !== null && msg !== null) {
+                // 关闭回应功能
+                if(get('close_respond') == true) {
+                    this.tags.menuDisplay.showRespond = false
+                }
                 if(select.nodeName == 'IMG' && (select as HTMLImageElement).name == 'avatar') {
                     // 右击头像需要显示的内容
                     Object.keys(this.tags.menuDisplay).forEach((name: string) => {

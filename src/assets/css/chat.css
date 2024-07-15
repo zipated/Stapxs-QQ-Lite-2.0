@@ -199,8 +199,9 @@ input {
     background: transparent;
     line-height: 1.1rem;
     border-radius: 7px;
-    margin-top: 5px;
+    font-size: 0.85rem;
     max-height: 50px;
+    margin-top: 5px;
     height: 26px;
     resize: none;
     width: 100%;

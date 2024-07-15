@@ -1,6 +1,9 @@
 export enum BotMsgType {
-    CQCode, Array
+    CQCode, Array, Auto
 }
+export const botMsgTypeName: string[] = [
+    'CQ 码', 'Array 数组', '自动检测'
+]
 
 export interface RunTimeDataElem {
     reader?: Electron.IpcRenderer | null,

@@ -6,7 +6,7 @@ import installExtension from 'electron-devtools-installer'
 
 import windowStateKeeper from 'electron-window-state'
 import { noticeList, regIpcListener } from './function/electron/ipc'
-import { version as appVersion } from '../package.json'
+import { version } from '../package.json'
 import { Menu, session, app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import { touchBar } from './function/electron/touchbar'
@@ -28,7 +28,7 @@ async function createWindow() {
                 '|__   | | | |     |   __|-   -| \n' +
                 '|_____| |_| |__|__|__|  |__|__| CopyRight © Stapx Steve')
     console.log('=======================================================')
-    console.log('Welcome to Stapxs QQ Lite, current version: ' + appVersion)
+    console.log('Welcome to Stapxs QQ Lite, current version: ' + version)
     console.log('The background language component will be initialized after the frontend is loaded.')
     
     console.log('Platform：' + process.platform)
