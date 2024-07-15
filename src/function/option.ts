@@ -31,7 +31,8 @@ const optDefault: { [key: string]: any } = {
     initial_scale: 0.85,
     fs_adaptation: 0,
     theme_color: 0,
-    chat_background_blur: 0
+    chat_background_blur: 0,
+    msg_type: 2
 }
 
 // =============== 设置项事件 ===============
@@ -67,7 +68,7 @@ function updateGTKColor(value: boolean) {
 }
 
 function setMsgType(value: any) {
-    if(value && typeof value == 'number') {
+    if(value) {
         runtimeData.tags.msgType = value
     }
 }
