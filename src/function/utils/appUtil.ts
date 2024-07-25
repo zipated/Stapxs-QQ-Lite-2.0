@@ -105,7 +105,7 @@ export function loadHistory(info: BaseChatInfoElem) {
 }
 export function loadHistoryMessage(id: number, type: string, count = 20, echo = 'getChatHistoryFist') {
     let name
-    if(runtimeData.jsonMap.message_list && type != "group") {
+    if(runtimeData.jsonMap.message_list && type != 'group') {
         name = runtimeData.jsonMap.message_list.private_name
     } else {
         name = runtimeData.jsonMap.message_list.name
@@ -115,8 +115,8 @@ export function loadHistoryMessage(id: number, type: string, count = 20, echo = 
         name ?? 'get_chat_history',
         {
             message_type: runtimeData.jsonMap.message_list.message_type[type],
-            group_id: type == "group" ? id : undefined,
-            user_id: type != "group" ? id : undefined,
+            group_id: type == 'group' ? id : undefined,
+            user_id: type != 'group' ? id : undefined,
             message_seq: 0,
             message_id: 0,
             count: count
@@ -136,7 +136,7 @@ export function reloadUsers() {
         Connector.send('get_friend_list', {}, 'getFriendList')
         Connector.send('get_group_list', {}, 'getGroupList')
         Connector.send('get_system_msg', {}, 'getSystemMsg')
-        Connector.send(runtimeData.jsonMap.class_list.name, {}, "getClassInfo")
+        Connector.send(runtimeData.jsonMap.class_list.name, {}, 'getClassInfo')
     }
 }
 
@@ -228,10 +228,6 @@ export function downloadFile (url: string, name: string, onprocess: (event: Prog
             nameCallback: function () {
                 return name
             }
-        }).catch(function (error) {
-            if (error) {
-                console.log(error)
-            }
         })
     } else {
         if(runtimeData.reader) {
@@ -252,7 +248,7 @@ export function downloadFile (url: string, name: string, onprocess: (event: Prog
  */
 function updateGTKTheme(cssStr: string) {
     if(option.get('log_level') == 'debug') {
-        console.log(cssStr)
+        logger.add(LogType.UI, 'GTK 主题 CSS 字符串：' + cssStr)
     }
     const css = window.require('css')
     let cssObj = undefined
@@ -325,7 +321,6 @@ export async function loadSystemThemeColor() {
         // 主题更新回调
         runtimeData.reader.on('sys:updateGTKTheme', (event, params) => {
             if(option.get('opt_auto_gtk') == true) {
-                console.log('GTK 主题已更新：' + params.name)
                 updateGTKTheme(params.css)
             }
         })
@@ -487,7 +482,6 @@ export function loadAppendStyle() {
         const gnomeExtInfo = runtimeData.reader?.invoke('sys:getGnomeExt')
         if(gnomeExtInfo) {
             gnomeExtInfo.then((info: any) => {
-                console.log(info)
                 if(info['enable-all'] == 'true' || info['whitelist'].indexOf('stapxs-qq-lite') != -1) {
                     import('@/assets/css/append/append_vibrancy.css').then(() => {
                         logger.info('透明 UI 附加样式加载完成')
@@ -711,7 +705,6 @@ export function checkNotice() {
 
 export function BackendRequest(type: 'GET' | 'POST', url: string, cookies: string[], data: any = undefined) {
     if (runtimeData.reader) {
-        console.log(type, url, cookies, data)
         runtimeData.reader.send('sys:requestHttp', {
             type: type,
             url: url,

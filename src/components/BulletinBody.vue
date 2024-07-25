@@ -8,7 +8,7 @@
 <template>
     <div class="base" @click="showAll = !showAll">
         <header>
-            <font-awesome-icon :icon="['fas', 'bookmark']"/>
+            <font-awesome-icon :icon="['fas', 'bookmark']" />
             <span>{{ $t('chat_chat_info_notice') }}</span>
             <div style="flex: 1;"></div>
             <span>{{ Intl.DateTimeFormat(trueLang, { month: "short", day: "numeric", hour: "numeric", minute: "numeric" })

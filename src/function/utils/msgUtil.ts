@@ -56,6 +56,7 @@ export function getMsgData(name: string, msg: { [key: string]: any }, map: strin
                 }
             } catch (ex) {
                 logger.error(`解析消息 JSON 错误：${name} -> ${map}`)
+                // eslint-disable-next-line
                 console.log(ex)
             }
         } else {
@@ -66,6 +67,7 @@ export function getMsgData(name: string, msg: { [key: string]: any }, map: strin
                         data[key] = jp.query(msg, replaceJPValue(map[key]))[0]
                     } catch (ex) {
                         logger.error(`解析 JSON 错误：${name} -> ${map}`)
+                        // eslint-disable-next-line
                         console.log(ex)
                     }
             })
@@ -227,6 +229,7 @@ export function getMsgRawTxt(message: [{ [key: string]: any }]): string {
             }
         } catch (error) {
             logger.error('解析消息短格式错误：' + JSON.stringify(message[i]))
+            // eslint-disable-next-line
             console.log(error)
         }
     }
@@ -332,7 +335,7 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
             message_id: msgUUID,
             message_type: runtimeData.chatInfo.show.type,
             time: parseInt(String(new Date().getTime() / 1000)),
-            post_type: "message",
+            post_type: 'message',
             sender: {
                 user_id: runtimeData.loginInfo.uin,
                 nickname: runtimeData.loginInfo.nickname

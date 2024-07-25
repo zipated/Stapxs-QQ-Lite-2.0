@@ -25,6 +25,8 @@ import './assets/css/sys_notice.css'
 
 import zh from './assets/l10n/zh-CN.json'
 
+/* eslint-disable no-console */
+
 // 载入 l10n
 const messages = { 'zh-CN': zh }
 // 初始化 i18n

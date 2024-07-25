@@ -28,7 +28,7 @@
                 <a class="ss-button" @click="goGithub()">{{
                 $t('option_info_visit_github') }}</a>
                 <a class="ss-button" style="width: 30px;" @click="goBlog()">
-                    <font-awesome-icon :icon="['fas', 'circle-info']"/>
+                    <font-awesome-icon :icon="['fas', 'circle-info']" />
                 </a>
             </div>
             <div v-if="constList.length > 0" class="ss-card contributors-card">
@@ -41,7 +41,7 @@
         </div>
         <div class="ss-card jump-card" @click="dependencies" :style="showUI ? '' : 'background: var(--color-card-1);'">
             <header><div></div>{{ $t('list_of_dependencies') }}</header>
-            <font-awesome-icon :icon="['fas', 'angle-right']"/>
+            <font-awesome-icon :icon="['fas', 'angle-right']" />
         </div>
         <div v-if="showUI" class="ss-card bcd-about" @click="openLink('https://stapxs.github.io/Border-Card-UI/docs/')">
             <div>
@@ -192,7 +192,6 @@ export default defineComponent({
                     })
                 }
             })
-            .catch(console.error)
     }
 })
 </script>

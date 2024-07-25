@@ -1,9 +1,8 @@
 import Store from 'electron-store'
 import path from 'path'
 import os from 'os'
-import axios from 'axios'
 
-import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions, Notification as ELNotification } from "electron"
+import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions, Notification as ELNotification } from 'electron'
 import { GtkTheme, GtkData } from '@jakejarrett/gtk-theme'
 import { runCommand } from './util'
 import { win, touchBarInstance } from '@/background'
@@ -249,7 +248,6 @@ export function regIpcListener() {
     ipcMain.handle('sys:getGTKTheme', () => {
         const gtkTheme = new GtkTheme({events: {
             themeChange: (data: GtkData) => {
-                console.log('GTK 主题修改：' + data.name)
                 const info = {} as {[key:string]:any}
                 info.name = data.name
                 info.css = data.gtk.css
@@ -284,7 +282,6 @@ export function regIpcListener() {
     // MacOS：初始化菜单
     // PS：由于本地化的存在，需要让 vue 获取到本地化信息之后再由 electron 构建
     ipcMain.on('sys:createMenu', (event, args) => {
-        console.log(args.success)
         if (process.platform === 'darwin') {
             template = [
                 {

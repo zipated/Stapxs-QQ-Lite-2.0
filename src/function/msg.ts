@@ -53,7 +53,7 @@ export function parse(str: string) {
                 case 'getGroupMemberList'       : saveGroupMember(msg.data); break
                 case 'getChatHistoryFist'       : saveMsg(msg); break
                 case 'getChatHistoryTop'        : updateTopMag(msg, echoList); break
-                case 'getChatHistory'           : saveMsg(msg, "top"); break
+                case 'getChatHistory'           : saveMsg(msg, 'top'); break
                 case 'getForwardMsg'            : saveForwardMsg(msg); break
                 case 'sendMsgBack'              : showSendedMsg(msg, echoList); break
                 case 'getRoamingStamp'          : runtimeData.stickerCache = msg.data.reverse(); break
@@ -254,7 +254,7 @@ function saveUser(msg: { [key: string]: any }, type: string) {
                                     const type = item.user_id ? 'user' : 'group'
                                     const id = item.user_id ? item.user_id : item.group_id
                                     let name
-                                    if (runtimeData.jsonMap.message_list && type != "group") {
+                                    if (runtimeData.jsonMap.message_list && type != 'group') {
                                         name = runtimeData.jsonMap.message_list.private_name
                                     } else {
                                         name = runtimeData.jsonMap.message_list.name
@@ -412,7 +412,6 @@ function saveForwardMsg(msg: any) {
     } else {
         let list = getMsgData('forward_message_list', msg, msgPath.forward_msg)
         list = getMessageList(list)
-        console.log(list)
         if (list != undefined) {
             runtimeData.mergeMessageList = list
         }
@@ -1083,6 +1082,7 @@ function friendNotice(msg: any) {
         }
         case 'decrease': {
             // 输出日志（显示为红色字体）
+            // eslint-disable-next-line no-console
             console.log('%c消失了一个好友：' + msg.nickname + '（' + msg.user_id + '）', 'color:red;')
             break
         }

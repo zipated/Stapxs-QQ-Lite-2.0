@@ -88,7 +88,7 @@ function changeUiTest(value: boolean) {
  * @param value 数值（0.1 - 5）
  */
 function changeInitialScale(value: number) {
-    const viewport = document.getElementById("viewport")
+    const viewport = document.getElementById('viewport')
     if(viewport && value && value >= 0.1 && value <= 5) {
         (viewport as any).content = `width=device-width, initial-scale=${value}, maximum-scale=5, user-scalable=0`
     }
@@ -190,10 +190,10 @@ function changeColorMode(mode: string) {
     }
     // 切换颜色
     const match_list = ['color-.*.css', 'prism-.*.css']
-    const css_list = document.getElementsByTagName("link")
+    const css_list = document.getElementsByTagName('link')
     for (let i = 0; i < css_list.length; i++) {
         const name = css_list[i].href
-        match_list.forEach(function (value) {
+        match_list.forEach((value) => {
             if (name.match(value) != null) {
                 // 检查切换的文件是否可以被访问到
                 if (name != undefined) {
@@ -212,15 +212,15 @@ function changeColorMode(mode: string) {
                         return
                     }
                 }
-                const newLink = document.createElement("link")
-                newLink.setAttribute("rel", "stylesheet")
-                newLink.setAttribute("type", "text/css")
-                if (mode === "dark") {
-                    newLink.setAttribute("href", name.replace('light', 'dark'))
+                const newLink = document.createElement('link')
+                newLink.setAttribute('rel', 'stylesheet')
+                newLink.setAttribute('type', 'text/css')
+                if (mode === 'dark') {
+                    newLink.setAttribute('href', name.replace('light', 'dark'))
                 } else {
-                    newLink.setAttribute("href", name.replace('dark', 'light'))
+                    newLink.setAttribute('href', name.replace('dark', 'light'))
                 }
-                const head = document.getElementsByTagName("head").item(0)
+                const head = document.getElementsByTagName('head').item(0)
                 if(head !== null) {
                     head.replaceChild(newLink, css_list[i])
                 }
@@ -258,7 +258,7 @@ function changeChatView(name: string | undefined) {
         markRaw(defineAsyncComponent(() => import(`@/pages/chat-view/${name}.vue`)))
     } else {
         runtimeData.pageView.chatView = 
-        markRaw(defineAsyncComponent(() => import(`@/pages/Chat.vue`)))
+        markRaw(defineAsyncComponent(() => import('@/pages/Chat.vue')))
     }
 }
 
@@ -292,7 +292,7 @@ export function load(): { [key: string]: any } {
 
 function loadOptData(data: { [key: string]: any }) {
     const options: { [key: string]: any } = {}
-    Object.keys(data).forEach(function (key) {
+    Object.keys(data).forEach((key) => {
         const value = data[key]
         if (value === 'true' || value === 'false') {
             options[key] = value === 'true'
@@ -428,7 +428,6 @@ export function runAS(name: string, value: any) {
  */
 export function runASWEvent(event: Event) {
     const sender = event.target as HTMLElement
-    console.log(sender)
     if (sender != null) {
         const type = sender.nodeName
         const name = sender.getAttribute('name')
@@ -459,7 +458,6 @@ export function runASWEvent(event: Event) {
                 break
             }
         }
-        console.log(type + '/' + name + ': ' + value)
         if (name !== null) {
             runAS(name, value)
         }
