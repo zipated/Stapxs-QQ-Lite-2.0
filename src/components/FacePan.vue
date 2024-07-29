@@ -97,7 +97,11 @@ export default defineComponent({
     mounted() {
         // 加载漫游表情
         if (runtimeData.stickerCache === undefined && runtimeData.jsonMap.roaming_stamp) {
-            Connector.send(runtimeData.jsonMap.roaming_stamp.name, {}, 'getRoamingStamp')
+            if(runtimeData.jsonMap.roaming_stamp.paged) {
+                Connector.send(runtimeData.jsonMap.roaming_stamp.name, { count: 20 }, 'getRoamingStamp')
+            } else {
+                Connector.send(runtimeData.jsonMap.roaming_stamp.name, {}, 'getRoamingStamp')
+            }
         }
         this.getStoreFaceList()
     }

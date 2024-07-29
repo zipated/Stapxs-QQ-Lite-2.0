@@ -109,3 +109,7 @@ group_essence:
         add_digest_nick: /add_digest_nick
         add_digest_time: /add_digest_time
     is_end: $.data.is_end
+# 获取收藏表情
+roaming_stamp:
+    name: fetch_custom_face
+    pageed: true

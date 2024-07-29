@@ -29,6 +29,7 @@ user_list:
 # 收藏表情
 roaming_stamp:
     name: fetch_custom_face
+    reverse: true
 # 消息列表
 message_list:
     name: get_group_msg_history

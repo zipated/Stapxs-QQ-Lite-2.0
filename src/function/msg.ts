@@ -56,7 +56,7 @@ export function parse(str: string) {
                 case 'getChatHistory'           : saveMsg(msg, 'top'); break
                 case 'getForwardMsg'            : saveForwardMsg(msg); break
                 case 'sendMsgBack'              : showSendedMsg(msg, echoList); break
-                case 'getRoamingStamp'          : runtimeData.stickerCache = msg.data.reverse(); break
+                case 'getRoamingStamp'          : saveSticker(msg.data); break
                 case 'getMoreGroupInfo'         : runtimeData.chatInfo.info.group_info = msg.data.data; break
                 case 'getMoreUserInfo'          : runtimeData.chatInfo.info.user_info = msg.data.data.result.buddy.info_list[0]; break
                 case 'getGroupNotices'          : saveGroupNotices(msg); break
@@ -1110,6 +1110,17 @@ function saveCookie(data: any, echoList: string[]) {
     if(!runtimeData.loginInfo.webapi[domain]) runtimeData.loginInfo.webapi[domain] = {}
     runtimeData.loginInfo.webapi[domain].cookie = cookieObject
     runtimeData.loginInfo.webapi[domain].bkn = (hash & 0x7FFFFFFF).toString()
+}
+
+function saveSticker(data: any) {
+    if(msgPath.roaming_stamp.reverse) {
+        data.reverse()
+    }
+    if(runtimeData.stickerCache == undefined) {
+        runtimeData.stickerCache = data
+    } else {
+        runtimeData.stickerCache = runtimeData.stickerCache.concat(data)
+    }
 }
 
 // ==============================================================

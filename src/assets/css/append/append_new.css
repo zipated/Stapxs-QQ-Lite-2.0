@@ -575,7 +575,15 @@
     width: 19px;
 }
 .store-face-list {
-    height: calc(300px - 100px);
+    height: calc(300px - 90px) !important;
+}
+
+.face-stickers {
+    height: calc(300px - 90px);
+}
+.face-stickers > img {
+    height: 44px;
+    width: 44px;
 }
 
 .respond {
