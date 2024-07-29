@@ -57,37 +57,45 @@ export function scrollToMsg (seqName: string, showAnimation: boolean): boolean {
  * 打开链接
  * @param url 链接
  */
-export function openLink(url: string) {
+export function openLink(url: string, external = false) {
+    runtimeData.popBoxList = []
     // 判断是不是 Electron，是的话打开内嵌 iframe
     if(runtimeData.tags.isElectron) {
-        const popInfo = {
-            html: `<iframe src="${url}" class="view-iframe"></iframe>`,
-            full: true,
-            button: [
-                {
-                    text: app.config.globalProperties.$t('btn_iframe_tip'),
-                    fun: () => undefined
-                },
-                {
-                    text: app.config.globalProperties.$t('btn_open'),
-                    fun: () => {
-                        const electron = window.require('electron')
-                        const shell = electron ? electron.shell : null
-                        if (shell) {
-                            shell.openExternal(url)
+        if(!external) {
+            const popInfo = {
+                html: `<iframe src="${url}" class="view-iframe"></iframe>`,
+                full: true,
+                button: [
+                    {
+                        text: app.config.globalProperties.$t('btn_iframe_tip'),
+                        fun: () => undefined
+                    },
+                    {
+                        text: app.config.globalProperties.$t('btn_open'),
+                        fun: () => {
+                            const electron = window.require('electron')
+                            const shell = electron ? electron.shell : null
+                            if (shell) {
+                                shell.openExternal(url)
+                            }
+                            runtimeData.popBoxList.shift()
                         }
-                        runtimeData.popBoxList.shift()
+                    },
+                    {
+                        text: app.config.globalProperties.$t('btn_close'),
+                        master: true,
+                        fun: () => { runtimeData.popBoxList.shift() }
                     }
-                },
-                {
-                    text: app.config.globalProperties.$t('btn_close'),
-                    master: true,
-                    fun: () => { runtimeData.popBoxList.shift() }
-                }
-            ]
+                ]
+            }
+            runtimeData.popBoxList.push(popInfo)
+        } else {
+            const electron = window.require('electron')
+            const shell = electron ? electron.shell : null
+            if (shell) {
+                shell.openExternal(url)
+            }
         }
-        runtimeData.popBoxList = []
-        runtimeData.popBoxList.push(popInfo)
     } else {
         window.open(url)
     }
@@ -496,104 +504,95 @@ export function loadAppendStyle() {
 }
 
 export function checkUpdate() {
-    const $t = app.config.globalProperties.$t
-    const mainTree = 'next'                                 // 更新主分支
-    const appVersion = appInfo.version                      // 当前版本
-    const cacheVersion = localStorage.getItem('version')
-
-    if (!runtimeData.tags.isElectron) {
-        if (!cacheVersion || cmp(appVersion, cacheVersion) == 1) {
-            localStorage.setItem('version', appVersion)
-            logger.debug($t('version_updated') + ': ' + cacheVersion + ' -> ' + appVersion)
-            showGitChangeLog(appVersion, mainTree, 'web')
-        }
-    } else {
-        const packageUrl = `https://raw.githubusercontent.com/Stapxs/Stapxs-QQ-Lite-2.0/${mainTree}/package.json`
-        fetch(packageUrl).then((response) => {
-            if (response.ok) {
-                response.json().then((data) => {
-                    if (cmp(appVersion, data.version) == -1) {
-                        showGitChangeLog(data.version, mainTree, 'electron')
-                    }
-                })
-            }
-        })
-    }
-}
-
-function showGitChangeLog(version: string, mainTree: string, from: string) {
-    const $t = app.config.globalProperties.$t
-    // 获取更新记录
-    const fetchData = {
-        sha: 'next',
-        per_page: '10'
-    } as Record<string, string>
-    const updateUrl = 'https://api.github.com/repos/stapxs/stapxs-qq-lite-2.0/commits'
-        + '?' + new URLSearchParams(fetchData).toString()
-    fetch(updateUrl).then((response) => {
+    // 获取最新的 release 信息
+    const packageUrl = 'https://api.github.com/repos/stapxs/Stapxs-QQ-Lite-2.0/releases/latest'
+    fetch(packageUrl).then((response) => {
         if (response.ok) {
-            response.json().then((info) => {
-                // 过滤掉一些不作为更新记录的提交
-                info = info.filter((item: any) => !item.commit.message.startsWith('[nl]'))
-                const json = info[0]
-                // 如果标题是 [ 开头的但不是 [platform]，则不显示
-                let platform = runtimeData.tags.platform
-                if(from == 'web') platform = 'web'
-                if (json.commit.message.startsWith('[') && !json.commit.message.startsWith('[' + platform + ']')) {
-                    return
-                }
-                // 如果是 electron 构建的版本，只显示 [build-electron] 的提交
-                if (from == 'web' || json.commit.message.indexOf('[build-electron]') > 0) {
-                    const popInfo = {
-                        template: UpdatePan,
-                        templateValue: toRaw({
-                            version: version + ' - ' + mainTree,
-                            user: {
-                                name: json.commit.author.name,
-                                avatar: json.author.avatar_url,
-                                date: json.commit.author.date,
-                                url: json.author.html_url
-                            },
-                            message: json.commit.message,
-                            from: from
-                        }),
-                        button: [
-                            {
-                                text: $t('btn_see'),
-                                fun: () => openLink('https://github.com/Stapxs/Stapxs-QQ-Lite-2.0/commit/' + json.sha)
-                            }, {
-                                text: $t('btn_know'),
-                                master: true,
-                                fun: () => { runtimeData.popBoxList.shift() }
-                            }
-                        ]
-                    }
-                    if(from != 'web') {
-                        popInfo.button = [
-                            {
-                                text: $t('btn_know'),
-                                fun: () => runtimeData.popBoxList.shift()
-                            }, {
-                                text: $t('btn_download_update'),
-                                master: true,
-                                fun: () => {
-                                    const url = 'https://github.com/Stapxs/Stapxs-QQ-Lite-2.0/releases'
-                                    const electron = window.require('electron')
-                                    const shell = electron ? electron.shell : null
-                                    if (shell) {
-                                        shell.openExternal(url)
-                                    } else {
-                                        window.open(url)
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                    runtimeData.popBoxList.push(popInfo)
-                }
+            response.json().then((data) => {
+                showUpadteLog(data)
             })
         }
     })
+    localStorage.setItem('version', appInfo.version)
+}
+
+function showUpadteLog(data: any) {
+    const appVersion = appInfo.version                      // 当前版本
+    const cacheVersion = localStorage.getItem('version')    // 缓存版本
+    // 这儿有两种情况：
+        //    如果当前版本小于获取到的版本就是有更新
+        //    如果缓存版本小于获取到的版本但是当前版本等于获取到的版本就是更新完成首次启动
+    const lastestVersion = data.tag_name.substring(1)
+    if(cmp(appVersion, lastestVersion) == -1) {
+        // 有更新
+        showReleaseLog(data, false)
+    }
+    if(cacheVersion && cmp(appVersion, lastestVersion) == 0 && cmp(cacheVersion, lastestVersion) == -1) {
+        // 更新完成首次启动
+        showReleaseLog(data, true)
+    }
+}
+
+function showReleaseLog(data: any, isUpdated: boolean) {
+    const $t = app.config.globalProperties.$t
+    let msg = data.body
+    // 处理 title，取开头到下一个 “\r\n” 之间的内容
+    const title = msg.split('\r\n')[0].substring(1)
+    // 处理 msg，取 “## 更新内容” 到下一个 “##” 之间的内容
+    const start = msg.indexOf('## 更新内容\r\n')
+    if (start != -1) {
+        msg = msg.substring(start + 9)
+        const end = msg.indexOf('##')
+        if (end != -1) {
+            msg = msg.substring(0, end)
+        }
+    }
+    msg = title + '\r\n' + msg
+    const info = {
+        version: (isUpdated ? localStorage.getItem('version') + ' -> ' : '') + data.tag_name.substring(1),
+        date: data.published_at,
+        user: {
+            name: data.author.login,
+            avatar: data.author.avatar_url,
+            url: data.author.html_url
+        },
+        message: msg,
+        updated: isUpdated
+    }
+    const buttonGoUpdate = runtimeData.tags.isElectron ? [
+        {
+            text: $t('btn_know'),
+            fun: () => runtimeData.popBoxList.shift()
+        }, {
+            text: $t('btn_download_update'),
+            master: true,
+            fun: () => openLink(data.html_url, true)
+        }
+    ] : [
+        {
+            text: $t('btn_see'),
+            fun: () => openLink(data.html_url)
+        }, {
+            text: $t('btn_reflush'),
+            master: true,
+            fun: () => location.reload()
+        }
+    ]
+    const popInfo = {
+        template: UpdatePan,
+        templateValue: toRaw(info),
+        button: isUpdated ? [
+            {
+                text: $t('btn_see'),
+                fun: () => openLink(data.html_url, true)
+            }, {
+                text: $t('btn_know'),
+                master: true,
+                fun: () => { runtimeData.popBoxList.shift() }
+            }
+        ] : buttonGoUpdate
+    }
+    runtimeData.popBoxList.push(popInfo)
 }
 
 export function checkOpenTimes() {

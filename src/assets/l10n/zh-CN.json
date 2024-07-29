@@ -250,6 +250,7 @@
   "chat_chat_info_silence_all_tip": "你们是不整点活不开心是吧",
   "btn_accept": "同意",
   "btn_reject": "拒绝",
+  "btn_reflush": "刷新页面",
   "sys_notice_new_friend": "新朋友",
   "sys_notice": "系统消息",
   "chat_msg_menu_remove": "移出群聊",
