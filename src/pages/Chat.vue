@@ -160,6 +160,8 @@
                         @click="details[1].open = !details[1].open, tags.showMoreDetail = false">
                         <font-awesome-icon :icon="['fas', 'face-laugh']" />
                     </div>
+                    <div :title="$t('chat_fun_menu_poke')" v-if="chat.show.type === 'user'" @click="sendPoke">
+                        <font-awesome-icon :icon="['fas', 'bomb']" /></div>
                     <div :title="$t('chat_fun_menu_jin')" v-if="chat.show.type === 'group'" @click="showJin">
                         <font-awesome-icon :icon="['fas', 'star']" /></div>
                 </div>
@@ -564,9 +566,8 @@ export default defineComponent({
             }
         },
         scrollToMsg (message_id: string) {
-            // oicq1：seq 字段名消息格式兼容
             if (!scrollToMsg(message_id, true)) {
-                new PopInfo().add(PopType.INFO, this.$t('pop_chat_msg_not_load') + ' ( ' + message_id.split('-')[1] + ' ) ')
+                new PopInfo().add(PopType.INFO, this.$t('pop_chat_msg_not_load'))
             }
         },
         imgLoadedScroll () {
@@ -914,7 +915,7 @@ export default defineComponent({
         forwardSelf() {
             if (this.selectedMsg) {
                 const msg = this.selectedMsg
-                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg.message)
+                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg.message, true)
             }
             this.closeMsgMenu()
         },
@@ -952,7 +953,7 @@ export default defineComponent({
                             text: this.$t('btn_yes'),
                             master: true,
                             fun: () => {
-                                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg.message)
+                                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg.message, true)
                                 runtimeData.popBoxList.shift()
                             }
                         }
@@ -1385,9 +1386,9 @@ export default defineComponent({
             // 在发送操作触发之后，将会解析此条字符串排列出最终需要发送的消息结构用于发送。
             let msg = SendUtil.parseMsg(this.msg, this.sendCache, this.imgCache)
             if(this.chat.show.temp) {
-                sendMsgRaw(this.chat.show.id + '/' + this.chat.show.temp, this.chat.show.type, msg)
+                sendMsgRaw(this.chat.show.id + '/' + this.chat.show.temp, this.chat.show.type, msg, true)
             } else {
-                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg)
+                sendMsgRaw(this.chat.show.id, this.chat.show.type, msg, true)
             }
             // 发送后事务
             this.msg = ''
@@ -1632,6 +1633,15 @@ export default defineComponent({
                     pages: 0
                 }, 'getJin' )
             }
+            this.tags.showMoreDetail = !this.tags.showMoreDetail
+        },
+
+        /**
+         * 发送戳一戳
+         */
+        sendPoke() {
+            let msg = SendUtil.parseMsg('[SQ:0]', [{ type: 'poke', _type: 1, id: -1, name: '戳一戳' }], this.imgCache)
+            sendMsgRaw(this.chat.show.id, this.chat.show.type, msg)
             this.tags.showMoreDetail = !this.tags.showMoreDetail
         },
 

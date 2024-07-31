@@ -383,6 +383,7 @@ input {
 }
 .merge-pan > div:last-child > div:first-child svg {
     color: var(--color-font);
+    cursor: pointer;
     height: 1.5rem;
 }
 .merge-pan > div:last-child > div:last-child {

@@ -173,7 +173,8 @@
                     <span>{{ $t('option_view_dont_touch_tip') }}</span>
                 </div>
                 <label class="ss-switch">
-                    <input type="checkbox" @change="modifyTouch">
+                    <input type="checkbox" @change="save" name="opt_revolve"
+                        v-model="runtimeData.sysConfig.opt_revolve">
                     <div>
                         <div></div>
                     </div>
@@ -246,21 +247,6 @@ export default defineComponent({
         
         isMobile() {
             return getDeviceType() === 'Android' || getDeviceType() === 'iOS'
-        },
-
-        modifyTouch(event: Event) {
-            const sender = event.target as HTMLInputElement
-            const baseApp = document.getElementById('base-app')
-            if(baseApp && sender.checked == true) {
-                if(baseApp.classList.contains('no-touch')) {
-                    baseApp.classList.remove('no-touch')
-                    sender.checked = false
-                } else {
-                    baseApp.classList.add('no-touch')
-                    // UM：上传禁用触摸(彩蛋)的选择
-                    Umami.trackEvent('click_statistics', { name: 'touch_randomly' })
-                }
-            }
         },
 
         getAppendChatView() {

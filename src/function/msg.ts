@@ -51,7 +51,7 @@ export function parse(str: string) {
                 case 'getFriendList'            : saveUser(msg, 'friend'); break
                 case 'getUserInfoInGroup'       : runtimeData.chatInfo.info.me_info = msg; break
                 case 'getGroupMemberList'       : saveGroupMember(msg.data); break
-                case 'getChatHistoryFist'       : saveMsg(msg); break
+                case 'getChatHistoryFist'       : saveMsg(msg, 'top'); break
                 case 'getChatHistoryTop'        : updateTopMag(msg, echoList); break
                 case 'getChatHistory'           : saveMsg(msg, 'top'); break
                 case 'getForwardMsg'            : saveForwardMsg(msg); break
@@ -83,7 +83,7 @@ export function parse(str: string) {
         switch (msg.post_type) {
             // 心跳包
             case 'meta_event'           : break
-            // go-cqhttp：自动发送的消息回调和其他消息有区分
+            // go-cqhttp：主动发送的消息回调和其他消息有区分
             case 'message_sent':
             case 'message'              : newMsg(msg); break
             case 'request'              : addSystemNotice(msg); break
@@ -361,7 +361,7 @@ function saveGroupMember(data: GroupMemberInfoElem[]) {
     runtimeData.chatInfo.info.group_members = back
 }
 
-function saveMsg(msg: any, append = undefined as undefined | string) {
+export function saveMsg(msg: any, append = undefined as undefined | string) {
     if (msg.error !== null && (msg.error !== undefined || msg.status === 'failed')) {
         popInfo.add(PopType.ERR, app.config.globalProperties.$t('pop_chat_load_msg_err', { code: msg.error | msg.retcode }))
     } else {
@@ -376,7 +376,12 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
                     return
                 }
                 if (append == 'top') {
-                    list.pop()      // TODO：丢掉一条重复消息，将来可以改成自动判断
+                    // 判断 list 的最后一条消息是否和 runtimeData.messageList 的第一条消息 id 相同
+                    if (runtimeData.messageList.length > 0 && list.length > 0) {
+                        if (runtimeData.messageList[0].message_id == list[list.length - 1].message_id) {
+                            list.pop() // 去掉重复的消息
+                        }
+                    }
                     runtimeData.messageList = list.concat(runtimeData.messageList)
                 } else if (append == 'bottom') {
                     runtimeData.messageList = runtimeData.messageList.concat(list)
@@ -459,7 +464,6 @@ function showSendedMsg(msg: any, echoList: string[]) {
             // 去 messagelist 里找到这条消息
             runtimeData.messageList.forEach((item) => {
                 if (item.message_id == messageId) {
-                    item.message_id = msg.message_id
                     item.fake_msg = false
                     return
                 }
@@ -759,7 +763,7 @@ function newMsg(data: any) {
         let fakeIndex = -1
         for (let i = runtimeData.messageList.length - 1; i > 0; i--) {
             const msg = runtimeData.messageList[i]
-            if (msg.fake_msg && sender == loginId) {
+            if (msg.fake_msg != undefined && sender == loginId) {
                 fakeIndex = i
                 break
             }
@@ -811,8 +815,7 @@ function newMsg(data: any) {
             list = parseMsgList(list, msgPath.message_list.type, msgPath.message_value)
             data = list[0]
         }
-        // 刷新消息列表
-        // PS：在消息列表内的永远会刷新，不需要被提及
+        // 刷新好友列表
         const get = runtimeData.onMsgList.filter((item, index) => {
             if (Number(id) === item.user_id || Number(id) === item.group_id || Number(info.target_id) === item.user_id) {
                 runtimeData.onMsgList[index].message_id = data.message_id
@@ -841,8 +844,8 @@ function newMsg(data: any) {
         }
         // (发送者不是自己 && (在特别关心列表里 || 发送者不是群组 || 群组 AT || 群组 AT 全体 || 打开了通知全部消息)) 这些情况需要进行新消息处理
         if (sender != loginId && sender != 0 && (isImportant || data.message_type !== 'group' || data.atme || data.atall || Option.get('notice_all') === true)) {
-            // (发送者没有被打开 || 窗口被最小化) 这些情况需要进行消息通知
-            if (id !== showId || document.hidden) {
+            // (发送者没有被打开 || 窗口没有焦点 || 窗口被最小化) 这些情况需要进行消息通知
+            if (id !== showId || !document.hasFocus() || document.hidden) {
                 // 准备消息内容
                 let raw = getMsgRawTxt(data.message)
                 raw = raw === '' ? data.raw_message : raw

@@ -428,7 +428,7 @@ export function createIpc() {
                 '[SQ:0]' + data.content,
                 [{ type: 'reply', id: String(data.msg) }],
                 []
-            ))
+            ), true)
             // 去消息列表内寻找，去除新消息标记
             for (let i = 0; i < runtimeData.onMsgList.length; i++) {
                 if (runtimeData.onMsgList[i].group_id == data.id || runtimeData.onMsgList[i].user_id == data.id) {

@@ -11,6 +11,7 @@
 */
 
 import app from '@/main'
+import Umami from '@stapxs/umami-logger-typescript'
 import languageConfig from '@/assets/l10n/_l10nconfig.json'
 
 import { i18n } from '@/main'
@@ -25,6 +26,7 @@ let cacheConfigs: { [key: string]: any }
 // 设置项的初始值，防止下拉菜单选项为空或者首次使用初始错误
 const optDefault: { [key: string]: any } = {
     opt_dark: false,
+    opt_auto_dark: true,
     language: 'zh-CN',
     log_level: 'err',
     open_ga_bot: true,
@@ -47,7 +49,23 @@ const configFunction: { [key: string]: (value: any) => void } = {
     initial_scale: changeInitialScale,
     msg_type: setMsgType,
     opt_auto_gtk: updateGTKColor,
-    opt_auto_win_color: updateWinColorOpt
+    opt_auto_win_color: updateWinColorOpt,
+    opt_revolve: viewRevolve,
+}
+
+function viewRevolve(value: boolean) {
+    const baseApp = document.getElementById('base-app')
+    if(baseApp && value) {
+        if(baseApp.classList.contains('no-touch')) {
+            baseApp.classList.remove('no-touch')
+            // 把这个选项设置为 false
+            save('opt_revolve', false)
+        } else {
+            baseApp.classList.add('no-touch')
+            // UM：上传禁用触摸(彩蛋)的选择
+            Umami.trackEvent('click_statistics', { name: 'touch_randomly' })
+        }
+    }
 }
 
 function updateWinColorOpt(value: boolean) {
@@ -265,7 +283,7 @@ function changeChatView(name: string | undefined) {
 // =============== 设置基础功能 ===============
 
 /**
- * 读取并序列化 cookie 中的设置项
+ * 读取并序列化 localStorage 中的设置项（electron 读取 electron-store 存储）
  * @returns 设置项集合
  */
 export function load(): { [key: string]: any } {

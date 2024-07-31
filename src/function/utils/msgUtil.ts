@@ -376,6 +376,11 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
                 newResult.type = item.type
                 newResult.data = item
                 delete newResult.data.type
+                // 特殊处理，如果 newResult.data 里有 _type 字段，给它改成 type
+                if (newResult.data._type != undefined) {
+                    newResult.data.type = newResult.data._type
+                    delete newResult.data._type
+                }
                 newMsg.push(newResult)
             })
             msg = newMsg

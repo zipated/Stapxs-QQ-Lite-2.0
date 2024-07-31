@@ -64,8 +64,9 @@
                                 <img
                                     v-if="['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(data.fileView.ext)"
                                     :src="data.fileView.url">
-                                <video v-if="['mp4', 'avi', 'mkv', 'flv'].includes(data.fileView.ext)" controls>
+                                <video v-if="['mp4', 'avi', 'mkv', 'flv'].includes(data.fileView.ext)" controls muted autoplay>
                                     <source :src="data.fileView.url" :type="'video/' + data.fileView.ext">
+                                    现在还有不支持 video tag 的浏览器吗？
                                 </video>
                                 <span class="txt" v-if="['txt', 'md'].includes(data.fileView.ext) && item.size < 2000000">
                                     <a>&gt; {{ item.name }} - {{ $t('chat_view_file_viewer') }}</a>
@@ -74,7 +75,10 @@
                             </div>
                         </div>
                         <div v-else-if="item.type == 'video'" class="msg-video">
-                            <video v-if="item.url" controls><source :src="item.url" type="video/mp4"></video>
+                            <video v-if="item.url" controls muted autoplay>
+                                <source :src="item.url" type="video/mp4">
+                                现在还有不支持 video tag 的浏览器吗？
+                            </video>
                             <div v-else-if="!getVideo" :class="getVideoUrl(item, data.message_id)"></div>
                         </div>
                         <span v-else-if="item.type == 'forward'" class="msg-unknown" style="cursor: pointer;" @click="View.getForwardMsg(item.id)">{{ $t('chat_show_forward') }}</span>
