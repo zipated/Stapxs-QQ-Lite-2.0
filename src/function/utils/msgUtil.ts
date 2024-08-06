@@ -5,7 +5,7 @@ import { Logger } from '@/function/base'
 import { runtimeData } from '@/function/msg'
 import { v4 as uuid } from 'uuid'
 import { Connector } from '@/function/connect'
-import { BotMsgType } from '../elements/information'
+import { BotMsgType, UserFriendElem, UserGroupElem } from '../elements/information'
 import Umami from '@stapxs/umami-logger-typescript'
 
 const logger = new Logger()
@@ -409,4 +409,28 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
         // UM：统计消息发送次数
         Umami.trackEvent('sendMsg', { type: type })
     }
+}
+
+export function updateLastestHistory(item: UserFriendElem & UserGroupElem) {
+    // 发起获取历史消息请求
+    const type = item.user_id ? 'user' : 'group'
+    const id = item.user_id ? item.user_id : item.group_id
+    let name
+    if (runtimeData.jsonMap.message_list && type != 'group') {
+        name = runtimeData.jsonMap.message_list.private_name
+    } else {
+        name = runtimeData.jsonMap.message_list.name
+    }
+    Connector.send(
+        name ?? 'get_chat_history',
+        {
+            message_type: runtimeData.jsonMap.message_list.message_type[type],
+            group_id: id,
+            user_id: id,
+            message_seq: 0,
+            message_id: 0,
+            count: 1
+        },
+        'getChatHistoryOnMsg_' + id
+    )
 }

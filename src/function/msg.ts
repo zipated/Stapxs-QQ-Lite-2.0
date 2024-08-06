@@ -18,7 +18,7 @@ import pinyin from 'pinyin'
 
 import Umami from '@stapxs/umami-logger-typescript'
 
-import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt } from '@/function/utils/msgUtil'
+import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt, updateLastestHistory } from '@/function/utils/msgUtil'
 import { getViewTime, escape2Html, randomNum } from '@/function/utils/systemUtil'
 import { reloadUsers, reloadCookies, downloadFile, updateMenu, jumpToChat } from '@/function/utils/appUtil'
 import { reactive, markRaw, defineAsyncComponent } from 'vue'
@@ -52,7 +52,7 @@ export function parse(str: string) {
                 case 'getUserInfoInGroup'       : runtimeData.chatInfo.info.me_info = msg; break
                 case 'getGroupMemberList'       : saveGroupMember(msg.data); break
                 case 'getChatHistoryFist'       : saveMsg(msg, 'top'); break
-                case 'getChatHistoryTop'        : updateTopMsg(msg, echoList); break
+                case 'getChatHistoryOnMsg'      : updateTopMsg(msg, echoList); break
                 case 'getChatHistory'           : saveMsg(msg, 'top'); break
                 case 'getForwardMsg'            : saveForwardMsg(msg); break
                 case 'sendMsgBack'              : showSendedMsg(msg, echoList); break
@@ -74,7 +74,7 @@ export function parse(str: string) {
                 case 'setFriendAdd':
                 case 'setGroupAdd'              : updateSysInfo(head); break
                 case 'loadFileBase'             : loadFileBase(echoList, msg); break
-                case 'getClassInfo'             : saveClassInfo(msg); break
+                case 'GetRecentContact'         : createRecentContact(msg); break
 
                 case 'getCookies'               : saveCookie(msg, echoList); break
             }
@@ -201,11 +201,65 @@ function saveGroupNotices(msg: any) {
     }
 }
 
+function createRecentContact(data: any) {
+    const list = getMsgData('recent_contact', data, msgPath.recent_contact)
+    if (list != undefined) {
+        // user_id: /peerUin
+        // time: /msgTime
+        // chat_type: /chatType
+        // 过滤掉 chatType 不是 1 和 2 的
+        let back = list.filter((item) => {
+            return item.chat_type == 1 || item.chat_type == 2
+        })
+        // 排除掉在置顶列表里的
+        const topList = runtimeData.sysConfig.top_info as { [key: string]: number[] } | null
+        if(topList != null) {
+            const top = topList[runtimeData.loginInfo.uin]
+            if(top != undefined) {
+                back = back.filter((item) => {
+                    return top.indexOf(Number(item.user_id)) == -1
+                })
+            }
+        }
+        // 去重
+        back = back.filter((item, index, arr) => {
+            return arr.findIndex((item2) => {
+                return item2.user_id == item.user_id
+            }) == index
+        })
+        back.forEach((item) => {
+            // 去消息列表里找一下它
+            const user = runtimeData.userList.find((user) => {
+                return user.user_id == item.user_id
+            })
+            const inMsgList = runtimeData.onMsgList.find((msg) => {
+                return msg.user_id == item.user_id
+            }) != undefined
+            if(user && !inMsgList) {
+                runtimeData.onMsgList.push(user)
+                updateLastestHistory(user)
+            }
+        })
+    }
+}
+
 function saveUser(msg: { [key: string]: any }, type: string) {
-    const list = getMsgData('user_list', msg, msgPath.user_list)
+    let list: any[] | undefined
+    if(msgPath.user_list)
+        list = getMsgData('user_list', msg, msgPath.user_list)
+    else {
+        switch(type) {
+            case 'friend':
+                list = getMsgData('friend_list', msg, msgPath.friend_list)
+                break
+            case 'group':
+                list = getMsgData('group_list', msg, msgPath.group_list)
+                break
+        }
+    }
     if (list != undefined) {
         const pyConfig = { style: 0 } as IPinyinOptions
-        const groupNames = {} as { [key: number]: string }
+        const groupNames = {} as {[key: number]: string}
         list.forEach((item, index) => {
             // 为所有项目追加拼音名称
             let py_name = ''
@@ -215,7 +269,7 @@ function saveUser(msg: { [key: string]: any }, type: string) {
                 py_name = pinyin(item.nickname, pyConfig).join('') + ',' +
                     pinyin(item.remark, pyConfig).join('')
             }
-            list[index].py_name = py_name
+            if(list && list[index]) list[index].py_name = py_name
             // 构建分类
             if (type == 'friend') {
                 if (item.class_id != undefined && item.class_name) {
@@ -227,8 +281,13 @@ function saveUser(msg: { [key: string]: any }, type: string) {
                 delete item.class_name
             }
         })
-        if (Object.keys(groupNames).length > 0) {
-            saveClassInfo(Array.from(Object.entries(groupNames), ([key, value]) => ({ [key]: value })))
+        if(Object.keys(groupNames).length > 0) {
+            // 把 groupNames 处理为 { class_id: number, class_name: string }[]
+            const groupNamesList = [] as { class_id: number, class_name: string }[]
+            for(const key in groupNames) {
+                groupNamesList.push({ class_id: Number(key), class_name: groupNames[key] })
+            }
+            saveClassInfo(groupNamesList)
         }
         runtimeData.userList = runtimeData.userList.concat(list)
         // 刷新置顶列表
@@ -250,27 +309,7 @@ function saveUser(msg: { [key: string]: any }, type: string) {
                             // 给置顶的用户刷新最新一条的消息用于显示
                             runtimeData.userList.forEach((item) => {
                                 if (item.always_top) {
-                                    // 发起获取历史消息请求
-                                    const type = item.user_id ? 'user' : 'group'
-                                    const id = item.user_id ? item.user_id : item.group_id
-                                    let name
-                                    if (runtimeData.jsonMap.message_list && type != 'group') {
-                                        name = runtimeData.jsonMap.message_list.private_name
-                                    } else {
-                                        name = runtimeData.jsonMap.message_list.name
-                                    }
-                                    Connector.send(
-                                        name ?? 'get_chat_history',
-                                        {
-                                            message_type: runtimeData.jsonMap.message_list.message_type[type],
-                                            group_id: id,
-                                            user_id: id,
-                                            message_seq: 0,
-                                            message_id: 0,
-                                            count: 1
-                                        },
-                                        'getChatHistoryTop_' + id
-                                    )
+                                    updateLastestHistory(item)
                                 }
                             })
                         }
@@ -297,52 +336,41 @@ function updateTopMsg(msg: any, echoList: string[]) {
             const raw = getMsgRawTxt(list[0].message)
             const sender = list[0].sender
             const time = list[0].time
-            // 更新置顶列表
+            // 更新消息列表
             runtimeData.onMsgList.forEach((item) => {
                 if (item.user_id == id) {
                     item.raw_msg = raw
                 } else if(item.group_id == id) {
                     item.raw_msg = sender.nickname + ': ' + raw
-                    item.time = getViewTime(Number(time))
                 }
+                item.time = getViewTime(Number(time))
             })
         }
     }
 }
 
-function saveClassInfo(data: any) {
-    const list = getMsgData('class_list', data, msgPath.class_list)
-    if (list != undefined && (data.status == 'ok' || data.status == undefined)) {
-        // 对 classes 列表按拼音重新排序
-        const names = [] as string[]
-        list.forEach((item: any) => {
-            names.push(Object.values(item)[0] as string)
-            // 如果分组 ID 没有返回在用户列表中而是在这儿……
-            if (item.list != undefined) {
-                item.list.forEach((user: any) => {
-                    const user_id = Number(user.uin)
-                    runtimeData.userList.forEach((get) => {
-                        if (get.user_id == user_id) {
-                            // 保存分组信息，特别关心（9999）优先覆盖
-                            if(get.class_id == undefined || item.class_id == 9999)
-                                get.class_id = item.class_id
-                        }
-                    })
-                })
-            }
-        })
-        const sortedData = names.sort(pinyin.compare)
+function saveClassInfo(list: { class_id: number, class_name: string }[]) {
+    // 按拼音重新排序
+    // const names = [] as string[]
+    // list.forEach((item) => {
+    //     names.push(item.class_name)
+    // })
+    // const sortedData = names.sort(pinyin.compare)
+    // const back = [] as { class_id: number, class_name: string }[]
+    // sortedData.forEach((name) => {
+    //     list.forEach((item) => {
+    //         if (item.class_name == name) {
+    //             back.push(item)
+    //         }
+    //     })
+    // })
 
-        const back = [] as any[]
-        sortedData.forEach((name) => {
-            list.forEach((item: any) => {
-                if ((Object.values(item)[0] as string) == name)
-                    back.push(item)
-            })
-        })
+    // 按 class_id 排序
+    const back = list.sort((a, b) => {
+        return a.class_id - b.class_id
+    })
 
-        runtimeData.tags.classes = back
-    }
+    runtimeData.tags.classes = back
 }
 
 function saveGroupMember(data: GroupMemberInfoElem[]) {

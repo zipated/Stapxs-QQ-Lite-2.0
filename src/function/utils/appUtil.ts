@@ -141,10 +141,23 @@ export function reloadUsers() {
     // 加载用户列表
     if (login.status) {
         runtimeData.userList = []
-        Connector.send('get_friend_list', {}, 'getFriendList')
-        Connector.send('get_group_list', {}, 'getGroupList')
+        let friendName = 'get_friend_list'
+        let groupName = 'get_group_list'
+        if(runtimeData.jsonMap.user_list?.name) {
+            friendName = runtimeData.jsonMap.user_list.name.split('|')[0]
+            groupName = runtimeData.jsonMap.user_list.name.split('|')[1]
+        } else if(runtimeData.jsonMap.friend_list?.name &&
+            runtimeData.jsonMap.group_list?.name) {
+            friendName = runtimeData.jsonMap.friend_list.name
+            groupName = runtimeData.jsonMap.group_list.name
+        }
+        Connector.send(friendName, {}, 'getFriendList')
+        Connector.send(groupName, {}, 'getGroupList')
+        // 获取系统消息
         Connector.send('get_system_msg', {}, 'getSystemMsg')
-        Connector.send(runtimeData.jsonMap.class_list.name, {}, 'getClassInfo')
+        // 获取最近的会话
+        if(runtimeData.jsonMap.recent_contact)
+            Connector.send(runtimeData.jsonMap.recent_contact.name, {}, 'GetRecentContact')
     }
 }
 

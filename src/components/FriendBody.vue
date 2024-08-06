@@ -17,15 +17,15 @@
                     'https://p.qlogo.cn/gh/' + data.group_id + '/' + data.group_id + '/0'">
         <div>
             <div>
-                <p>{{getShowName()}}</p>
+                <p>{{ getShowName() }}</p>
                 <div style="flex:1"></div>
-                <a class="time">{{ data.time !== undefined ? Intl.DateTimeFormat(trueLang,
+                <a class="time" v-if="from == 'message'">{{ data.time !== undefined ? Intl.DateTimeFormat(trueLang,
                         { hour: "numeric", minute: "numeric" }).format(new Date(data.time)) : ''
                 }}</a>
             </div>
             <div>
-                <a>{{ data.raw_msg }}</a>
-                <div style="margin-left:10px;display:flex;">
+                <a :class="from == 'friend' ? 'nick' : ''">{{ from == 'friend' ? data.longNick ?? '' : data.raw_msg }}</a>
+                <div style="margin-left:10px;display:flex;" v-if="from == 'message'">
                     <font-awesome-icon v-if="data.always_top === true" :icon="['fas', 'thumbtack']" />
                 </div>
             </div>
@@ -40,7 +40,7 @@ import { getMsgRawTxt } from '@/function/utils/msgUtil'
 
 export default defineComponent({
     name: 'FriendBody',
-    props: ['data', 'select', 'menu'],
+    props: ['data', 'select', 'menu', 'from'],
     data () {
         return {
             trueLang: getTrueLang(),

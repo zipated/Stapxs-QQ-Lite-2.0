@@ -45,7 +45,7 @@
                     :key="'inMessage-' + item.user_id ? item.user_id : item.group_id"
                     :select="chat.show.id === item.user_id || (chat.show.id === item.group_id && chat.group_name != '')"
                     :menu="menu.select && menu.select == item"
-                    :data="item"
+                    :data="item" from="message"
                     @contextmenu.prevent="listMenuShow($event, item)"
                     @click="userClick(item)"
                     @touchstart="showMenuStart($event, item)"
