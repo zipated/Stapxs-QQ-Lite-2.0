@@ -38,7 +38,7 @@ export function getTrueLang(): string {
  * @param str 待处理的字符串
  * @returns 处理完成的字符串
  */
-export function htmlDecodeByRegExp(str: string): string {
+export function escape2Html(str: string): string {
     let s = ''
     if (str.length === 0) return ''
     s = str.replace(/&amp;/g, '&')

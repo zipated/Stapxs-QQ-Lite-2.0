@@ -332,17 +332,16 @@ export default defineComponent({
          */
         parseText (text: string) {
             const logger = new Logger()
-
             text = ViewFuns.parseText(text)
             // 链接判定
-            const reg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/gi //eslint-disable-line
+            const reg = /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&:/~+#]*[\w\-@?^=%&/~+#])?/gi
             text = text.replaceAll(reg, '<a href="" data-link="$&" onclick="return false">$&</a>')
             let linkList = text.match(reg)
             if (linkList !== null && !this.gotLink) {
                 this.gotLink = true
                 const fistLink = linkList[0]
                 // 获取链接预览
-                fetch('https://api.stapxs.cn/tool/page-info/' + encodeURIComponent(fistLink))
+                fetch(process.env.VUE_APP_LINK_VIEW + encodeURIComponent(fistLink))
                     .then(res => res.json())
                     .then(res => {
                         if (res.status === undefined && Object.keys(res).length > 0) {
@@ -448,7 +447,10 @@ export default defineComponent({
                 return item.message_id == message_id
             })
             if (list.length === 1) {
-                return list[0].sender.nickname + ': ' + getMsgRawTxt(list[0].message)
+                if(list[0].message.length > 0)
+                    return list[0].sender.nickname + ': ' + getMsgRawTxt(list[0].message)
+                else
+                    return this.$t('chat_jump_reply_fail')
             }
             return null
         },

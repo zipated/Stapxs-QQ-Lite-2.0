@@ -320,6 +320,7 @@
   "chat_msg_menu_plus": "+ 1",
   "option_dev_chat_respond": "关闭回应功能",
   "option_dev_chat_respond_tip": "如果你不想用它或者 bot 不支持，可以关闭这个功能",
+  "chat_jump_reply_fail": "（获取回复消息失败）",
 
   "menu_about": "关于",
   "menu_update": "检查更新…",

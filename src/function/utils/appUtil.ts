@@ -158,29 +158,34 @@ export function reloadCookies() {
  * @param msgId 
  */
 export function jumpToChat(userId: string, msgId: string) {
-    const body = document.getElementById('user-' + userId)
-    if (body === null) {
-        // 从缓存列表里寻找这个 ID
-        for (let i = 0; i < runtimeData.userList.length; i++) {
-            const item = runtimeData.userList[i]
-            const id = item.user_id !== undefined ? item.user_id : item.group_id
-            if (String(id) === userId) {
-                // 把它插入到显示列表的第一个
-                runtimeData.showList?.unshift(item)
-                nextTick(() => {
-                    const bodyNext = document.getElementById('user-' + userId)
-                    if (bodyNext !== null) {
-                        // 添加一个消息跳转标记
-                        bodyNext.dataset.jump = msgId
-                        // 然后点一下它触发聊天框切换
-                        bodyNext.click()
-                    }
-                })
-                break
+    if(runtimeData.chatInfo.show.id != Number(userId)) {
+        const body = document.getElementById('user-' + userId)
+        if (body === null) {
+            // 从缓存列表里寻找这个 ID
+            for (let i = 0; i < runtimeData.userList.length; i++) {
+                const item = runtimeData.userList[i]
+                const id = item.user_id !== undefined ? item.user_id : item.group_id
+                if (String(id) === userId) {
+                    // 把它插入到显示列表的第一个
+                    runtimeData.showList?.unshift(item)
+                    nextTick(() => {
+                        const bodyNext = document.getElementById('user-' + userId)
+                        if (bodyNext !== null) {
+                            // 添加一个消息跳转标记
+                            bodyNext.dataset.jump = msgId
+                            // 然后点一下它触发聊天框切换
+                            bodyNext.click()
+                        }
+                    })
+                    break
+                }
             }
+        } else {
+            body.click()
         }
     } else {
-        body.click()
+        // 当前聊天已经打开，是没有焦点触发的消息通知；直接滚动到消息。
+        scrollToMsg(msgId, true)
     }
 }
 

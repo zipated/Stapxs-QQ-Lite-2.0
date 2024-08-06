@@ -19,7 +19,7 @@ import pinyin from 'pinyin'
 import Umami from '@stapxs/umami-logger-typescript'
 
 import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt } from '@/function/utils/msgUtil'
-import { getViewTime, htmlDecodeByRegExp, randomNum } from '@/function/utils/systemUtil'
+import { getViewTime, escape2Html, randomNum } from '@/function/utils/systemUtil'
 import { reloadUsers, reloadCookies, downloadFile, updateMenu, jumpToChat } from '@/function/utils/appUtil'
 import { reactive, markRaw, defineAsyncComponent } from 'vue'
 import { PopInfo, PopType, Logger, LogType } from './base'
@@ -52,7 +52,7 @@ export function parse(str: string) {
                 case 'getUserInfoInGroup'       : runtimeData.chatInfo.info.me_info = msg; break
                 case 'getGroupMemberList'       : saveGroupMember(msg.data); break
                 case 'getChatHistoryFist'       : saveMsg(msg, 'top'); break
-                case 'getChatHistoryTop'        : updateTopMag(msg, echoList); break
+                case 'getChatHistoryTop'        : updateTopMsg(msg, echoList); break
                 case 'getChatHistory'           : saveMsg(msg, 'top'); break
                 case 'getForwardMsg'            : saveForwardMsg(msg); break
                 case 'sendMsgBack'              : showSendedMsg(msg, echoList); break
@@ -287,7 +287,7 @@ function saveUser(msg: { [key: string]: any }, type: string) {
     }
 }
 
-function updateTopMag(msg: any, echoList: string[]) {
+function updateTopMsg(msg: any, echoList: string[]) {
     const id = Number(echoList[1])
     if (id) {
         // 对消息进行一次格式化处理
@@ -361,7 +361,7 @@ function saveGroupMember(data: GroupMemberInfoElem[]) {
     runtimeData.chatInfo.info.group_members = back
 }
 
-export function saveMsg(msg: any, append = undefined as undefined | string) {
+function saveMsg(msg: any, append = undefined as undefined | string) {
     if (msg.error !== null && (msg.error !== undefined || msg.status === 'failed')) {
         popInfo.add(PopType.ERR, app.config.globalProperties.$t('pop_chat_load_msg_err', { code: msg.error | msg.retcode }))
     } else {
@@ -464,6 +464,7 @@ function showSendedMsg(msg: any, echoList: string[]) {
             // 去 messagelist 里找到这条消息
             runtimeData.messageList.forEach((item) => {
                 if (item.message_id == messageId) {
+                    item.message_id = msg.message_id
                     item.fake_msg = false
                     return
                 }
@@ -647,7 +648,7 @@ function downloadGroupFile(msg: any) {
     let subFileIndex = -1
     runtimeData.chatInfo.info.group_files.file_list.forEach((item: any, index: number) => {
         if (item.id === id) {
-            fileName = htmlDecodeByRegExp(item.name)
+            fileName = escape2Html(item.name)
             fileIndex = index
         }
     })
@@ -655,7 +656,7 @@ function downloadGroupFile(msg: any) {
     if (info[2] !== undefined) {
         runtimeData.chatInfo.info.group_files.file_list[fileIndex].sub_list.forEach((item: any, index: number) => {
             if (item.id === info[2]) {
-                fileName = htmlDecodeByRegExp(item.name)
+                fileName = escape2Html(item.name)
                 subFileIndex = index
             }
         })
@@ -748,10 +749,10 @@ function newMsg(data: any) {
         const showId = runtimeData.chatInfo.show.id
         const sender = info.sender
         // 在好友列表里找一下他
-        const user = runtimeData.userList.find((item) => {
-            return item.user_id == id || item.group_id == id
+        const senderInfo = runtimeData.userList.find((item) => {
+            return item.user_id == sender
         })
-        const isImportant = user?.class_id == 9999
+        const isImportant = senderInfo?.class_id == 9999
 
         // 消息回调检查
         // PS：如果在新消息中获取到了自己的消息，则自动打开“停止消息回调”设置防止发送的消息重复
@@ -844,8 +845,8 @@ function newMsg(data: any) {
         }
         // (发送者不是自己 && (在特别关心列表里 || 发送者不是群组 || 群组 AT || 群组 AT 全体 || 打开了通知全部消息)) 这些情况需要进行新消息处理
         if (sender != loginId && sender != 0 && (isImportant || data.message_type !== 'group' || data.atme || data.atall || Option.get('notice_all') === true)) {
-            // (发送者没有被打开 || 窗口没有焦点 || 窗口被最小化) 这些情况需要进行消息通知
-            if (id !== showId || !document.hasFocus() || document.hidden) {
+            // (发送者没有被打开 || 窗口没有焦点 || 窗口被最小化 || 在特别关心列表里) 这些情况需要进行消息通知
+            if (id !== showId || !document.hasFocus() || document.hidden || isImportant) {
                 // 准备消息内容
                 let raw = getMsgRawTxt(data.message)
                 raw = raw === '' ? data.raw_message : raw

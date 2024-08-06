@@ -44,7 +44,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
-import { getTrueLang, htmlDecodeByRegExp, getSizeFromBytes } from '@/function/utils/systemUtil'
+import { getTrueLang, escape2Html, getSizeFromBytes } from '@/function/utils/systemUtil'
 import { Connector } from '@/function/connect'
 import { runtimeData } from '@/function/msg'
 
@@ -55,7 +55,7 @@ export default defineComponent({
         return {
             trueLang: getTrueLang(),
             getSize: getSizeFromBytes,
-            toHtml: htmlDecodeByRegExp
+            toHtml: escape2Html
         }
     },
     methods: {
