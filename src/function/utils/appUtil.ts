@@ -155,9 +155,6 @@ export function reloadUsers() {
         Connector.send(groupName, {}, 'getGroupList')
         // 获取系统消息
         Connector.send('get_system_msg', {}, 'getSystemMsg')
-        // 获取最近的会话
-        if(runtimeData.jsonMap.recent_contact)
-            Connector.send(runtimeData.jsonMap.recent_contact.name, {}, 'GetRecentContact')
     }
 }
 

@@ -11,18 +11,21 @@
     <div id="base-app">
         <div class="main-body">
             <ul :style="get('fs_adaptation') > 0 ? `padding-bottom: ${get('fs_adaptation')}px;` : ''">
-                <li id="bar-home" @click="changeTab('主页', 'Home', true)"
+                <li id="bar-home" @click="changeTab('主页', 'Home', false)"
                     :class="(tags.page == 'Home' ? 'active' : '') + (loginInfo.status ? ' hiden-home' : '')">
                     <font-awesome-icon :icon="['fas', 'home']" />
                 </li>
-                <li id="bar-msg" @click="changeTab('信息', 'Messages', false)" :class="tags.page == 'Messages' ? 'active' : ''">
+                <li id="bar-msg" @click="changeTab('信息', 'Messages', true)" :class="tags.page == 'Messages' ? 'active' : ''">
                     <font-awesome-icon :icon="['fas', 'envelope']" />
                 </li>
-                <li id="bar-friends" @click="changeTab('列表', 'Friends', false)" :class="tags.page == 'Friends' ? 'active' : ''">
+                <li id="bar-friends" @click="changeTab('列表', 'Friends', true)" :class="tags.page == 'Friends' ? 'active' : ''">
                     <font-awesome-icon :icon="['fas', 'user']" />
                 </li>
                 <div class="side-bar-space"></div>
-                <li @click="changeTab('设置', 'Options', true);Connector.send('get_version_info', {}, 'getVersionInfo')"
+                <li v-show="runtimeData.sysConfig.append_scripts" id="bar-friends" @click="changeTab('脚本', 'Scripts', false)" :class="tags.page == 'Scripts' ? 'active' : ''">
+                    <font-awesome-icon :icon="['fas', 'file-code']" />
+                </li>
+                <li @click="changeTab('设置', 'Options', false);Connector.send('get_version_info', {}, 'getVersionInfo')"
                     :class="tags.page == 'Options' ? 'active' : ''">
                     <font-awesome-icon :icon="['fas', 'gear']" />
                 </li>
@@ -93,6 +96,9 @@
                         @loadHistory="loadHistory"
                         @userClick="changeChat">
                     </Friends>
+                </div>
+                <div v-show="tags.page == 'Scripts' && runtimeData.sysConfig.append_scripts">
+                    <Scripts></Scripts>
                 </div>
                 <div class="opt-main-tab">
                     <Options
@@ -191,6 +197,7 @@ import { runtimeData, notificationList } from '@/function/msg'
 import { BaseChatInfoElem } from '@/function/elements/information'
 import * as App from './function/utils/appUtil'
 
+import Scripts from '@/pages/Scripts.vue'
 import Options from '@/pages/Options.vue'
 import Friends from '@/pages/Friends.vue'
 import Messages from '@/pages/Messages.vue'
@@ -199,6 +206,7 @@ import Chat from '@/pages/Chat.vue'
 export default defineComponent({
     name: 'App',
     components: {
+        Scripts,
         Options,
         Friends,
         Messages,
@@ -253,14 +261,14 @@ export default defineComponent({
         changeTab (name: string, view: string, show: boolean) {
             // UM：发送页面路由分析
             Umami.trackPageView('/' + view)
-            this.tags.showChat = !show
+            this.tags.showChat = show
             this.tags.page = view
         },
         barMainClick() {
             if(loginInfo.status) {
-                this.changeTab('信息', 'Messages', false)
+                this.changeTab('信息', 'Messages', true)
             } else {
-                this.changeTab('主页', 'Home', true)
+                this.changeTab('主页', 'Home', false)
             }
         },
 

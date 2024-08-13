@@ -8,6 +8,23 @@
 <template>
     <div class="opt-page">
         <div class="ss-card">
+            <header>{{ $t('option_dev_append') }}</header>
+            <div class="opt-item">
+                <font-awesome-icon :icon="['fas', 'code']" />
+                <div>
+                    <span>{{ $t('title_scripts') }}</span>
+                    <span>{{ $t('option_dev_scripts_tip') }}</span>
+                </div>
+                <label class="ss-switch">
+                    <input type="checkbox" @change="save" name="append_scripts" v-model="runtimeData.sysConfig.append_scripts">
+                    <div>
+                        <div></div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="ss-card">
             <header>{{ $t('option_dev_connect') }}</header>
             <div class="tip">
                 {{ $t('option_dev_connect_tip') }}

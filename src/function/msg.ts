@@ -33,6 +33,9 @@ const popInfo = new PopInfo()
 // eslint-disable-next-line
 let msgPath = require('@/assets/pathMap/Lagrange.OneBot.yaml')
 
+// 其他 tag
+let listLoadTimes = 0
+
 export function parse(str: string) {
     const msg = JSON.parse(str)
     if (msg.echo !== undefined) {
@@ -244,6 +247,7 @@ function createRecentContact(data: any) {
 }
 
 function saveUser(msg: { [key: string]: any }, type: string) {
+    listLoadTimes ++
     let list: any[] | undefined
     if(msgPath.user_list)
         list = getMsgData('user_list', msg, msgPath.user_list)
@@ -323,6 +327,12 @@ function saveUser(msg: { [key: string]: any }, type: string) {
             action: 'label',
             value: app.config.globalProperties.$t('menu_user_list', { count: runtimeData.userList.length })
         })
+    }
+    // 如果获取次数大于 0 并且是双数，刷新一下历史会话
+    if(listLoadTimes > 0 && listLoadTimes % 2 == 0) {
+        // 获取最近的会话
+        if(runtimeData.jsonMap.recent_contact)
+            Connector.send(runtimeData.jsonMap.recent_contact.name, {}, 'GetRecentContact')
     }
 }
 
@@ -781,6 +791,7 @@ function newMsg(data: any) {
             return item.user_id == sender
         })
         const isImportant = senderInfo?.class_id == 9999
+        runtimeData.watch.newMsg = data
 
         // 消息回调检查
         // PS：如果在新消息中获取到了自己的消息，则自动打开“停止消息回调”设置防止发送的消息重复
@@ -1169,6 +1180,9 @@ const baseRuntime = {
         release: undefined,
         connectSsl: false,
         classes: []
+    },
+    watch: {
+        newMsg: {}
     },
     chatInfo: {
         show: { type: '', id: 0, name: '', avatar: '' },

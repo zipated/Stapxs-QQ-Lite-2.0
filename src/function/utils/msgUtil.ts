@@ -390,7 +390,7 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
         switch (type) {
             case 'group': 
                 Connector.send(
-                    runtimeData.jsonMap.message_list.name_group_send ?? 'send_group_msg',
+                    runtimeData.jsonMap.message_list.name_group_send ?? 'send_msg',
                     { 'group_id': id, 'message': msg },'sendMsgBack_uuid_' + msgUUID); break
             case 'user': 
             {
@@ -400,7 +400,7 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
                         { 'user_id': id.split('/')[0], 'group_id': id.split('/')[1], 'message': msg }, 'sendMsgBack_uuid_' + msgUUID);
                 } else {
                     Connector.send(
-                        runtimeData.jsonMap.message_list.name_user_send ?? 'send_private_msg',
+                        runtimeData.jsonMap.message_list.name_user_send ?? 'send_msg',
                          { 'user_id': id, 'message': msg }, 'sendMsgBack_uuid_' + msgUUID);
                 }
                 break

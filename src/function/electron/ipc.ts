@@ -20,32 +20,32 @@ export function regIpcListener() {
         return os.release()
     })
     // 代理请求 HTTP
-    ipcMain.on('sys:requestHttp', (event, args) => {
-        console.log(args)
+    // ipcMain.on('sys:requestHttp', (event, args) => {
+        // console.log(args)
 
-        const cookies = JSON.parse(args.cookies)
-        console.log(cookies)
-        const cookieStrs = Object.keys(cookies).map((key) => {
-            return key + '=' + cookies[key]
-        })
-        console.log(cookieStrs.join('; '))
-        // 异步请求，不需要立即返回
-        axios({
-            method: args.type,
-            url: args.url,
-            headers: {
-                'Content-Type': 'application/json',
-                'Cookie': cookieStrs.join('; '),
-            },
-            data: args.data
-        }).then((res) => {
-            // res.data
-            console.log(res.data)
-        }).catch((err) => {
-            // err
-            console.error(err)
-        })
-    })
+        // const cookies = JSON.parse(args.cookies)
+        // console.log(cookies)
+        // const cookieStrs = Object.keys(cookies).map((key) => {
+        //     return key + '=' + cookies[key]
+        // })
+        // console.log(cookieStrs.join('; '))
+        // // 异步请求，不需要立即返回
+        // axios({
+        //     method: args.type,
+        //     url: args.url,
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'Cookie': cookieStrs.join('; '),
+        //     },
+        //     data: args.data
+        // }).then((res) => {
+        //     // res.data
+        //     console.log(res.data)
+        // }).catch((err) => {
+        //     // err
+        //     console.error(err)
+        // })
+    // })
     // 关闭窗口
     ipcMain.on('win:close', () => {
         if(win) win.close()
@@ -62,6 +62,13 @@ export function regIpcListener() {
     ipcMain.on('win:relaunch', () => {
         app.relaunch()
         app.exit()
+    })
+    // 保存信息
+    ipcMain.on('sys:store', (event, arg) => {
+        store.set(arg.key, arg.value)
+    })
+    ipcMain.handle('sys:getStore', (event, key) => {
+        return store.get(key)
     })
     // 保存设置
     // PS：升级至 electron 27 后 cookie 已完全无法持久化，只能进行保存
