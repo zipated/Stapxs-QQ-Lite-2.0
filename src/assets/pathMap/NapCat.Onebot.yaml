@@ -30,7 +30,7 @@ group_list:
         group_id: /group_id
         group_name: /group_name
         member_count: /member_count
-        admin_flag: $.admins[?(@ == '<uin>')]
+        admin_flag: null
 # 消息列表
 message_list:
     name: get_group_msg_history
