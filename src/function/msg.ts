@@ -20,7 +20,7 @@ import Umami from '@stapxs/umami-logger-typescript'
 
 import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt, updateLastestHistory } from '@/function/utils/msgUtil'
 import { getViewTime, escape2Html, randomNum } from '@/function/utils/systemUtil'
-import { reloadUsers, reloadCookies, downloadFile, updateMenu, jumpToChat } from '@/function/utils/appUtil'
+import { reloadUsers, reloadCookies, downloadFile, updateMenu, jumpToChat, loadJsonMap } from '@/function/utils/appUtil'
 import { reactive, markRaw, defineAsyncComponent } from 'vue'
 import { PopInfo, PopType, Logger, LogType } from './base'
 import { Connector, login } from './connect'
@@ -145,18 +145,8 @@ function saveBotInfo(msg: { [key: string]: any }) {
         if (!login.status) {
             // 尝试动态载入对应的 pathMap
             if (data.app_name !== undefined) {
-                try {
-                    // eslint-disable-next-line
-                    msgPath = require(`@/assets/pathMap/${data.app_name}.yaml`)
-                    logger.debug('加载映射表：' + msgPath.name)
-                    if(msgPath.redirect) {
-                        msgPath = require(`@/assets/pathMap/${msgPath.redirect}.yaml`)
-                        logger.debug('加载映射表（重定向）：' + msgPath.name)
-                    }
-                    runtimeData.jsonMap = msgPath
-                } catch (ex) {
-                    logger.debug('加载映射表失败：' + ex)
-                }
+                const getMap = loadJsonMap(data.app_name)
+                if(getMap != null) msgPath = getMap
             }
             // 继续获取后续内容
             Connector.send('get_login_info', {}, 'getLoginInfo')
@@ -1179,7 +1169,8 @@ const baseRuntime = {
         platform: undefined,
         release: undefined,
         connectSsl: false,
-        classes: []
+        classes: [],
+        darkMode: false
     },
     watch: {
         newMsg: {}

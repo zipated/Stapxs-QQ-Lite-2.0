@@ -46,6 +46,7 @@
                 <div class="opt-item">
                     <select v-model="condition">
                         <option value="message">{{ $t('scripts_run_message') }}</option>
+                        <option value="userFlush">{{ $t('scripts_run_userFlush') }}</option>
                     </select>
                 </div>
                 <div style="flex: 1;"></div>
@@ -76,7 +77,6 @@
 </template>
 
 <script lang="ts">
-import 'prismjs/themes/prism.css'
 
 import { Connector } from '@/function/connect'
 import { runtimeData } from '@/function/msg'
@@ -87,7 +87,7 @@ import { PrismEditor } from 'vue-prism-editor'
 import { highlight, languages } from 'prismjs'
 
 import { getMsgData } from '@/function/utils/msgUtil'
-import { PopInfo, PopType } from '@/function/base'
+import { Logger, PopInfo, PopType } from '@/function/base'
 
 export default defineComponent({
     name: 'ViewScripts',
@@ -96,7 +96,7 @@ export default defineComponent({
     },
     data() {
         return {
-            runtimedata: runtimeData,
+            runtimeData: runtimeData,
             openLink: openLink,
             script: '',
             condition: 'message',
@@ -115,6 +115,49 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * 交互操作 ==================
+         */
+
+        // 发送消息
+        sendText(text: string) {
+            if(this.message && this.msgInfo) {
+                const id = this.msgInfo.group_id ?? this.msgInfo.private_id
+                const type = this.msgInfo.group_id ? 'group' : 'private'
+                let action = runtimeData.jsonMap.message_list.name_group_send ?? 'send_msg'
+                if(type == 'private') {
+                    action = runtimeData.jsonMap.message_list.name_user_send ?? 'send_msg'
+                }
+                if(type == 'group') {
+                    this.sendMsg(action, {group_id: id, message: { type: 'text', data: { text: text }}})
+                } else {
+                    this.sendMsg(action, {user_id: id, message: { type: 'text', data: { text: text }}})
+                }
+            }
+        },
+
+        sendMsg(action: string, params: {[key: string]: any}) {
+            Connector.send(action, params, 'ScriptBack')
+        },
+
+        /**
+         * 事件处理 ==================
+         */
+
+        onEvent(type: string) {
+            const scripts = this.savedList.filter((item) => item.condition == type)
+            if(scripts.length > 0) new Logger().debug('触发脚本：' + type)
+            for(const script of scripts) {
+                if(script.enabled) {
+                    eval(script.script)
+                }
+            }
+        },
+
+        /**
+         * 页面功能 ==================
+         */
+
         cnewScript() {
             this.select = ''
             this.script = '/*\n    title: Demo Script\n*/\n\nconsole.log(\'Hello World!\')'
@@ -162,12 +205,7 @@ export default defineComponent({
             this.updateSave()
         },
 
-        selectItem(item: {
-                title: string,
-                condition: string,
-                script: string,
-                enabled: boolean
-            }) {
+        selectItem(item: { title: string, condition: string, script: string, enabled: boolean }) {
             // 选中脚本
             this.select = item.title
             this.script = item.script
@@ -177,40 +215,18 @@ export default defineComponent({
 
         highlighter(code: any) {
             return highlight(code, languages.js, 'js')
-        },
-
-        onMessage() {
-            // 筛选出消息中的 condition 为 message 的脚本
-            const scripts = this.savedList.filter((item) => item.condition == 'message')
-            for(const script of scripts) {
-                if(script.enabled) {
-                    eval(script.script)
-                }
-            }
-        },
-
-        // 发送消息
-        sendText(text: string) {
-            if(this.message && this.msgInfo) {
-                const id = this.msgInfo.group_id ?? this.msgInfo.private_id
-                const type = this.msgInfo.group_id ? 'group' : 'private'
-                let action = runtimeData.jsonMap.message_list.name_group_send ?? 'send_msg'
-                if(type == 'private') {
-                    action = runtimeData.jsonMap.message_list.name_user_send ?? 'send_msg'
-                }
-                if(type == 'group') {
-                    this.sendMsg(action, {group_id: id, message: { type: 'text', data: { text: text }}})
-                } else {
-                    this.sendMsg(action, {user_id: id, message: { type: 'text', data: { text: text }}})
-                }
-            }
-        },
-
-        sendMsg(action: string, params: {[key: string]: any}) {
-            Connector.send(action, params, 'ScriptBack')
         }
     },
     async mounted() {
+        require('prismjs/themes/prism.css')
+        // 加载不同暗黑模式的 css
+        this.$watch(() => runtimeData.tags.darkMode, (value) => {
+            if(value) {
+                require('prismjs/themes/prism-tomorrow.css')
+            } else {
+                require('prismjs/themes/prism.css')
+            }
+        })
         // 读取保存的脚本
         const electron = window.require('electron')
         let data = null
@@ -226,7 +242,7 @@ export default defineComponent({
                 this.savedList = JSON.parse(data)
             }
         }
-        // 监听数据
+        // 监听消息更改
         this.$watch(() => runtimeData.watch.newMsg, () => {
             if(runtimeData.sysConfig.append_scripts) {
                 this.message = runtimeData.watch.newMsg
@@ -240,8 +256,12 @@ export default defineComponent({
                 } else {
                     this.isMe = false
                 }
-                this.onMessage()
+                this.onEvent('message')
             }
+        })
+        // 监听好友/群列表刷新
+        this.$watch(() => runtimeData.userList.length, () => {
+            this.onEvent('userFlush')
         })
     }
 })
@@ -371,6 +391,7 @@ export default defineComponent({
 }
 
 .editor {
+    color: var(--color-font-1);
     font-size: 0.9rem;
 }
 .editor > div:first-child {
