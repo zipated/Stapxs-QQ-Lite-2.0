@@ -476,6 +476,17 @@ export function createIpc() {
         runtimeData.reader.on('app:jumpChat', (event, info) => {
             jumpToChat(info.userId, info.msgId)
         })
+        
+        // 后端连接模式
+        runtimeData.reader.on('onebot:onopen', (event, data) => {
+            Connector.onopen(data.address, data.token)
+        })
+        runtimeData.reader.on('onebot:onmessage', (event, message) => {
+            Connector.onmessage(message)
+        })
+        runtimeData.reader.on('onebot:onclose', (event, data) => {
+            Connector.onclose(data.code, data.reason, data.address, data.token)
+        })
     }
 }
 

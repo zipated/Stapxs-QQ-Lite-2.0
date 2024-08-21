@@ -340,6 +340,7 @@
   "cq_code": "CQ 码",
   "array_code": "Array 数组",
   "chat_pic": "图片",
+  "log_con_backend": "使用后端连接模式",
 
   "menu_about": "关于",
   "menu_update": "检查更新…",

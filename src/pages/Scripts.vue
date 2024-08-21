@@ -89,7 +89,6 @@ import { highlight, languages } from 'prismjs'
 
 import { getMsgData } from '@/function/utils/msgUtil'
 import { Logger, PopInfo, PopType } from '@/function/base'
-import { MsgElem, MsgInfoElem } from '@/function/elements/information'
 
 export default defineComponent({
     name: 'ViewScripts',
@@ -111,8 +110,8 @@ export default defineComponent({
             }[],
             select: '',
 
-            message: null as MsgElem | null,
-            msgInfo: null as MsgInfoElem | null,
+            message: null as any | null,
+            msgInfo: null as {[key: string]: any} | null,
             isMe: false
         }
     },

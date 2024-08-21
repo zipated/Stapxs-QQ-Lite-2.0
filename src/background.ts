@@ -10,9 +10,12 @@ import { noticeList, regIpcListener } from './function/electron/ipc'
 import { Menu, session, app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import { touchBar } from './function/electron/touchbar'
+import log4js from 'log4js'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const isPrimary = app.requestSingleInstanceLock()
+const logger = log4js.getLogger('background')
+export let logLevel = isDevelopment ? 'debug' : 'info'
 
 protocol.registerSchemesAsPrivileged([
     { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -21,19 +24,25 @@ protocol.registerSchemesAsPrivileged([
 export let win = undefined as BrowserWindow | undefined
 export let touchBarInstance = undefined as touchBar | undefined
 
-/* eslint-disable no-console */
 async function createWindow() {
+    if(new Store().get('opt_log_level')) {
+        logLevel = (String) (new Store().get('opt_log_level')) ?? 'info'
+    }
+    logger.level = logLevel
+
+    /* eslint-disable no-console */
     console.log('')
     console.log(' _____ _____ _____ _____ __ __  \n' +
                 '|   __|_   _|  _  |  _  |  |  | \n' +
                 '|__   | | | |     |   __|-   -| \n' +
                 '|_____| |_| |__|__|__|  |__|__| CopyRight © Stapx Steve')
     console.log('=======================================================')
-    console.log('Welcome to Stapxs QQ Lite, current version: ' + packageInfo.version)
-    console.log('The background language component will be initialized after the frontend is loaded.')
+    console.log('日志等级:', logLevel)
+    /* eslint-enable no-console */
+    logger.info('欢迎使用 Stapxs QQ Lite, 当前版本: ' + packageInfo.version)
     
-    console.log('Platform：' + process.platform)
-    console.log('Start creating main window ……')
+    logger.info('启动平台架构：' + process.platform)
+    logger.info('正在创建窗体 ……')
     Menu.setApplicationMenu(null)
     // 创建窗口
     const mainWindowState = windowStateKeeper({
@@ -89,7 +98,7 @@ async function createWindow() {
     win = new BrowserWindow(windowConfig)
     win.once('focus', () => {if(win)win.flashFrame(false)})
     mainWindowState.manage(win)     // 窗口状态管理器
-    console.log('Create main window to complete.')
+    logger.info('创建窗体完成')
     // 注册 IPC 事务
     regIpcListener()
     // macOS：创建 TouchBar
@@ -176,7 +185,7 @@ app.on('ready', async () => {
         try {
             await installExtension('nhdogjmejiglipccpnnnanhbledajbpd')
         } catch (e: unknown) {
-            console.error('Vue Devtools failed to install:', (e as Error).toString())
+            logger.error('Vue Devtools 安装失败：', (e as Error).toString())
         }
     }
     createWindow()
