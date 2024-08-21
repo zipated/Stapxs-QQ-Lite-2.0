@@ -268,7 +268,7 @@ export default defineComponent({
             info += `    Browser Name     -> ${browser.name}\n`
             info += `    Browser Version  -> ${browser.version}\n`
             if(addInfo) {
-                const get = addInfo as {[key: string]: any}
+                const get = addInfo as { [key: string]: [string, string] }
                 Object.keys(get).forEach((name: string) => {
                     info += `    ${get[name][0]} -> ${get[name][1]}\n`
                 })

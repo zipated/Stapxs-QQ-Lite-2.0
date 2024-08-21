@@ -89,7 +89,7 @@ export function regIpcListener() {
     })
     // 获取补充的调试信息
     ipcMain.handle('opt:getSystemInfo', () => {
-        const systemInfo = {} as { [key: string]: any }
+        const systemInfo = {} as { [key: string]: [string, string] }
         systemInfo.electron = ['Electron Version', process.versions.electron]
         return systemInfo
     })

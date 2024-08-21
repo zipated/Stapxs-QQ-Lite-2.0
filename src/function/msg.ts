@@ -28,7 +28,6 @@ import { GroupMemberInfoElem, UserFriendElem, UserGroupElem, MsgItemElem, RunTim
 import { NotificationElem } from './elements/system'
 import { IPinyinOptions } from 'pinyin/lib/declare'
 
-const logger = new Logger()
 const popInfo = new PopInfo()
 // eslint-disable-next-line
 let msgPath = require('@/assets/pathMap/Lagrange.OneBot.yaml')
@@ -52,6 +51,7 @@ export function parse(str: string) {
                 case 'getMoreLoginInfo'         : runtimeData.loginInfo.info = msg.data.data.result.buddy.info_list[0]; break
                 case 'getGroupList'             : saveUser(msg, 'group'); break
                 case 'getFriendList'            : saveUser(msg, 'friend'); break
+                case 'getFriendCategory'        : saveClassInfoAlone(msg); break
                 case 'getUserInfoInGroup'       : runtimeData.chatInfo.info.me_info = msg; break
                 case 'getGroupMemberList'       : saveGroupMember(msg.data); break
                 case 'getChatHistoryFist'       : saveMsg(msg, 'top'); break
@@ -245,9 +245,23 @@ function saveUser(msg: { [key: string]: any }, type: string) {
         switch(type) {
             case 'friend':
                 list = getMsgData('friend_list', msg, msgPath.friend_list)
+                if(list)
+                    // 根据 user_id 去重
+                    list = list.filter((item, index, arr) => {
+                        return arr.findIndex((item2) => {
+                            return item2.user_id == item.user_id
+                        }) == index
+                    })
                 break
             case 'group':
                 list = getMsgData('group_list', msg, msgPath.group_list)
+                if(list)
+                    // 根据 group_id 去重
+                    list = list.filter((item, index, arr) => {
+                        return arr.findIndex((item2) => {
+                            return item2.group_id == item.group_id
+                        }) == index
+                    })
                 break
         }
     }
@@ -324,6 +338,10 @@ function saveUser(msg: { [key: string]: any }, type: string) {
         if(runtimeData.jsonMap.recent_contact)
             Connector.send(runtimeData.jsonMap.recent_contact.name, {}, 'GetRecentContact')
     }
+    // 如果是分离式的好友列表，继续获取分类信息
+    if(type == 'friend' && runtimeData.jsonMap.friend_category) {
+        Connector.send(runtimeData.jsonMap.friend_category.name, {}, 'getFriendCategory')
+    }
 }
 
 function updateTopMsg(msg: any, echoList: string[]) {
@@ -349,7 +367,29 @@ function updateTopMsg(msg: any, echoList: string[]) {
     }
 }
 
-function saveClassInfo(list: { class_id: number, class_name: string }[]) {
+function saveClassInfoAlone(msg: any) {
+    const list = getMsgData('friend_category', msg, msgPath.friend_category) as {
+        class_id: number,
+        class_name: string,
+        sort_id: number,
+        users: number[]
+    }[]
+    if (list != undefined) {
+        saveClassInfo(list)
+    }
+    // 刷新用户列表的分类信息
+    list.forEach((item) => {
+        item.users.forEach((id) => {
+            runtimeData.userList.forEach((user) => {
+                if (user.user_id == id && user.class_id == undefined) {
+                    user.class_id = item.class_id
+                    user.class_name = item.class_name
+                }
+            })
+        })
+    })
+}
+function saveClassInfo(list: { class_id: number, class_name: string, sort_id?: number }[]) {
     // 按拼音重新排序
     // const names = [] as string[]
     // list.forEach((item) => {
@@ -365,12 +405,21 @@ function saveClassInfo(list: { class_id: number, class_name: string }[]) {
     //     })
     // })
 
-    // 按 class_id 排序
-    const back = list.sort((a, b) => {
-        return a.class_id - b.class_id
-    })
+    if(list[0].sort_id != undefined) {
+        // 如果有 sort_id，按 sort_id 排序，从小到大
+        list.sort((a, b) => {
+            if(a.sort_id && b.sort_id) 
+                return a.sort_id - b.sort_id
+            else return 0
+        })
+    } else {
+        // 按 class_id 排序
+        list.sort((a, b) => {
+            return a.class_id - b.class_id
+        })
+    }
 
-    runtimeData.tags.classes = back
+    runtimeData.tags.classes = list
 }
 
 function saveGroupMember(data: GroupMemberInfoElem[]) {

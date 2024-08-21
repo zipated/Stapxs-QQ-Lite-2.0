@@ -175,8 +175,8 @@ app.on('ready', async () => {
     if (isDevelopment && !process.env.IS_TEST) {
         try {
             await installExtension('nhdogjmejiglipccpnnnanhbledajbpd')
-        } catch (e: any) {
-            console.error('Vue Devtools failed to install:', e.toString())
+        } catch (e: unknown) {
+            console.error('Vue Devtools failed to install:', (e as Error).toString())
         }
     }
     createWindow()

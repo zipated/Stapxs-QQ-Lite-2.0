@@ -20,21 +20,21 @@
                 <div v-for="(item, index) in savedList"
                     :class="{selected: (select == item.title && editScript)}"
                     :key="index">
-                    <div @click="selectItem(item)">
-                        <div style="flex: 1">
-                            <h2>{{ item.title }}</h2>
+                    <div>
+                        <div style="flex: 1" @click="selectItem(item)">
+                            <h2>
+                                {{ item.title }}
+                                <span style="font-size: 0.7rem;" v-if="item.enabled">{{ $t('statue_enabled') }}</span>
+                                <span style="font-size: 0.7rem;" v-else>{{ $t('statue_disabled') }}</span>
+                            </h2>
                             <span>
                                 <font-awesome-icon :icon="['fas', 'code-branch']" />
                                 {{ $t('scripts_run_' + item.condition) }}{{ $t('scripts_run_trigger') }}
                             </span>
                         </div>
-                        <span v-if="item.enabled">{{ $t('statue_enabled') }}</span>
-                        <span v-else>{{ $t('statue_disabled') }}</span>
-                    </div>
-                    <div>
-                        <font-awesome-icon @click="item.enabled = !item.enabled;updateSave();" :icon="['fas', 'check']" />
-                        <font-awesome-icon :icon="['fas', 'edit']" @click="selectItem(item)" />
-                        <font-awesome-icon :icon="['fas', 'trash-alt']" @click="remove(item.title)" />
+                        <div :style="item.enabled ? 'color: #ed6a5e;' : ''" @click="item.enabled = !item.enabled;updateSave();">
+                            <font-awesome-icon :icon="['fas', item.enabled ? 'stop' : 'play']" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,8 +56,9 @@
                     <span>{{ $t('scripts_run_save') }}</span>
                 </button>
                 <button class="ss-button"
-                    @click="editScript = false">
-                    <font-awesome-icon :icon="['fas', 'times']" />
+                    @click="editScript = false;remove(select);">
+                    <font-awesome-icon v-if="select == ''" :icon="['fas', 'times']" />
+                    <font-awesome-icon v-else :icon="['fas', 'trash-alt']" />
                 </button>
             </div>
             <prism-editor class="editor" v-model="script"
@@ -88,6 +89,7 @@ import { highlight, languages } from 'prismjs'
 
 import { getMsgData } from '@/function/utils/msgUtil'
 import { Logger, PopInfo, PopType } from '@/function/base'
+import { MsgElem, MsgInfoElem } from '@/function/elements/information'
 
 export default defineComponent({
     name: 'ViewScripts',
@@ -109,8 +111,8 @@ export default defineComponent({
             }[],
             select: '',
 
-            message: null as any | null,
-            msgInfo: null as {[key: string]: any} | null,
+            message: null as MsgElem | null,
+            msgInfo: null as MsgInfoElem | null,
             isMe: false
         }
     },
@@ -246,17 +248,19 @@ export default defineComponent({
         this.$watch(() => runtimeData.watch.newMsg, () => {
             if(runtimeData.sysConfig.append_scripts) {
                 this.message = runtimeData.watch.newMsg
-                // FIXME 这儿没有判断是不是自身返回的消息，注意谨防死循环
-                const infoList = getMsgData('message_info', this.message, runtimeData.jsonMap.message_info)
-                if(infoList != undefined) {
-                    this.msgInfo = infoList[0]
+                if(this.message) {
+                    // FIXME 这儿没有判断是不是自身返回的消息，注意谨防死循环
+                    const infoList = getMsgData('message_info', this.message, runtimeData.jsonMap.message_info)
+                    if(infoList != undefined) {
+                        this.msgInfo = infoList[0]
+                    }
+                    if(this.msgInfo) {
+                        this.isMe = Number(this.msgInfo.sender) == Number(runtimeData.loginInfo.uin)
+                    } else {
+                        this.isMe = false
+                    }
+                    this.onEvent('message')
                 }
-                if(this.msgInfo) {
-                    this.isMe = Number(this.msgInfo.sender) == Number(runtimeData.loginInfo.uin)
-                } else {
-                    this.isMe = false
-                }
-                this.onEvent('message')
             }
         })
         // 监听好友/群列表刷新
@@ -325,15 +329,40 @@ export default defineComponent({
     display: flex;
     padding: 10px;
 }
+.list-body > div > div:last-child > div:last-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: var(--color-card-2);
+    border-radius: 100%;
+    margin-right: 10px;
+}
+.list-body > div.selected > div:last-child > div:last-child {
+    background: #ffffffca;
+}
+.list-body > div > div:last-child > div:last-child svg {
+    color: var(--color-font-1);
+    font-size: 0.7rem;
+}
+.list-body > div.selected > div:last-child > div:last-child svg {
+    color: var(--color-main);
+}
+
 .list-body > div.selected {
     background: var(--color-main);
 }
+.list-body > div.selected span,
 .list-body > div.selected h2 {
     color: var(--color-font-r);
 }
-.list-body > div.selected span,
-.list-body > div.selected > div:last-child > svg {
-    color: var(--color-font-1-r);
+.list-body > div.selected span > svg {
+    color: var(--color-font-r);
+}
+.list-body > div.selected svg {
+    color: var(--color-font-1);
 }
 .list-body h2 {
     font-size: 1rem;
@@ -356,6 +385,7 @@ export default defineComponent({
     flex: 1;
 }
 .list-body > div > div:last-child {
+    align-items: center;
     justify-content: space-evenly;
     margin-top: 5px;
     display: flex;
