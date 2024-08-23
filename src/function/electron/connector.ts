@@ -13,6 +13,7 @@ export class Connector {
 
     private win: BrowserWindow
     private websocket: WebSocket | undefined
+    private reconnectTimes = 0
 
     constructor(win: BrowserWindow) {
         this.logger.level = logLevel
@@ -39,6 +40,7 @@ export class Connector {
         }
 
         this.websocket.onopen = () => {
+            this.reconnectTimes = 0
             this.logger.info('已成功连接到', url)
             this.win.webContents.send('onebot:onopen', { address: url, token: token })
         }
@@ -59,6 +61,8 @@ export class Connector {
             this.win.webContents.send('onebot:onmessage', e.data)
         }
         this.websocket.onclose = (e) => {
+            this.websocket = undefined
+
             this.logger.info('连接已关闭，代码：', e.code)
             if(e.code != 1006 && e.code != 1015) {
                 // 除了需要重连的情况，其他情况都直接常规处理
@@ -68,10 +72,28 @@ export class Connector {
                     address: url,
                     token: token
                 })
-            } else if(e.code == 1015) {
-                // TSL 连接失败，尝试使用非加密连接
-                this.logger.warn('连接失败，尝试使用非加密连接...')
-                this.connect(url.replace('wss://', 'ws://'), token)
+            } else {
+                this.win.webContents.send('onebot:onclose', {
+                    code: -1,
+                    message: e.reason,
+                    address: url,
+                    token: token
+                })
+            }
+            if(this.reconnectTimes < 5) {
+                setTimeout(() => {
+                    if(e.code == 1015) {
+                        // TSL 连接失败，尝试使用非加密连接
+                        this.websocket = undefined
+                        this.logger.warn('连接失败，尝试使用非加密连接...')
+                        this.connect(url.replace('wss://', 'ws://'), token)
+                    } else if(e.code == 1006) {
+                        // 连接失败，尝试重连
+                        this.logger.warn('连接失败，尝试重连...')
+                        this.connect(url, token)
+                    }
+                    this.reconnectTimes ++
+                }, 1500)
             }
         }
         this.websocket.onerror = (e) => {

@@ -15,7 +15,7 @@
         </div>
         <div class="sys-not-list">
             <template v-for="(notice, index) in runtimeData.systemNoticesList" :key="'sysNot-' + index">
-                <div v-if="notice.request_type == 'friend' && notice.sub_type == 'add'"
+                <div v-if="notice.request_type == 'friend'"
                     class="sys_not_new_friend">
                     <span>{{ $t('sys_notice_new_friend') }}</span>
                     <div>
@@ -37,7 +37,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-else-if="notice.request_type == 'group' && notice.sub_type == 'add'"
+                <div v-else-if="notice.request_type == 'group'"
                     class="sys_not_new_friend">
                     <span>{{ $t('sys_notice_new_group_nmember') }}</span>
                     <div>

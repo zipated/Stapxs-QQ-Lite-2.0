@@ -200,11 +200,12 @@ export class Connector {
             }
         } else {
             if(websocket) websocket.send(json)
-            if (Option.get('log_level') === 'debug') {
-                logger.debug('PUT：' + json)
-            } else {
-                logger.add(LogType.WS, 'PUT：' + json)
-            }
+        }
+
+        if (Option.get('log_level') === 'debug') {
+            logger.debug('PUT：' + json)
+        } else {
+            logger.add(LogType.WS, 'PUT：' + json)
         }
     }
 }

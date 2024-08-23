@@ -921,8 +921,17 @@ function newMsg(data: any) {
         if (data.sub_type === 'group') {
             data.sender.nickname = data.sender.user_id
         }
-        // (发送者不是自己 && (在特别关心列表里 || 发送者不是群组 || 群组 AT || 群组 AT 全体 || 打开了通知全部消息)) 这些情况需要进行新消息处理
-        if (sender != loginId && sender != 0 && (isImportant || data.message_type !== 'group' || data.atme || data.atall || Option.get('notice_all') === true)) {
+        // 检查群组有没有开启通知
+        let isGroupNotice = false
+        if(data.message_type === 'group') {
+            const noticeInfo = Option.get('notice_group') ?? {}
+            const list = noticeInfo[runtimeData.loginInfo.uin]
+            if(list) {
+                isGroupNotice = list.indexOf(id) >= 0
+            }
+        }
+        // (发送者不是自己 && (在特别关心列表里 || 发送者不是群组 || 群组 AT || 群组 AT 全体 || 群组开启了通知 || 打开了通知全部消息)) 这些情况需要进行新消息处理
+        if (sender != loginId && sender != 0 && (isImportant || data.message_type !== 'group' || data.atme || data.atall || isGroupNotice || Option.get('notice_all') === true)) {
             // (发送者没有被打开 || 窗口没有焦点 || 窗口被最小化 || 在特别关心列表里) 这些情况需要进行消息通知
             if (id !== showId || !document.hasFocus() || document.hidden || isImportant) {
                 // 准备消息内容

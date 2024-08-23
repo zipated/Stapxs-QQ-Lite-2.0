@@ -365,7 +365,12 @@ export function get(name: string): any {
         const names = Object.keys(cacheConfigs)
         for (let i = 0; i < names.length; i++) {
             if (names[i] === name) {
-                return cacheConfigs[names[i]]
+                const get = cacheConfigs[names[i]]
+                try {
+                    return JSON.parse(get)
+                } catch(e: unknown) {
+                    return get
+                }
             }
         }
     }

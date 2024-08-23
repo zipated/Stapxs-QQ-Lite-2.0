@@ -31,6 +31,8 @@
                     <li icon="fa-solid fa-grip-lines" id="canceltop">{{ $t('list_menu_canceltop') }}</li>
                     <li icon="fa-solid fa-trash-can" id="remove">{{ $t('list_menu_remove') }}</li>
                     <li icon="fa-solid fa-check-to-slot" id="readed">{{ $t('list_menu_readed') }}</li>
+                    <li icon="fa-solid fa-volume-high" id="notice_open">{{ $t('list_menu_notice') }}</li>
+                    <li icon="fa-solid fa-volume-xmark" id="notice_close">{{ $t('list_menu_notice_close') }}</li>
                 </ul>
             </BcMenu>
             <div id="message-list-body" :class="(runtimeData.tags.openSideBar ? 'open' : '')" style="overflow-y: scroll;">
@@ -224,9 +226,45 @@ export default defineComponent({
                     }
                     case 'top': this.saveTop(item, true); break
                     case 'canceltop': this.saveTop(item, false); break
+                    case 'notice_open': {
+                        const noticeInfo = Option.get('notice_group') ?? {}
+                        const list = noticeInfo[runtimeData.loginInfo.uin]
+                        if(list) {
+                            list.push(item.group_id)
+                        } else {
+                            noticeInfo[runtimeData.loginInfo.uin] = [item.group_id]
+                        }
+                        Option.save('notice_group', noticeInfo)
+                        break
+                    }
+                    case 'notice_close': {
+                        const noticeInfo = Option.get('notice_group') ?? {}
+                        const list = noticeInfo[runtimeData.loginInfo.uin]
+                        if(list) {
+                            const index = list.indexOf(item.group_id)
+                            if(index >= 0) {
+                                list.splice(index, 1)
+                            }
+                        }
+                        Option.save('notice_group', noticeInfo)
+                        break
+                    }
                 }
             }
             this.menu.select = undefined
+        },
+
+        /**
+         * 判断是否通知群消息
+         * @param id 群 ID
+         */
+        canGroupNotice(id: number) {
+            const noticeInfo = Option.get('notice_group') ?? {}
+            const list = noticeInfo[runtimeData.loginInfo.uin]
+            if(list) {
+                return list.indexOf(id) >= 0
+            }
+            return false
         },
 
         /**
@@ -296,6 +334,14 @@ export default defineComponent({
             // 置顶的不显示移除
             if(item.always_top) {
                 info.list = ['canceltop', 'readed']
+            }
+            // 是群的话显示通知设置
+            if(item.group_id) {
+                if(this.canGroupNotice(item.group_id)) {
+                    info.list.push('notice_close')
+                } else {
+                    info.list.push('notice_open')
+                }
             }
             this.listMenu = info
             this.menu.select = item

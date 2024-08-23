@@ -389,6 +389,10 @@ textarea:focus {
     background: var(--color-main);
     color: var(--color-font-r);
 }
+.friend-body.active > svg {
+    background: var(--color-card-2);
+    color: var(--color-main);
+}
 .friend-body.onmenu,
 .friend-body:hover {
     background: var(--color-card-2) !important;
@@ -404,6 +408,7 @@ textarea:focus {
     width: 50px;
 }
 .friend-body > svg {
+    transition: background .3s, color .3s;
     background: var(--color-main);
     color: var(--color-font-1-r);
     pointer-events: none;
