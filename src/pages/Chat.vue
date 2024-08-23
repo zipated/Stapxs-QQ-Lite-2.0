@@ -129,7 +129,7 @@
                 <!-- 回复指示器 -->
                 <div :class="tags.isReply ? 'replay-tag show' : 'replay-tag'">
                     <font-awesome-icon :icon="['fas', 'reply']" />
-                    <span>{{ selectedMsg === null ? '' : (selectedMsg.sender.nickname + ': ' + (selectedMsg.raw_message ?? fun.getMsgRawTxt(selectedMsg.message)))
+                    <span>{{ selectedMsg === null ? '' : (selectedMsg.sender.nickname + ': ' + fun.getMsgRawTxt(selectedMsg.message))
                     }}</span>
                     <div @click="cancelReply"><font-awesome-icon :icon="['fas', 'xmark']" /></div>
                 </div>
@@ -799,10 +799,15 @@ export default defineComponent({
                 menu.style.marginLeft = pointX + 'px'
                 menu.style.marginTop = pointY + 'px'
                 // 出界判定
-                const menuWidth = menu.clientWidth
+                let menuWidth = menu.clientWidth
+                if(this.tags.menuDisplay.showRespond) {
+                    // 如果有回应功能，获取回应功能的宽度；它比菜单长
+                    const item = menu.children[0] as HTMLDivElement
+                    menuWidth = item.clientWidth
+                }
                 const msgWidth = msg.offsetWidth
                 if (pointX + menuWidth > msgWidth + 27) {
-                    menu.style.marginLeft = (msgWidth + 27 - menuWidth) + 'px'
+                    menu.style.marginLeft = (msgWidth + 7 - menuWidth) + 'px'
                 }
                 // 显示菜单
                 this.tags.showMsgMenu = true
@@ -811,12 +816,11 @@ export default defineComponent({
                     // 出界判定
                     const menuHeight = menu.clientHeight
                     const bodyHeight = document.body.clientHeight
-                    if (pointY + menuHeight > bodyHeight + 10) {
+                    if (pointY + menuHeight > bodyHeight - 20) {
                         menu.classList.add('topOut')
                         menu.style.marginTop = (bodyHeight - menuHeight - 10) + 'px'
-                        // menu.classList.remove('topOut')
                     }
-                }, 90)
+                }, 100)
                 // 设置消息背景
                 this.tags.openedMenuMsg = msg
                 msg.style.background = '#00000008'
@@ -971,8 +975,7 @@ export default defineComponent({
             const msg = this.selectedMsg
             if (msg !== null) {
             const mface = msg.message[0]
-                const storeFace = option.get('store_face') ?? '[]'
-                const storeFaceList = JSON.parse(storeFace)
+                const storeFaceList = option.get('store_face') ?? []
                 const face = storeFaceList.find((item: any) => {
                     return item.emoji_package_id == mface.emoji_package_id && 
                         item.emoji_id == mface.emoji_id
@@ -981,7 +984,7 @@ export default defineComponent({
                     popInfo.add(PopType.INFO, this.$t('pop_chat_msg_menu_store_face_exist'))
                 } else {
                     storeFaceList.push(mface)
-                    option.save('store_face', JSON.stringify(storeFaceList))
+                    option.save('store_face', storeFaceList)
                     popInfo.add(PopType.INFO, this.$t('pop_chat_msg_menu_store_face_success'))
                 }
             }

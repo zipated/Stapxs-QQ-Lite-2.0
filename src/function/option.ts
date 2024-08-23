@@ -318,16 +318,13 @@ function loadOptData(data: { [key: string]: any }) {
             options[key] = value === 'true'
         } else if (value === 'null') {
             options[key] = null
-        } else if (key == 'top_info') {
-            // 特殊处理 top_info
-            try {
-                options[key] = JSON.parse(decodeURIComponent(value))
-            } catch (e) {
-                // 无法解析的数据，初始化为空对象
-                options[key] = {}
-            }
         } else if(typeof value == 'string') {
             options[key] = decodeURIComponent(value)
+            try {
+                options[key] = JSON.parse(options[key])
+            } catch(e: unknown) {
+                //
+            }
         } else {
             options[key] = value
         }

@@ -37,6 +37,11 @@ export class Connector {
         if(!this.websocket) {
             this.logger.info('正在连接到：', url)
             this.websocket = new WebSocket(url + '?access_token=' + token)
+        } else {
+            // 如果前端发起了连接请求，说明前端在未连接状态；断开已有连接，重新连接
+            // PS：这种情况一般不会发生，大部分情况是因为 debug 模式前端热重载导致的
+            this.websocket.close(1000)
+            this.connect(url, token)
         }
 
         this.websocket.onopen = () => {

@@ -505,7 +505,7 @@ textarea:focus {
     padding: 10px;
 }
 .msg-menu-body.topOut {
-    transition: transform .1s, margin-top .1s;
+    transition: transform .1s, margin-top .2s;
 }
 .msg-menu-body.show {
     transform: scaleY(1);

@@ -212,6 +212,12 @@ export default defineComponent({
          * @param id 选择的菜单 ID
          */
         listMenuClose(id: string) {
+            const menu = document.getElementById('msg-menu-view-messages-menu')?.children[1] as HTMLDivElement
+            if(menu) {
+                setTimeout(() => {
+                    menu.style.transition = 'transform .1s'
+                }, 200)
+            }
             this.listMenu.show = false
             const item = this.menu.select
             if(id) {
@@ -345,6 +351,22 @@ export default defineComponent({
             }
             this.listMenu = info
             this.menu.select = item
+            // 出界处理
+            setTimeout(() => {
+                const menu = document.getElementById('msg-menu-view-messages-menu')?.children[1] as HTMLDivElement
+                if(menu) {
+                        menu.style.transition = 'margin .2s, transform .1s'
+                    const hight = menu.clientHeight
+                    const top = menu.getBoundingClientRect().top
+                    const docHight = document.documentElement.clientHeight
+                    // 出界高度
+                    const dtHight = ( hight + top ) - docHight + 20
+                    if(dtHight > 0) {
+                        menu.style.marginTop = (docHight - hight - 30)  + 'px'
+                    }
+
+                }
+            }, 100)
         },
 
         showMenuStart(event: TouchEvent, item: (UserFriendElem & UserGroupElem)) {
