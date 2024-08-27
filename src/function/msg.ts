@@ -458,6 +458,16 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
         let list = getMsgData('message_list', msg, msgPath.message_list)
         list = getMessageList(list)
         if (list != undefined) {
+            // 检查消息是否是当前聊天的消息
+            const firstMsg = list[0]
+            const infoList = getMsgData('message_info', firstMsg, msgPath.message_info)
+            if (infoList != undefined) {
+                const info = infoList[0]
+                const id = info.group_id ?? info.private_id
+                if (id != undefined && id != runtimeData.chatInfo.show.id) {
+                    return
+                }
+            }
             // 在加载历史消息的时候判断是否支持分页追加
             if(append == 'top' && runtimeData.jsonMap.message_list?.pageed == false) {
                 append = undefined

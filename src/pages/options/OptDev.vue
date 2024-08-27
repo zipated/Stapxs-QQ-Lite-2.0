@@ -198,7 +198,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { runASWEvent as save, saveAll } from '@/function/option'
-import { Connector, websocket as ws } from '@/function/connect'
+import { Connector } from '@/function/connect'
 import { PopInfo, PopType } from '@/function/base'
 import { runtimeData } from '@/function/msg'
 import app from '@/main'

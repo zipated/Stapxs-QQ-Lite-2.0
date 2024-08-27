@@ -68,7 +68,7 @@ export default defineComponent({
             return id
         },
         fTime(time: number) {
-            // 将秒数转换为可阅读的事件，最大单位天
+            // 将秒数转换为可阅读的时间，最大单位天
             const day = Math.floor(time / 86400)
             const hour = Math.floor((time % 86400) / 3600)
             const minute = Math.floor((time % 3600) / 60)
