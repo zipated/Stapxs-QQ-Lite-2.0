@@ -52,7 +52,7 @@ export function parse(str: string) {
                 case 'getGroupList'             : saveUser(msg, 'group'); break
                 case 'getFriendList'            : saveUser(msg, 'friend'); break
                 case 'getFriendCategory'        : saveClassInfoAlone(msg); break
-                case 'getUserInfoInGroup'       : runtimeData.chatInfo.info.me_info = msg; break
+                case 'getUserInfoInGroup'       : saveUserInfoInGroup(msg); break
                 case 'getGroupMemberList'       : saveGroupMember(msg.data); break
                 case 'getChatHistoryFist'       : saveMsg(msg, 'top'); break
                 case 'getChatHistoryOnMsg'      : updateTopMsg(msg, echoList); break
@@ -75,9 +75,9 @@ export function parse(str: string) {
                 case 'getGroupDirFiles'         : saveDirFile(msg); break
                 case 'readMemberMessage'        : readMemberMessage(msg.data[0]); break
                 case 'setFriendAdd':
-                case 'setGroupAdd'              : updateSysInfo(head); break
+                case 'setGroupAdd'              : updateSysInfo(msg, echoList); break
                 case 'loadFileBase'             : loadFileBase(echoList, msg); break
-                case 'GetRecentContact'         : createRecentContact(msg); break
+                case 'GetRecentContact'         : createRecentContact(msg); break 
 
                 case 'getCookies'               : saveCookie(msg, echoList); break
             }
@@ -99,6 +99,7 @@ export function parse(str: string) {
                     case 'friend_recall':
                     case 'recall'                   : revokeMsg(msg); break
                     case 'group_msg_emoji_like'     : showEmojiLike(msg); break
+                    case 'group_ban'                : groupBanNotice(msg); break
                 }
                 break
             }
@@ -367,6 +368,18 @@ function updateTopMsg(msg: any, echoList: string[]) {
     }
 }
 
+function saveUserInfoInGroup(msg: any) {
+    const data = getMsgData('group_member_info', msg, msgPath.group_member_info)
+    if(data && data[0]) {
+        const info = data[0]
+        // 单独判断下 shut_up_timestamp
+        if(info.shut_up_timestamp * 1000 < Date.now()) {
+            info.shut_up_timestamp = 0
+        }
+        runtimeData.chatInfo.info.me_info = info
+    }
+}
+
 function saveClassInfoAlone(msg: any) {
     const list = getMsgData('friend_category', msg, msgPath.friend_category) as {
         class_id: number,
@@ -445,6 +458,10 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
         let list = getMsgData('message_list', msg, msgPath.message_list)
         list = getMessageList(list)
         if (list != undefined) {
+            // 在加载历史消息的时候判断是否支持分页追加
+            if(append == 'top' && runtimeData.jsonMap.message_list?.pageed == false) {
+                append = undefined
+            }
             // 追加处理
             if (append != undefined) {
                 // 没有更旧的消息能加载了，禁用允许加载标志
@@ -1138,11 +1155,16 @@ function readMemberMessage(data: any) {
 /**
  * 刷新系统通知和其他内容，给系统通知响应用的
  */
-function updateSysInfo(type: string) {
-    Connector.send('get_system_msg', {}, 'getSystemMsg')
-    switch (type) {
-        case 'setFriendAdd':
-            reloadUsers(); break
+function updateSysInfo(type: any, echoList: string[]) {
+    const flag = echoList[1]
+    // 从系统通知列表里删除这条消息
+    if (flag !== undefined) {
+        const index = runtimeData.systemNoticesList?.findIndex((item: any) => {
+            return item.flag == flag
+        })
+        if (index !== -1) {
+            runtimeData.systemNoticesList?.splice(index, 1)
+        }
     }
 }
 
@@ -1212,6 +1234,22 @@ function saveSticker(data: any) {
     } else {
         runtimeData.stickerCache = runtimeData.stickerCache.concat(data)
     }
+}
+
+function groupBanNotice(data: any) {
+    const groupId = data.group_id
+    const userId = data.user_id
+    const status = data.sub_type === 'ban' ? true : false
+    const duration = data.duration ?? 0     // 秒
+
+    if(userId == runtimeData.loginInfo.uin && groupId == runtimeData.chatInfo.show.id) {
+        if(status)
+            runtimeData.chatInfo.info.me_info.shut_up_timestamp = (new Date().getTime() + duration * 1000) / 1000
+        else 
+            runtimeData.chatInfo.info.me_info.shut_up_timestamp = 0
+    }
+
+    runtimeData.messageList.push(data)
 }
 
 // ==============================================================

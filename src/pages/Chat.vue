@@ -179,7 +179,9 @@
                             type="text"
                             v-model="msg"
                             autocomplete="off"
-                            :disabled="runtimeData.tags.openSideBar"
+                            :disabled="runtimeData.tags.openSideBar || chat.info.me_info.shut_up_timestamp > 0"
+                            :placeholder="chat.info.me_info.shut_up_timestamp > 0 ? $t('chat_send_msg_watermark_ban', {
+                            time: Intl.DateTimeFormat(trueLang, getTimeConfig(new Date(chat.info.me_info.shut_up_timestamp * 1000))).format(new Date(chat.info.me_info.shut_up_timestamp * 1000)) }) : ''"
                             @paste="addImg"
                             @keyup="mainKeyUp"
                             @click="selectSQIn()">
@@ -383,7 +385,7 @@ import imageCompression from 'browser-image-compression'
 
 import { defineComponent, markRaw } from 'vue'
 import { downloadFile, loadHistory as loadHistoryFirst } from '@/function/utils/appUtil'
-import { getTrueLang } from '@/function/utils/systemUtil'
+import { getTimeConfig, getTrueLang } from '@/function/utils/systemUtil'
 import { getMsgRawTxt, sendMsgRaw, getFace } from '@/function/utils/msgUtil'
 import { scrollToMsg } from '@/function/utils/appUtil'
 import { Logger, LogType, PopInfo, PopType } from '@/function/base'
@@ -405,6 +407,7 @@ export default defineComponent({
             getFace: getFace,
             Connector: Connector,
             runtimeData: runtimeData,
+            getTimeConfig: getTimeConfig,
             forwardList: runtimeData.userList,
             trueLang: getTrueLang(),
             tags: {
@@ -519,6 +522,7 @@ export default defineComponent({
                 // 锁定加载防止反复触发
                 this.tags.nowGetHistroy = true
                 // 发起获取历史消息请求
+                const pageed = !(runtimeData.jsonMap.message_list.pageed == false)
                 const type = runtimeData.chatInfo.show.type
                 const id = runtimeData.chatInfo.show.id
                 let name
@@ -530,12 +534,10 @@ export default defineComponent({
                 Connector.send(
                     name ?? 'get_chat_history',
                     {
-                        message_type: runtimeData.jsonMap.message_list.message_type[type],
                         group_id: type == 'group' ? id : undefined,
                         user_id: type != 'group' ? id : undefined,
-                        message_seq: firstMsgId,
                         message_id: firstMsgId,
-                        count: 20
+                        count: !pageed ? runtimeData.messageList.length + 20 : 20
                     },
                     'getChatHistory'
                 )

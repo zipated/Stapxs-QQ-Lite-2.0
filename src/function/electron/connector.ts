@@ -87,13 +87,13 @@ export class Connector {
             }
             if(this.reconnectTimes < 5) {
                 setTimeout(() => {
-                    if(e.code == 1015) {
-                        // TSL 连接失败，尝试使用非加密连接
-                        this.websocket = undefined
-                        this.logger.warn('连接失败，尝试使用非加密连接...')
-                        this.connect(url.replace('wss://', 'ws://'), token)
-                    } else if(e.code == 1006) {
-                        // 连接失败，尝试重连
+                    if(e.code == 1006) {
+                        // 连接失败，尝试轮替协议重连
+                        if(url.indexOf('wss://') >= 0) {
+                            url = url.replace('wss://', 'ws://')
+                        } else {
+                            url = url.replace('ws://', 'wss://')
+                        }
                         this.logger.warn('连接失败，尝试重连...')
                         this.connect(url, token)
                     }
@@ -102,6 +102,7 @@ export class Connector {
             }
         }
         this.websocket.onerror = (e) => {
+            this.websocket = undefined
             this.logger.error('连接错误：', e)
         }
     }

@@ -384,6 +384,7 @@ textarea:focus {
     border-radius: 7px;
     transform: translate(0, 0);
     transition: background .2s, color .2s, transform .2s;
+    align-items: center;
 }
 .friend-body.active {
     background: var(--color-main);
@@ -423,6 +424,7 @@ textarea:focus {
     overflow: hidden;
 }
 .friend-body > div:nth-child(1) {
+    height: 54px;
     flex: unset;
     width: 4px;
     background: var(--color-main);
