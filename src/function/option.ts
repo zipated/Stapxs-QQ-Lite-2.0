@@ -34,7 +34,8 @@ const optDefault: { [key: string]: any } = {
     fs_adaptation: 0,
     theme_color: 0,
     chat_background_blur: 0,
-    msg_type: 2
+    msg_type: 2,
+    vibrancy_mode: 'default'
 }
 
 // =============== 设置项事件 ===============
@@ -51,6 +52,13 @@ const configFunction: { [key: string]: (value: any) => void } = {
     opt_auto_gtk: updateGTKColor,
     opt_auto_win_color: updateWinColorOpt,
     opt_revolve: viewRevolve,
+    opt_always_top: viewAlwaysTop,
+}
+
+function viewAlwaysTop(value: boolean) {
+    if(runtimeData.reader) {
+        runtimeData.reader.send('win:alwaysTop', value)
+    }
 }
 
 function viewRevolve(value: boolean) {
@@ -483,6 +491,43 @@ export function runASWEvent(event: Event) {
         if (name !== null) {
             runAS(name, value)
         }
+    }
+    // 有些设置项需要重启/刷新
+    if(sender.dataset.reload == 'true') {
+        const $t = app.config.globalProperties.$t
+
+        let html = '<span>' + $t('option_dev_restart_tip1') + '</span>'
+
+        // 模糊模式的特殊情况
+        if(sender.title == 'vibrancy_mode') {
+            html += '<span>' + $t('option_dev_restart_tip2') + '</span>'
+        }
+
+        const popInfo = {
+            svg: 'trash-arrow-up',
+            html: html,
+            title: $t('option_dev_restart'),
+            button: [
+                {
+                    text: app.config.globalProperties.$t('btn_yes'),
+                    fun: () => {
+                        if(runtimeData.tags.isElectron) {
+                            if (runtimeData.reader) {
+                                runtimeData.reader.send('win:relaunch')
+                            }
+                        } else {
+                            location.reload()
+                        }
+                    }
+                },
+                {
+                    text: app.config.globalProperties.$t('btn_no'),
+                    master: true,
+                    fun: () => { runtimeData.popBoxList.shift() }
+                }
+            ]
+        }
+        runtimeData.popBoxList.push(popInfo)
     }
 }
 

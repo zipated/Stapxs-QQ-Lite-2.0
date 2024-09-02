@@ -188,6 +188,9 @@ export default defineComponent({
          * @param item 
          */
         getAtName (item: { [key: string]: any }) {
+            if(item.qq == 'all') {
+                return '@' + this.$t('chat_at_all')
+            }
             if(item.text != undefined) {
                 return item.text
             } else {

@@ -72,6 +72,10 @@ export function regIpcListener() {
         app.relaunch()
         app.exit()
     })
+    // 置顶窗口
+    ipcMain.on('win:alwaysTop', (event, args) => {
+        if(win) win.setAlwaysOnTop(args)
+    })
     // 保存信息
     ipcMain.on('sys:store', (event, arg) => {
         store.set(arg.key, arg.value)

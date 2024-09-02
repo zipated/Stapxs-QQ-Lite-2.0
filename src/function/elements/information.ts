@@ -36,7 +36,8 @@ export interface RunTimeDataElem {
         darkMode: boolean
     },
     watch: {                // PS: 一些给监听器捕捉用的数据
-        newMsg: any
+        newMsg: any,
+        newNotice: any
     },
     messageList: any[]
     mergeMessageList?: any[] | undefined,

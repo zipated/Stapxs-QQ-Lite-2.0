@@ -18,6 +18,7 @@
             </header>
             <div class="list-body">
                 <div v-for="(item, index) in savedList"
+                    :id="item.title"
                     :class="{selected: (select == item.title && editScript)}"
                     :key="index">
                     <div>
@@ -47,6 +48,7 @@
                     <select v-model="condition">
                         <option value="message">{{ $t('scripts_run_message') }}</option>
                         <option value="userFlush">{{ $t('scripts_run_userFlush') }}</option>
+                        <option value="newNotice">{{ $t('scripts_run_newNotice') }}</option>
                     </select>
                 </div>
                 <div style="flex: 1;"></div>
@@ -88,7 +90,7 @@ import { PrismEditor } from 'vue-prism-editor'
 import { highlight, languages } from 'prismjs'
 
 import { getMsgData } from '@/function/utils/msgUtil'
-import { Logger, PopInfo, PopType } from '@/function/base'
+import { PopInfo, PopType } from '@/function/base'
 import { getRaw, save } from '@/function/option'
 
 export default defineComponent({
@@ -148,9 +150,12 @@ export default defineComponent({
 
         onEvent(type: string) {
             const scripts = this.savedList.filter((item) => item.condition == type)
-            if(scripts.length > 0) new Logger().debug('触发脚本：' + type)
-            for(const script of scripts) {
-                if(script.enabled) {
+            for (const script of scripts) {
+                if (script.enabled) {
+                    document.getElementById(script.title)?.classList.add('active')
+                    setTimeout(() => {
+                        document.getElementById(script.title)?.classList.remove('active')
+                    }, 1500)
                     eval(script.script)
                 }
             }
@@ -244,6 +249,10 @@ export default defineComponent({
                 }
             }
         })
+        // 监听新通知
+        this.$watch(() => runtimeData.watch.newNotice, () => {
+            this.onEvent('newNotice')
+        })
         // 监听好友/群列表刷新
         this.$watch(() => runtimeData.userList.length, () => {
             this.onEvent('userFlush')
@@ -266,7 +275,7 @@ export default defineComponent({
 }
 .list > header {
     padding: 10px 10px 0 10px;
-    margin: 15px;
+    margin: 15px 15px 10px 15px;
 }
 .list > header > div {
     align-items: center;
@@ -294,15 +303,16 @@ export default defineComponent({
 
 .list-body {
     overflow-x: scroll;
-    padding: 0 25px;
+    padding: 5px 25px;
     flex: 1;
 }
 .list-body::-webkit-scrollbar {
     display: none;
 }
 .list-body > div {
+    outline: 1px solid transparent;;
     background: var(--color-card-1);
-    transition: background .3s;
+    transition: background .3s, outline .3s;
     flex-direction: column;
     margin-bottom: 10px;
     border-radius: 7px;
@@ -330,6 +340,10 @@ export default defineComponent({
 }
 .list-body > div.selected > div:last-child > div:last-child svg {
     color: var(--color-main);
+}
+
+.list-body > div.active {
+    outline: 2px solid var(--color-main);
 }
 
 .list-body > div.selected {

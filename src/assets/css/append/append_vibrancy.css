@@ -94,7 +94,6 @@
 }
 .script-view .list > header > span,
 .script-view .list-body > div {
-    background: transparent;
     backdrop-filter: blur(10px);
 }
 

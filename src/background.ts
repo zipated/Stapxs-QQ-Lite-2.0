@@ -50,6 +50,7 @@ async function createWindow() {
         defaultHeight: 530
     })
     const store = new Store()
+    const vibrancyMode = store.get('vibrancy_mode')
     let windowConfig = {
         x: mainWindowState.x,
         y: mainWindowState.y,
@@ -71,7 +72,7 @@ async function createWindow() {
             ...windowConfig,
             titleBarStyle: 'hidden',
             trafficLightPosition: { x: 11, y: 10 },
-            vibrancy: 'fullscreen-ui',
+            vibrancy: vibrancyMode == 'transparent' ? undefined : 'fullscreen-ui',
             transparent: true,
 
             visualEffectState: process.env.NODE_ENV 
@@ -82,7 +83,7 @@ async function createWindow() {
         windowConfig = {
             ...windowConfig,
             backgroundColor: '#00000000',
-            backgroundMaterial: 'acrylic',
+            backgroundMaterial: vibrancyMode == 'transparent' ? undefined : 'acrylic',
             frame: false
         }
         store.set('opt_no_window', 'true')

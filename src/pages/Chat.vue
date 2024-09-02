@@ -369,7 +369,7 @@
                 <div class="bg" @click="cancelForward"></div>
             </div>
         </Transition>
-        <div class="bg" :style="`backdrop-filter: blur(${runtimeData.sysConfig.chat_background_blur}px);`"></div>
+        <div class="bg" :style="runtimeData.sysConfig.option_view_background ? `backdrop-filter: blur(${runtimeData.sysConfig.chat_background_blur}px);` : ''"></div>
     </div>
 </template>
 

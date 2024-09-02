@@ -78,7 +78,7 @@
                 </div>
             </div>
         </div>
-        <div :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
+        <div v-show="runtimeData.chatInfo.show.id == 0" :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
             <div class="ss-card">
                 <font-awesome-icon :icon="['fas', 'inbox']" />
                 <span>{{ $t('chat_space') }}</span>

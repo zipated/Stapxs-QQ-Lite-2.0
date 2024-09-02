@@ -86,13 +86,13 @@ export function parse(str: string) {
         switch (msg.post_type) {
             // 心跳包
             case 'meta_event'           : break
-            // go-cqhttp：主动发送的消息回调和其他消息有区分
             case 'message_sent':
             case 'message'              : newMsg(msg); break
             case 'request'              : addSystemNotice(msg); break
             case 'notice': {
                 let typeName = msg.notice_type
                 if (!typeName) typeName = msg.sub_type
+                runtimeData.watch.newNotice = msg
                 switch (msg.notice_type) {
                     case 'friend'                   : friendNotice(msg); break
                     case 'group_recall':
@@ -1279,7 +1279,8 @@ const baseRuntime = {
         darkMode: false
     },
     watch: {
-        newMsg: {}
+        newMsg: {},
+        newNotice: {}
     },
     chatInfo: {
         show: { type: '', id: 0, name: '', avatar: '' },

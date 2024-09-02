@@ -458,7 +458,6 @@ export default defineComponent({
             // 初始化功能
             App.createMenu()            // Electron：创建菜单
             App.createIpc()             // Electron：创建 IPC 通信
-            App.loadAppendStyle()       // 加载额外样式
             // 加载开发者相关功能
             if (process.env.NODE_ENV == 'development') {
                 document.title = 'Stapxs QQ Lite (Dev)'
@@ -477,6 +476,8 @@ export default defineComponent({
                 if(app) app.classList.add('withBar')
             }
             Option.runAS('opt_auto_gtk', Option.get('opt_auto_gtk'))
+            // 加载额外样式
+            App.loadAppendStyle()
             // 加载密码保存和自动连接
             loginInfo.address = runtimeData.sysConfig.address
             if(runtimeData.sysConfig.save_password && runtimeData.sysConfig.save_password != true) {
