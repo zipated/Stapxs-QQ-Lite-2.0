@@ -19,7 +19,7 @@
             <div class="list-body">
                 <div v-for="(item, index) in savedList"
                     :id="item.title"
-                    :class="{selected: (select == item.title && editScript)}"
+                    :class="{selected: (select?.title == item.title && editScript)}"
                     :key="index">
                     <div>
                         <div style="flex: 1" @click="selectItem(item)">
@@ -29,6 +29,7 @@
                                 <span style="font-size: 0.7rem;" v-else>{{ $t('statue_disabled') }}</span>
                             </h2>
                             <span>
+                                <font-awesome-icon v-if="item.inner" style="margin-right: 5px;" :icon="['fas', 'star']" />
                                 <font-awesome-icon :icon="['fas', 'code-branch']" />
                                 {{ $t('scripts_run_' + item.condition) }}{{ $t('scripts_run_trigger') }}
                             </span>
@@ -41,6 +42,10 @@
             </div>
         </div>
         <div class="editor-main" v-if="editScript">
+            <div v-if="select?.inner" class="inner">
+                <font-awesome-icon :icon="['fas', 'info']" />
+                <span>{{ $t('a_inner_script') }}</span>
+            </div>
             <div class="save-controller">
                 <font-awesome-icon :icon="['fas', 'code-branch']" />
                 <span>{{ $t('scripts_run_condition') }}</span>
@@ -58,8 +63,8 @@
                     <span>{{ $t('scripts_run_save') }}</span>
                 </button>
                 <button class="ss-button"
-                    @click="editScript = false;remove(select);">
-                    <font-awesome-icon v-if="select == ''" :icon="['fas', 'times']" />
+                    @click="editScript = false;remove(select?.title);">
+                    <font-awesome-icon v-if="!select" :icon="['fas', 'times']" />
                     <font-awesome-icon v-else :icon="['fas', 'trash-alt']" />
                 </button>
             </div>
@@ -80,6 +85,7 @@
 </template>
 
 <script lang="ts">
+import sysScriptsList from '@/assets/scripts/_scriptList.json'
 
 import { Connector } from '@/function/connect'
 import { runtimeData } from '@/function/msg'
@@ -109,9 +115,16 @@ export default defineComponent({
                 title: string,
                 condition: string,
                 script: string,
-                enabled: boolean
+                enabled: boolean,
+                inner?: boolean
             }[],
-            select: '',
+            select: undefined as {
+                title: string,
+                condition: string,
+                script: string,
+                enabled: boolean,
+                inner?: boolean
+            } | undefined,
 
             message: null as any | null,
             msgInfo: null as {[key: string]: any} | null,
@@ -166,13 +179,14 @@ export default defineComponent({
          */
 
         cnewScript() {
-            this.select = ''
+            this.select = undefined
             this.script = '/*\n    title: Demo Script\n*/\n\nconsole.log(\'Hello World!\')'
             this.editScript = true
         },
         updateSave() {
-            const saveJson = JSON.stringify(this.savedList)
-            save('scripts', saveJson)
+            const saveInfo = JSON.parse(JSON.stringify(this.savedList))
+            // 移除带有 inner 属性的条目，它们不需要保存
+            save('scripts', JSON.stringify(saveInfo.filter((item: any) => !item.inner)))
         },
         save() {
             this.editScript = false
@@ -199,16 +213,24 @@ export default defineComponent({
                     enabled: false
                 })
             }
+            // 如果修改的这条存在 inner 属性，那么删除 inner 属性
+            this.savedList.forEach((item) => {
+                if(item.title == title) {
+                    delete item.inner
+                }
+            })
             this.updateSave()
         },
-        remove(title: string) {
-            this.savedList = this.savedList.filter((item) => item.title != title)
-            this.updateSave()
+        remove(title: string | undefined) {
+            if(title != undefined) {
+                this.savedList = this.savedList.filter((item) => item.title != title)
+                this.updateSave()
+            }
         },
 
         selectItem(item: { title: string, condition: string, script: string, enabled: boolean }) {
             // 选中脚本
-            this.select = item.title
+            this.select = item
             this.script = item.script
             this.condition = item.condition
             this.editScript = true
@@ -230,6 +252,26 @@ export default defineComponent({
         })
         // 读取保存的脚本
         this.savedList = JSON.parse(decodeURIComponent(getRaw('scripts'))) ?? []
+        // 读取内嵌脚本
+        for (const scriptInfo of sysScriptsList) {
+            const title = scriptInfo.title
+            if(this.savedList.find((item) => item.title == title)) {
+                continue
+            }
+            // 读取 js 文件为纯文本
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const script = require('raw-loader!@/assets/scripts/' + scriptInfo.name + '.js')
+            if(script.default) {
+                this.savedList.unshift({
+                    title: title,
+                    condition: scriptInfo.condition,
+                    script: script.default,
+                    enabled: false,
+                    inner: true
+                })
+            }
+        }
+
         // 监听消息更改
         this.$watch(() => runtimeData.watch.newMsg, () => {
             if(runtimeData.sysConfig.append_scripts) {
@@ -413,6 +455,26 @@ export default defineComponent({
     font-size: 2.5rem;
     color: var(--color-main);
     margin: 20px 0;
+}
+
+.editor-main > div.inner {
+    background: var(--color-card-1);
+    border-radius: 7px;
+    padding: 10px;
+    margin: -10px 10px 10px 10px;
+    font-size: 0.8rem;
+    color: var(--color-font-2);
+    display: flex;
+    align-items: center;
+}
+.editor-main > div.inner > svg {
+    background: var(--color-main);
+    width: 0.5rem;
+    color: var(--color-font-r);
+    border-radius: 100%;
+    padding: 4px;
+    margin-right: 5px;
+    font-size: 0.5rem;
 }
 
 .editor {

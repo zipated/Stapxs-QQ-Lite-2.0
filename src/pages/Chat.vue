@@ -1004,7 +1004,7 @@ export default defineComponent({
                 Connector.send(runtimeData.jsonMap.send_respond.name, {
                     'message_id': msgId,
                     'emoji_id': String(num)
-                }, 'SendRespondBack')
+                }, 'SendRespondBack_' + msgId + '_' + num)
             }
             this.closeMsgMenu()
         },

@@ -10,11 +10,9 @@
         <div class="note-recall note-base" v-if="data.notice_type && data.notice_type.indexOf('recall') >= 0">
             <a>{{ info.name }}</a>
             <span>{{ $t('chat_notice_recall') }}</span>
-            <div>
-
-            </div>
+            <div></div>
         </div>
-        <div class="note-ban note-base" v-if="data.notice_type == 'group_ban'">
+        <div v-if="data.notice_type == 'group_ban'" class="note-ban note-base">
             <template v-if="data.sub_type === 'ban'">
                 <template v-if="isMe(data.user_id)">
                     <span>{{ $t('chat_member_type_admin') }}</span>
@@ -30,7 +28,8 @@
             </template>
             <span v-else>{{ $t('note_unban', { name: isMe(data.user_id) ? $t('you') : getName(data.user_id) }) }}</span>
         </div>
-        <div class="note-time note-base" v-if="data.sub_type === 'time'">
+        <div v-if="data.sub_type === 'poke'" class="note-notify note-base" v-html="data.str"></div>
+        <div v-if="data.sub_type === 'time'" class="note-time note-base">
             <a>{{
                 Intl.DateTimeFormat(trueLang, getTimeConfig(new Date(data.time * 1000)))
                     .format(new Date(data.time * 1000))

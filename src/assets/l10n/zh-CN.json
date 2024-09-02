@@ -366,6 +366,7 @@
   "option_view_vibrancy_mode_tip": "怎么看光还要挑三拣四的",
   "option_dev_restart_tip1": "此操作将在重启应用后生效，现在就要重启吗？",
   "option_dev_restart_tip2": "此操作仅供娱乐，将会在下次关闭时恢复。",
+  "a_inner_script": "这是个内嵌示例脚本，你可以修改它并保存使用。",
 
   "menu_about": "关于",
   "menu_update": "检查更新…",

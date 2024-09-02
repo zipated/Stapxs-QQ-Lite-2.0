@@ -499,6 +499,17 @@
     margin: 0 5px;
 }
 
+.note-notify img {
+    display: inline-block;
+    width: 1rem;
+    margin: 0 3px;
+}
+.note-notify span {
+    margin: 0 3px;
+    color: var(--color-main);
+    font-weight: bold;
+}
+
 @media (max-width: 992px) {
     /* 消息体 */
     .message > img {
