@@ -9,7 +9,7 @@
     <div class="opt-main">
         <AboutPan showUI></AboutPan>
         <div>
-            <BcTab :title="$t('option_title')" class="opt-tab">
+            <BcTab v-show="show" :title="$t('option_title')" class="opt-tab">
                 <div :name="$t('option_bar_account')"><OptAccount :config="config"></OptAccount></div>
                 <div :name="$t('option_bar_view')"><OptView></OptView></div>
                 <div :name="$t('option_bar_function')"><OptFunction :config="config"></OptFunction></div>
@@ -76,6 +76,7 @@ import AboutPan from '@/components/AboutPan.vue'
 export default defineComponent({
     name: 'ViewOption',
     props: {
+        show: Boolean,
         config: {} as { [key: string]: string | number | boolean }
     },
     components: { BcTab, OptAccount, OptView, OptDev, OptFunction, AboutPan },

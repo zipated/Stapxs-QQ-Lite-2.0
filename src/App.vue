@@ -102,6 +102,7 @@
                 </div>
                 <div class="opt-main-tab">
                     <Options
+                        :show="tags.page == 'Options'"
                         :class="tags.page == 'Options' ? 'active' : ''"
                         :config="runtimeData.sysConfig"
                         :info="runtimeData.loginInfo"
@@ -111,15 +112,15 @@
             </div>
         </div>
         <component
-          ref="chat"
-          v-if="loginInfo.status && runtimeData.chatInfo && runtimeData.chatInfo.show.id != 0"
-          v-show="tags.showChat"
-          :is="runtimeData.pageView.chatView"
-          :mumberInfo="runtimeData.chatInfo.info.now_member_info == undefined ? {} : runtimeData.chatInfo.info.now_member_info"
-          :mergeList="runtimeData.mergeMessageList"
-          :list= "runtimeData.messageList"
-          :chat="runtimeData.chatInfo"
-          @userClick="changeChat">
+            ref="chat"
+            v-if="loginInfo.status && runtimeData.chatInfo && runtimeData.chatInfo.show.id != 0"
+            v-show="tags.showChat"
+            :is="runtimeData.pageView.chatView"
+            :mumberInfo="runtimeData.chatInfo.info.now_member_info == undefined ? {} : runtimeData.chatInfo.info.now_member_info"
+            :mergeList="runtimeData.mergeMessageList"
+            :list= "runtimeData.messageList"
+            :chat="runtimeData.chatInfo"
+            @userClick="changeChat">
         </component>
         <TransitionGroup class="app-msg" name="appmsg" tag="div">
           <div v-for="msg in appMsgs" :key="'appmsg-' + msg.id">

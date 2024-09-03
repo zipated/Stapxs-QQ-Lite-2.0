@@ -78,7 +78,7 @@
                 </div>
             </div>
         </div>
-        <div v-show="runtimeData.chatInfo.show.id == 0" :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
+        <div v-show="!loginInfo.status || runtimeData.chatInfo.show.id == 0" :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
             <div class="ss-card">
                 <font-awesome-icon :icon="['fas', 'inbox']" />
                 <span>{{ $t('chat_space') }}</span>
@@ -96,6 +96,7 @@ import { UserGroupElem } from '@/function/elements/information'
 
 import { runtimeData } from '@/function/msg'
 import { reloadUsers } from '@/function/utils/appUtil'
+import { login as loginInfo } from '@/function/connect'
 
 export default defineComponent({
     name: 'ViewFriends',
@@ -107,7 +108,8 @@ export default defineComponent({
             loading: false,
             isSearch: false,
             searchInfo: '',
-            classStatus: {} as {[key: string]: boolean}
+            classStatus: {} as {[key: string]: boolean},
+            loginInfo: loginInfo
         }
     },
     methods: {

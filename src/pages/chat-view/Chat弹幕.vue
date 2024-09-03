@@ -311,7 +311,7 @@ export default defineComponent({
                     const id = runtimeData.chatInfo.show.id
                     const firstMsgId = this.list[0].message_id ?? 0
                     let name
-                    const pageed = !(runtimeData.jsonMap.message_list?.pageed == false)
+                    const fullPage = runtimeData.jsonMap.message_list?.pagerType == 'full'
                     if(runtimeData.jsonMap.message_list && type != 'group') {
                         name = runtimeData.jsonMap.message_list.private_name
                     } else {
@@ -323,7 +323,7 @@ export default defineComponent({
                             group_id: type == 'group' ? id : undefined,
                             user_id: type != 'group' ? id : undefined,
                             message_id: firstMsgId,
-                            count: !pageed ? runtimeData.messageList.length + 10 : 10
+                            count: fullPage ? runtimeData.messageList.length + 10 : 10
                         },
                         'getChatHistory'
                     )

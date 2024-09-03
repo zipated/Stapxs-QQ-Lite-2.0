@@ -522,7 +522,7 @@ export default defineComponent({
                 // 锁定加载防止反复触发
                 this.tags.nowGetHistroy = true
                 // 发起获取历史消息请求
-                const pageed = !(runtimeData.jsonMap.message_list.pageed == false)
+                const fullPage = runtimeData.jsonMap.message_list?.pagerType == 'full'
                 const type = runtimeData.chatInfo.show.type
                 const id = runtimeData.chatInfo.show.id
                 let name
@@ -537,7 +537,7 @@ export default defineComponent({
                         group_id: type == 'group' ? id : undefined,
                         user_id: type != 'group' ? id : undefined,
                         message_id: firstMsgId,
-                        count: !pageed ? runtimeData.messageList.length + 20 : 20
+                        count: fullPage ? runtimeData.messageList.length + 20 : 20
                     },
                     'getChatHistory'
                 )

@@ -36,6 +36,8 @@ let msgPath = require('@/assets/pathMap/Lagrange.OneBot.yaml')
 // 其他 tag
 let listLoadTimes = 0
 const logger = new Logger()
+let firstHeartbeatTime = -1
+let heartbeatTime = -1
 
 /**
  * 处理分发消息
@@ -68,6 +70,25 @@ export function parse(str: string) {
 // ==============================================================
 
 const noticeFunctions = {
+    /**
+     * 心跳包
+     */
+    meta_event: (name: string, msg: { [key: string]: any }) => {
+        if(firstHeartbeatTime == -1) {
+            firstHeartbeatTime = msg.time
+        }
+        if(firstHeartbeatTime != -1 && heartbeatTime == -1) {
+            // 计算心跳时间
+            heartbeatTime = msg.time - firstHeartbeatTime
+        }
+        // 记录心跳状态
+        if(heartbeatTime != -1) {
+            runtimeData.watch.heartbeatTime = heartbeatTime
+            runtimeData.watch.oldHeartbeatTime = runtimeData.watch.lastHeartbeatTime
+            runtimeData.watch.lastHeartbeatTime = msg.time
+        }
+    },
+
     /**
      * 新消息
      */
@@ -207,6 +228,12 @@ const msgFunctons = {
 
         if (msgBody) {
             const data = msgBody[0]
+
+            // 如果 runtime 存在（即不是第一次连接），且 app_name 不同，重置 runtime
+            if(runtimeData.botInfo.app_name != data.app_name) {
+                resetRimtime()
+            }
+
             runtimeData.botInfo = data
             // UM：提交分析信息，主要在意的是 bot 类型
             if (Option.get('open_ga_bot') !== false) {
@@ -235,6 +262,11 @@ const msgFunctons = {
         const msgBody = getMsgData('login_info', msg, msgPath.login_info)
         if (msgBody) {
             const data = msgBody[0]
+
+            // 如果 runtime 存在（即不是第一次连接），且 uin 不同，重置 runtime
+            if(runtimeData.loginInfo.uin != data.uin) {
+                resetRimtime()
+            }
 
             // 完成登陆初始化
             runtimeData.loginInfo = data
@@ -425,12 +457,20 @@ const msgFunctons = {
     /**
      * 获取收藏表情
      */
-    getRoamingStamp: (name: string, msg: { [key: string]: any }) => {
+    getRoamingStamp: (name: string, msg: { [key: string]: any }, echoList: string[]) => {
+        const getCount = Number(echoList[1])
         const data = msg.data
         if(msgPath.roaming_stamp.reverse) {
             data.reverse()
         }
         if(runtimeData.stickerCache == undefined) {
+            runtimeData.stickerCache = data
+        } else if(runtimeData.jsonMap.roaming_stamp.pagerType == 'full') {
+            // 全量分页模式下不追加
+            if(getCount > runtimeData.stickerCache.length + 48) {
+                // 已经获取到所有内容了
+                data.push('end')
+            }
             runtimeData.stickerCache = data
         } else {
             runtimeData.stickerCache = runtimeData.stickerCache.concat(data)
@@ -1012,8 +1052,8 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
                     return
                 }
             }
-            // 在加载历史消息的时候判断是否支持分页追加
-            if(append == 'top' && runtimeData.jsonMap.message_list?.pageed == false) {
+            // 如果分页不是增量的，就不使用追加
+            if(append == 'top' && runtimeData.jsonMap.message_list?.pagerType == 'full') {
                 append = undefined
             }
             // 追加处理
@@ -1477,6 +1517,7 @@ export function resetRimtime() {
     runtimeData.chatInfo = reactive(baseRuntime.chatInfo)
     runtimeData.userList = reactive([])
     runtimeData.showList = reactive([])
+    runtimeData.watch = reactive(baseRuntime.watch)
     runtimeData.systemNoticesList = reactive([])
     runtimeData.onMsgList = reactive([])
     runtimeData.loginInfo = reactive([])

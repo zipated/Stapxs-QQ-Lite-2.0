@@ -11,7 +11,7 @@ import app from '@/main'
 
 import { reactive } from 'vue'
 import { LogType, Logger, PopType, PopInfo  } from './base'
-import { parse, runtimeData, resetRimtime } from './msg'
+import { parse, runtimeData } from './msg'
 
 import { BotActionElem, LoginCacheElem } from './elements/system'
 import { updateMenu } from '@/function/utils/appUtil'
@@ -124,46 +124,42 @@ export class Connector {
         const $t = app.config.globalProperties.$t
 
         websocket = undefined
-            updateMenu({
-                id: 'logout',
-                action: 'visible',
-                value: false
-            })
-            updateMenu({
-                id: 'userName',
-                action: 'label',
-                value: $t('menu_login')
-            })
+        updateMenu({
+            id: 'logout',
+            action: 'visible',
+            value: false
+        })
+        updateMenu({
+            id: 'userName',
+            action: 'label',
+            value: $t('menu_login')
+        })
 
-            switch(code) {
-                case 1000: break;   // 正常关闭
-                case 1006: {        // 非正常关闭，尝试重连
-                    if(login.status) {
-                        this.create(address, token, undefined)
-                    } else {
-                        // PS：由于创建连接失败也会触发此事件，所以需要判断是否已经登录
-                        // 尝试使用 ws 连接
-                        this.create(address, token, false)
-                    }
-                    break;
-                }
-                case 1015: {        // TSL 错误，尝试使用 ws 连接
+        switch (code) {
+            case 1000: break;   // 正常关闭
+            case 1006: {        // 非正常关闭，尝试重连
+                if (login.status) {
+                    this.create(address, token, undefined)
+                } else {
+                    // PS：由于创建连接失败也会触发此事件，所以需要判断是否已经登录
+                    // 尝试使用 ws 连接
                     this.create(address, token, false)
-                    break;
                 }
-                default: {
-                    popInfo.add(PopType.ERR, $t('pop_log_con_fail') + ': ' + code, false)
-                    // eslint-disable-next-line no-console
-                    console.log(message)
-                }
+                break;
             }
-            logger.error($t('pop_log_con_fail') + ': ' + code)
-            login.status = false
-            
-            // 除了 1006 意外断开（可能要保留数据重连），其他情况都会清空
-            if(code != 1006) {
-                resetRimtime()
+            case 1015: {        // TSL 错误，尝试使用 ws 连接
+                this.create(address, token, false)
+                break;
             }
+            default: {
+                popInfo.add(PopType.ERR, $t('pop_log_con_fail') + ': ' + code, false)
+                // eslint-disable-next-line no-console
+                console.log(message)
+            }
+        }
+        
+        logger.error($t('pop_log_con_fail') + ': ' + code)
+        login.status = false
     }
 
     // 连接器操作 =====================================================

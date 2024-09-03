@@ -113,7 +113,7 @@ export function loadHistory(info: BaseChatInfoElem) {
 }
 export function loadHistoryMessage(id: number, type: string, count = 20, echo = 'getChatHistoryFist') {
     let name
-    const pageed = !(runtimeData.jsonMap.message_list?.pageed == false)
+    const fullPage = runtimeData.jsonMap.message_list?.pagerType == 'full'
     if(runtimeData.jsonMap.message_list && type != 'group') {
         name = runtimeData.jsonMap.message_list.private_name
     } else {
@@ -126,7 +126,7 @@ export function loadHistoryMessage(id: number, type: string, count = 20, echo = 
             group_id: type == 'group' ? id : undefined,
             user_id: type != 'group' ? id : undefined,
             message_id: 0,
-            count: !pageed ? runtimeData.messageList.length + count : count
+            count: fullPage ? runtimeData.messageList.length + count : count
         },
         echo
     )
