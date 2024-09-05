@@ -113,7 +113,7 @@ export function loadHistory(info: BaseChatInfoElem) {
 }
 export function loadHistoryMessage(id: number, type: string, count = 20, echo = 'getChatHistoryFist') {
     let name
-    const pageed = !(runtimeData.jsonMap.message_list?.pageed == false)
+    const fullPage = runtimeData.jsonMap.message_list?.pagerType == 'full'
     if(runtimeData.jsonMap.message_list && type != 'group') {
         name = runtimeData.jsonMap.message_list.private_name
     } else {
@@ -126,7 +126,7 @@ export function loadHistoryMessage(id: number, type: string, count = 20, echo = 
             group_id: type == 'group' ? id : undefined,
             user_id: type != 'group' ? id : undefined,
             message_id: 0,
-            count: !pageed ? runtimeData.messageList.length + count : count
+            count: fullPage ? runtimeData.messageList.length + count : count
         },
         echo
     )
@@ -525,6 +525,19 @@ export function loadAppendStyle() {
                 }
             })
         }
+    }
+    // 全透明模式
+    if(option.get('vibrancy_mode') != 'default') {
+        import('@/assets/css/append/append_full_transparent.css').then(() => {
+            logger.info('全透明 UI 附加样式加载完成')
+        })
+        // 将 card 颜色透明化
+        document.documentElement.style.setProperty('--color-bg', 'rgba(var(--color-bg-rgb), 0.5)')
+        document.documentElement.style.setProperty('--color-card', 'rgba(var(--color-card-rgb), 0.5)')
+        document.documentElement.style.setProperty('--color-card-1', 'rgba(var(--color-card-1-rgb), 0.5)')
+        document.documentElement.style.setProperty('--color-card-2', 'rgba(var(--color-card-2-rgb), 0.5)')
+        // 恢复设置项
+        option.save('vibrancy_mode', 'default')
     }
 }
 

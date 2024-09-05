@@ -85,7 +85,7 @@ export class Connector {
                     token: token
                 })
             }
-            if(this.reconnectTimes < 5) {
+            if(this.reconnectTimes < 4) {
                 setTimeout(() => {
                     if(e.code == 1006) {
                         // 连接失败，尝试轮替协议重连

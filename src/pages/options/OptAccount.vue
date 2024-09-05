@@ -61,6 +61,10 @@
                     <span>{{ $t('option_account_bot_tip') }}</span>
                 </div>
             </div>
+            <div :class="'bot-status ' + getRunStatus()" v-if="getRunStatus() != 'unknown'">
+                <div></div>
+                <span>{{ $t('opt_bot_status_' + getRunStatus(), { step: runtimeData.watch.heartbeatTime, timeout: (runtimeData.watch.lastHeartbeatTime ?? 0) - (runtimeData.watch.oldHeartbeatTime ?? 0)}) }}</span>
+            </div>
             <div class="bot-info">
                 <div v-for="key in Object.keys(runtimeData.botInfo)" :key="'botinfo-' + key">
                     <span v-if="key !== 'app_name' && key !== 'app_version' && key !== 'version'">
@@ -148,6 +152,25 @@ export default {
             // TODO: 这玩意的返回好像永远是错误的 …… 所以干脆不处理返回了
             if (event.key === 'Enter' && runtimeData.loginInfo.info.lnick !== '') {
                 Connector.send('set_signature', {signature: runtimeData.loginInfo.info.lnick}, 'setSignature')
+            }
+        },
+
+        getRunStatus() {
+            const step = runtimeData.watch.heartbeatTime
+            const old = runtimeData.watch.oldHeartbeatTime
+            const last = runtimeData.watch.lastHeartbeatTime
+            
+            if(step && old && last) {
+                if(last - old == step) {
+                    return 'normal'
+                } else {
+                    return 'slow'
+                }
+            } else {
+                if(step == 0) {
+                    return 'loading'
+                }
+                return 'unknown'
             }
         }
     }

@@ -141,6 +141,18 @@
                     <span :style="`color: var(--color-font${runtimeData.sysConfig.chat_background_blur > 50 ? '-r' : ''})`">{{ runtimeData.sysConfig.chat_background_blur }} px</span>
                 </div>
             </div>
+            <div class="opt-item" v-if="runtimeData.tags.isElectron && browser.os != 'Linux'">
+                <font-awesome-icon :icon="['fas', 'border-none']" />
+                <div>
+                    <span>{{ $t('option_view_vibrancy_mode') }}</span>
+                    <span>{{ $t('option_view_vibrancy_mode_tip') }}</span>
+                </div>
+                <select data-reload="true" @change="save" name="vibrancy_mode" title="vibrancy_mode" v-model="runtimeData.sysConfig.vibrancy_mode">
+                    <option value="default">{{ $t('option_default') }}</option>
+                    <option value="vibrancy">{{ $t('option_vibrancy_mode_vibrancy') }}</option>
+                    <option value="transparent">{{ $t('option_vibrancy_mode_transparent') }}</option>
+                </select>
+            </div>
         </div>
         <div class="ss-card">
             <header>{{ $t('option_view_view') }}</header>
@@ -165,6 +177,20 @@
                     <input :style="`background-size: ${fsAdaptationShow / 50 * 100}% 100%;`" type="range" min="0" max="50" step="10" v-model="runtimeData.sysConfig.fs_adaptation" name="fs_adaptation" @change="save" @input="setFsAdaptationShow">
                     <span :style="`color: var(--color-font${fsAdaptationShow / 50 > 0.5 ? '-r' : ''})`">{{ fsAdaptationShow }} px</span>
                 </div>
+            </div>
+            <div class="opt-item" v-if="runtimeData.tags.isElectron">
+                <font-awesome-icon :icon="['fas', 'angle-up']" />
+                <div>
+                    <span>{{ $t('option_view_always_top') }}</span>
+                    <span>{{ $t('option_view_always_top_tip') }}</span>
+                </div>
+                <label class="ss-switch">
+                    <input type="checkbox" @change="save" name="opt_always_top"
+                        v-model="runtimeData.sysConfig.opt_always_top">
+                    <div>
+                        <div></div>
+                    </div>
+                </label>
             </div>
             <div class="opt-item">
                 <font-awesome-icon :icon="['fas', 'arrows-rotate']" />

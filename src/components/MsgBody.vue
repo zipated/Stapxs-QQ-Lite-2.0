@@ -69,11 +69,10 @@
                             </div>
                         </div>
                         <div v-else-if="item.type == 'video'" class="msg-video">
-                            <video v-if="item.url" controls muted autoplay>
+                            <video controls muted autoplay>
                                 <source :src="item.url" type="video/mp4">
                                 现在还有不支持 video tag 的浏览器吗？
                             </video>
-                            <div v-else-if="!getVideo" :class="getVideoUrl(item, data.message_id)"></div>
                         </div>
                         <span v-else-if="item.type == 'forward'" class="msg-unknown" style="cursor: pointer;" @click="View.getForwardMsg(item.id)">{{ $t('chat_show_forward') }}</span>
                         <div v-else-if="item.type == 'reply'" @click="scrollToMsg(item.id)" :class="isMe ? (type == 'merge' ? 'msg-replay' : 'msg-replay me') : 'msg-replay'">
@@ -188,6 +187,9 @@ export default defineComponent({
          * @param item 
          */
         getAtName (item: { [key: string]: any }) {
+            if(item.qq == 'all') {
+                return '@' + this.$t('chat_at_all')
+            }
             if(item.text != undefined) {
                 return item.text
             } else {
@@ -442,21 +444,6 @@ export default defineComponent({
                     fid: data.fid
                 }, 'downloadFile_' + message_id + '_' + data.name)
             }
-        },
-
-        /**
-         * 
-         * @param msgId 消息 ID
-         * @param fid 文件 ID
-         */
-        getVideoUrl(data: any, message_id: string) {
-            this.getVideo = true
-            Connector.send('get_video_url', {
-                id: runtimeData.chatInfo.show.id,
-                message_id: message_id,
-                fid: data.fid,
-                md5: data.md5
-            }, 'getVideoUrl_' + message_id)
         },
 
         /**

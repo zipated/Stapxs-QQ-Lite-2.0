@@ -55,7 +55,7 @@
                 </FriendBody>
             </div>
         </div>
-        <div :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
+        <div v-show="!loginInfo.status || runtimeData.chatInfo.show.id == 0" :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
             <div class="ss-card">
                 <font-awesome-icon :icon="['fas', 'inbox']" />
                 <span>{{ $t('chat_space') }}</span>
@@ -79,6 +79,7 @@ import { loadHistoryMessage } from '@/function/utils/appUtil'
 import { Logger, LogType, PopInfo, PopType } from '@/function/base'
 import { MenuStatue } from 'vue3-bcui/packages/dist/types'
 import { library } from '@fortawesome/fontawesome-svg-core'
+import { login as loginInfo } from '@/function/connect'
 
 import { faThumbTack, faTrashCan, faCheckToSlot, faGripLines } from '@fortawesome/free-solid-svg-icons'
 
@@ -95,7 +96,8 @@ export default defineComponent({
                 point: { x: 0, y: 0 }
             } as MenuStatue,
             menu: Menu.append,
-            showMenu: false
+            showMenu: false,
+            loginInfo: loginInfo
         }
     },
     methods: {

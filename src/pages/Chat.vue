@@ -66,7 +66,7 @@
                         @touchend="msgMoveEnd($event, msg)">
                     </MsgBody>
                     <!-- 其他通知消息 -->
-                    <NoticeBody v-if="msg.post_type === 'notice'" :key="'notice-' + index" :data="msg"></NoticeBody>
+                    <NoticeBody :id="uuid()" v-if="msg.post_type === 'notice'" :key="'notice-' + index" :data="msg"></NoticeBody>
                 </template> 
             </TransitionGroup>
         </div>
@@ -223,6 +223,7 @@
                         <NoticeBody
                             v-if="isShowTime((mergeList[index - 1] ? mergeList[index - 1].time : undefined), msg.time, index == 0)"
                             :key="'notice-time-' + index"
+                            :id="uuid()"
                             :data="{sub_type: 'time', time: msg.time}">
                         </NoticeBody>
                         <!-- 合并转发消息忽略是不是自己的判定 -->
@@ -369,7 +370,7 @@
                 <div class="bg" @click="cancelForward"></div>
             </div>
         </Transition>
-        <div class="bg" :style="`backdrop-filter: blur(${runtimeData.sysConfig.chat_background_blur}px);`"></div>
+        <div class="bg" :style="runtimeData.sysConfig.option_view_background ? `backdrop-filter: blur(${runtimeData.sysConfig.chat_background_blur}px);` : ''"></div>
     </div>
 </template>
 
@@ -384,6 +385,7 @@ import FacePan from '@/components/FacePan.vue'
 import imageCompression from 'browser-image-compression'
 
 import { defineComponent, markRaw } from 'vue'
+import { v4 as uuid } from 'uuid'
 import { downloadFile, loadHistory as loadHistoryFirst } from '@/function/utils/appUtil'
 import { getTimeConfig, getTrueLang } from '@/function/utils/systemUtil'
 import { getMsgRawTxt, sendMsgRaw, getFace } from '@/function/utils/msgUtil'
@@ -400,6 +402,7 @@ export default defineComponent({
     components: { Info, MsgBody, NoticeBody, FacePan },
     data() {
         return {
+            uuid,
             fun: {
                 getMsgRawTxt: getMsgRawTxt
             },
@@ -522,7 +525,7 @@ export default defineComponent({
                 // 锁定加载防止反复触发
                 this.tags.nowGetHistroy = true
                 // 发起获取历史消息请求
-                const pageed = !(runtimeData.jsonMap.message_list.pageed == false)
+                const fullPage = runtimeData.jsonMap.message_list?.pagerType == 'full'
                 const type = runtimeData.chatInfo.show.type
                 const id = runtimeData.chatInfo.show.id
                 let name
@@ -537,7 +540,7 @@ export default defineComponent({
                         group_id: type == 'group' ? id : undefined,
                         user_id: type != 'group' ? id : undefined,
                         message_id: firstMsgId,
-                        count: !pageed ? runtimeData.messageList.length + 20 : 20
+                        count: fullPage ? runtimeData.messageList.length + 20 : 20
                     },
                     'getChatHistory'
                 )
@@ -1004,7 +1007,7 @@ export default defineComponent({
                 Connector.send(runtimeData.jsonMap.send_respond.name, {
                     'message_id': msgId,
                     'emoji_id': String(num)
-                }, 'SendRespondBack')
+                }, 'SendRespondBack_' + msgId + '_' + num)
             }
             this.closeMsgMenu()
         },
