@@ -62,7 +62,7 @@
                     <font-awesome-icon :icon="['fas', 'save']" />
                     <span>{{ $t('scripts_run_save') }}</span>
                 </button>
-                <button class="ss-button"
+                <button class="ss-button" v-if="!select?.inner"
                     @click="editScript = false;remove(select?.title);">
                     <font-awesome-icon v-if="!select" :icon="['fas', 'times']" />
                     <font-awesome-icon v-else :icon="['fas', 'trash-alt']" />
@@ -251,7 +251,7 @@ export default defineComponent({
             }
         })
         // 读取保存的脚本
-        this.savedList = JSON.parse(decodeURIComponent(getRaw('scripts'))) ?? []
+        this.savedList = getRaw('scripts') ? JSON.parse(decodeURIComponent(getRaw('scripts'))) : []
         // 读取内嵌脚本
         for (const scriptInfo of sysScriptsList) {
             const title = scriptInfo.title

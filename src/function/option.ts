@@ -35,7 +35,8 @@ const optDefault: { [key: string]: any } = {
     theme_color: 0,
     chat_background_blur: 0,
     msg_type: 2,
-    vibrancy_mode: 'default'
+    vibrancy_mode: 'default',
+    store_face: '[]'
 }
 
 // =============== 设置项事件 ===============
@@ -215,7 +216,7 @@ function changeColorMode(mode: string) {
         runtimeData.tags.firstLoad = false
     }
     // 切换颜色
-    const match_list = ['color-.*.css', 'prism-.*.css']
+    const match_list = ['color-.*.css', 'prism-.*.css', 'append-.*.css']
     const css_list = document.getElementsByTagName('link')
     for (let i = 0; i < css_list.length; i++) {
         const name = css_list[i].href

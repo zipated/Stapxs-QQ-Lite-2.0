@@ -1,3 +1,7 @@
+html, body {
+    background: transparent;
+}
+
 .home-body {
     background: rgba(var(--color-card-rgb), 0.6);
 }

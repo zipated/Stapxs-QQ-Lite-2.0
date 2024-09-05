@@ -66,7 +66,7 @@
                         @touchend="msgMoveEnd($event, msg)">
                     </MsgBody>
                     <!-- 其他通知消息 -->
-                    <NoticeBody v-if="msg.post_type === 'notice'" :key="'notice-' + index" :data="msg"></NoticeBody>
+                    <NoticeBody :id="uuid()" v-if="msg.post_type === 'notice'" :key="'notice-' + index" :data="msg"></NoticeBody>
                 </template> 
             </TransitionGroup>
         </div>
@@ -223,6 +223,7 @@
                         <NoticeBody
                             v-if="isShowTime((mergeList[index - 1] ? mergeList[index - 1].time : undefined), msg.time, index == 0)"
                             :key="'notice-time-' + index"
+                            :id="uuid()"
                             :data="{sub_type: 'time', time: msg.time}">
                         </NoticeBody>
                         <!-- 合并转发消息忽略是不是自己的判定 -->
@@ -384,6 +385,7 @@ import FacePan from '@/components/FacePan.vue'
 import imageCompression from 'browser-image-compression'
 
 import { defineComponent, markRaw } from 'vue'
+import { v4 as uuid } from 'uuid'
 import { downloadFile, loadHistory as loadHistoryFirst } from '@/function/utils/appUtil'
 import { getTimeConfig, getTrueLang } from '@/function/utils/systemUtil'
 import { getMsgRawTxt, sendMsgRaw, getFace } from '@/function/utils/msgUtil'
@@ -400,6 +402,7 @@ export default defineComponent({
     components: { Info, MsgBody, NoticeBody, FacePan },
     data() {
         return {
+            uuid,
             fun: {
                 getMsgRawTxt: getMsgRawTxt
             },

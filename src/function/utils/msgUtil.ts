@@ -1,12 +1,12 @@
 import jp from 'jsonpath'
 import app from '@/main'
+import Umami from '@stapxs/umami-logger-typescript'
 
 import { Logger } from '@/function/base'
 import { runtimeData } from '@/function/msg'
 import { v4 as uuid } from 'uuid'
 import { Connector } from '@/function/connect'
 import { BotMsgType, UserFriendElem, UserGroupElem } from '../elements/information'
-import Umami from '@stapxs/umami-logger-typescript'
 
 const logger = new Logger()
 

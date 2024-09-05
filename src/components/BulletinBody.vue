@@ -15,7 +15,7 @@
                     .format(data.time) }}</span>
         </header>
         <div :id="'bulletins-msg-' + index" :class="'body' + (!showAll ? '' : ' all')">
-            <span @click="textClick" v-html="parseText(data.content)"></span>
+            <span @click="textClick" v-html="parseText(data.content[0])"></span>
         </div>
         <span v-show="needShow && !showAll">{{ $t('bulletin_show_tip') }}</span>
         <div class="info">

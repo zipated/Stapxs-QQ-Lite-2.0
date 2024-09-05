@@ -75,7 +75,14 @@ const noticeFunctions = {
      */
     meta_event: (name: string, msg: { [key: string]: any }) => {
         if(firstHeartbeatTime == -1) {
+            firstHeartbeatTime = 0
+            runtimeData.watch.heartbeatTime = 0
+            return
+        }
+        if(firstHeartbeatTime == 0) {
             firstHeartbeatTime = msg.time
+            runtimeData.watch.lastHeartbeatTime = msg.time
+            return
         }
         if(firstHeartbeatTime != -1 && heartbeatTime == -1) {
             // 计算心跳时间
@@ -214,6 +221,7 @@ const noticeFunctions = {
             })
             // 插入系统消息
             msg.str = str
+            msg.pokeMe = userInfo[1].isMe
             runtimeData.messageList.push(msg)
         }
     }
@@ -230,9 +238,7 @@ const msgFunctons = {
             const data = msgBody[0]
 
             // 如果 runtime 存在（即不是第一次连接），且 app_name 不同，重置 runtime
-            if(runtimeData.botInfo.app_name != data.app_name) {
-                resetRimtime()
-            }
+            resetRimtime(runtimeData.botInfo.app_name != data.app_name && !login.status)
 
             runtimeData.botInfo = data
             // UM：提交分析信息，主要在意的是 bot 类型
@@ -264,9 +270,7 @@ const msgFunctons = {
             const data = msgBody[0]
 
             // 如果 runtime 存在（即不是第一次连接），且 uin 不同，重置 runtime
-            if(runtimeData.loginInfo.uin != data.uin) {
-                resetRimtime()
-            }
+            resetRimtime(runtimeData.loginInfo.uin != data.uin && !login.status)
 
             // 完成登陆初始化
             runtimeData.loginInfo = data
@@ -1332,13 +1336,21 @@ function newMsg(name: string, data: any) {
                             runtimeData.reader.send('sys:sendNotice', msgInfo)
                         }
                     } else {
-                        // 检查通知权限，老旧浏览器不支持这个功能
-                        if (Notification.permission === 'default') {
-                            Notification.requestPermission(() => {
+                        // Safari：在 iOS 下，如果页面没有被创建为主屏幕，通知无法被调用
+                        // 最见鬼的是它不是方法返回失败，而且整个 Notification 对象都没有
+                        const isSupported = () =>
+                            'Notification' in window &&
+                            'serviceWorker' in navigator &&
+                            'PushManager' in window
+                        if(isSupported()) {
+                            // 检查通知权限，老旧浏览器不支持这个功能
+                            if (Notification.permission === 'default') {
+                                Notification.requestPermission(() => {
+                                    sendNotice(msgInfo)
+                                })
+                            } else if (Notification.permission !== 'denied') {
                                 sendNotice(msgInfo)
-                            })
-                        } else if (Notification.permission !== 'denied') {
-                            sendNotice(msgInfo)
+                            }
                         }
                     }
                 }
@@ -1512,15 +1524,19 @@ export const runtimeData: RunTimeDataElem = reactive(baseRuntime)
 export const notificationList: Notification[] = reactive([])
 
 // 重置 Runtime，但是保留应用设置之类已经加载好的应用内容
-export function resetRimtime() {
-    runtimeData.tags = reactive(baseRuntime.tags)
-    runtimeData.chatInfo = reactive(baseRuntime.chatInfo)
-    runtimeData.userList = reactive([])
-    runtimeData.showList = reactive([])
-    runtimeData.watch = reactive(baseRuntime.watch)
-    runtimeData.systemNoticesList = reactive([])
-    runtimeData.onMsgList = reactive([])
-    runtimeData.loginInfo = reactive([])
+export function resetRimtime(resetAll = false) {
     runtimeData.botInfo = reactive([])
-    runtimeData.messageList = reactive([])
+    runtimeData.watch = reactive(baseRuntime.watch)
+    firstHeartbeatTime = -1
+    heartbeatTime = -1
+    if(resetAll) {
+        runtimeData.tags = reactive(baseRuntime.tags)
+        runtimeData.chatInfo = reactive(baseRuntime.chatInfo)
+        runtimeData.userList = reactive([])
+        runtimeData.showList = reactive([])
+        runtimeData.systemNoticesList = reactive([])
+        runtimeData.onMsgList = reactive([])
+        runtimeData.loginInfo = reactive([])
+        runtimeData.messageList = reactive([])
+    }
 }
