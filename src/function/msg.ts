@@ -203,7 +203,7 @@ const noticeFunctions = {
                     if (user)
                         userInfo.push({
                             txt: `<span>${user.nickname}</span>`,
-                            isMe: true
+                            isMe: false
                         })
                 }
             })

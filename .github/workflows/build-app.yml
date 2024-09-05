@@ -152,7 +152,9 @@ jobs:
   release:
     name: 发布构建结果
     runs-on: ubuntu-latest
-    needs: build-electron
+    needs: 
+      - build-root-web
+      - build-electron
     steps:
     # 下载构建结果
     - name: Download Artifacts
