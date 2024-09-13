@@ -23,6 +23,20 @@ textarea:focus {
     height: 30px;
 }
 
+.dev-bar {
+    background: var(--color-bg-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-font-2);
+    font-size: 0.7rem;
+    box-shadow: 0 0 10px var(--color-shader);
+    position: absolute;
+    width: 100%;
+    padding: 10px 0;
+    z-index: 100;
+}
+
 .top-bar {
     -webkit-app-region: drag;
     box-shadow: 0 0 10px 0 rgb(0 0 0 / 28%);

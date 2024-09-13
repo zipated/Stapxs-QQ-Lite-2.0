@@ -1,4 +1,8 @@
 <template>
+    <div v-if="dev" class="dev-bar">
+            {{ 'Stapxs QQ Lite Development Mode' }}
+            {{ ' / fps: ' + fps.value }}
+    </div>
     <div class="top-bar" name="appbar" v-if="runtimeData.sysConfig.opt_no_window">
         <div class="bar-button" @click="barMainClick()"></div>
         <div class="space"></div>
@@ -233,7 +237,12 @@ export default defineComponent({
                 savePassword: false
             },
             viewerOpt: { inline: false, button: false, title: false, navbar: false, toolbar: { prev: true, rotateLeft: true, reset: true, rotateRight: true, next: true } },
-            viewerBody: undefined as HTMLDivElement | undefined
+            viewerBody: undefined as HTMLDivElement | undefined,
+            fps: {
+                last: Date.now(),
+                ticks: 0,
+                value: 0
+            }
         }
     },
     methods: {
@@ -297,6 +306,24 @@ export default defineComponent({
                 }, 50)
                 return timer
             }
+        },
+
+        /**
+         * 刷新页面 fps 数据
+         * @param timestamp 时间戳
+         */
+        rafLoop() {
+            this.fps.ticks += 1
+            //每30帧统计一次帧率
+            if (this.fps.ticks >= 30) {
+                const now = Date.now()
+                const diff = now - this.fps.last
+                const fps = Math.round(1000 / (diff / this.fps.ticks))
+                this.fps.last = now
+                this.fps.ticks = 0
+                this.fps.value = fps
+            }
+            requestAnimationFrame(this.rafLoop)
         },
 
         /**
@@ -464,6 +491,8 @@ export default defineComponent({
                 document.title = 'Stapxs QQ Lite (Dev)'
                 // 布局检查工具
                 Spacing.start()
+                // FPS 检查
+                this.rafLoop()
             }
             // 加载设置项
             runtimeData.sysConfig = Option.load()

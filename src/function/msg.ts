@@ -20,7 +20,7 @@ import pinyin from 'pinyin'
 
 import Umami from '@stapxs/umami-logger-typescript'
 
-import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt, updateLastestHistory } from '@/function/utils/msgUtil'
+import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt, updateLastestHistory, sendMsgAppendInfo } from '@/function/utils/msgUtil'
 import { getViewTime, escape2Html, randomNum } from '@/function/utils/systemUtil'
 import { reloadUsers, reloadCookies, downloadFile, updateMenu, jumpToChat, loadJsonMap } from '@/function/utils/appUtil'
 import { reactive, markRaw, defineAsyncComponent } from 'vue'
@@ -164,6 +164,7 @@ const noticeFunctions = {
         const status = msg.sub_type === 'ban' ? true : false
         const duration = msg.duration ?? 0     // 秒
     
+        // 如果是自己，更新禁言时间
         if(userId == runtimeData.loginInfo.uin && groupId == runtimeData.chatInfo.show.id) {
             if(status)
                 runtimeData.chatInfo.info.me_info.shut_up_timestamp = (new Date().getTime() + duration * 1000) / 1000
@@ -171,7 +172,9 @@ const noticeFunctions = {
                 runtimeData.chatInfo.info.me_info.shut_up_timestamp = 0
         }
     
-        runtimeData.messageList.push(msg)
+        // 只有在当前群才会显示
+        if(groupId == runtimeData.chatInfo.show.id)
+            runtimeData.messageList.push(msg)
     },
 
     /**
@@ -1082,6 +1085,11 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
                 runtimeData.messageList = []
                 runtimeData.messageList = list
             }
+            // 消息后处理
+            // PS: 部分消息类型可能需要获取附加内容，在此处进行处理
+            runtimeData.messageList.forEach((item) => {
+                sendMsgAppendInfo(item)
+            })
         }
         // 将消息列表的最后一条 raw_message 保存到用户列表中
         const lastMsg = runtimeData.messageList[runtimeData.messageList.length - 1]

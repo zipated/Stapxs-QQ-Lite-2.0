@@ -365,8 +365,15 @@ input {
     height: 50px;
     width: 50px;
 }
+.more-detail > div.space {
+    background: transparent !important;
+    flex: 1;
+}
 .more-detail > div:first-child {
     margin-left: 20px;
+}
+.more-detail > div:last-child {
+    margin-right: 20px;
 }
 .more-detail > div > svg {
     color: var(--color-font-1);
@@ -1245,6 +1252,36 @@ input {
 .jin-pan-load > svg {
     color: var(--color-font);
     width: 1rem;
+}
+
+.search-tag {
+    background: var(--color-card-1);
+    margin: 0 20px;
+    transition: all .3s;
+    align-items: center;
+    flex-direction: row;
+    border-radius: 7px;
+    overflow: hidden;
+    display: flex;
+    height: 0;
+}
+.search-tag.show {
+    margin: 10px 20px 10px 20px;
+    margin-top: 20px;
+    padding: 10px;
+    height: auto;
+}
+.search-tag svg {
+    color: var(--color-font-2);
+    margin-right: 10px;
+    height: 1rem;
+}
+.search-tag > span {
+    max-width: calc(100% - 2rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    flex: 1;
 }
 
 .replay-tag {

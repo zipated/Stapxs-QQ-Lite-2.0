@@ -42,7 +42,7 @@
             <span>{{ $t('loading') }}</span>
         </div>
         <!-- 消息显示区 -->
-        <div class="chat" @scroll="chatScroll" id="msgPan" style="scroll-behavior: smooth;">
+        <div v-if="!details[3].open" class="chat" @scroll="chatScroll" id="msgPan" style="scroll-behavior: smooth;">
             <div class="note note-nomsg" v-if="!runtimeData.tags.canLoadHistory">
                 <hr>
                 <a>{{ $t('chat_no_more_msg') }}</a>
@@ -51,6 +51,28 @@
             <NoticeBody v-if="tags.nowGetHistroy" :data="{sub_type: 'time', time: list[0].time}"></NoticeBody>
             <TransitionGroup name="msglist" tag="div">
                 <template v-for="(msg, index) in list">
+                    <!-- 时间戳 -->
+                    <NoticeBody v-if="isShowTime((list[index - 1] ? list[index - 1].time : undefined), msg.time)" :key="'notice-time-' + index" :data="{sub_type: 'time', time: msg.time}"></NoticeBody>
+                    <!-- 消息体 -->
+                    <MsgBody
+                        v-if="(msg.post_type === 'message' || msg.post_type === 'message_sent') && msg.message.length > 0"
+                        :key="msg.message_id"
+                        :data="msg"
+                        @scrollToMsg="scrollToMsg"
+                        @scrollButtom="imgLoadedScroll"
+                        @contextmenu.prevent="showMsgMeun($event, msg)"
+                        @touchstart="msgStartMove($event, msg)"
+                        @touchmove="msgOnMove"
+                        @touchend="msgMoveEnd($event, msg)">
+                    </MsgBody>
+                    <!-- 其他通知消息 -->
+                    <NoticeBody :id="uuid()" v-if="msg.post_type === 'notice'" :key="'notice-' + index" :data="msg"></NoticeBody>
+                </template> 
+            </TransitionGroup>
+        </div>
+        <div v-else class="chat" id="msgPan" style="scroll-behavior: smooth;">
+            <TransitionGroup name="msglist" tag="div">
+                <template v-for="(msg, index) in tags.search.list">
                     <!-- 时间戳 -->
                     <NoticeBody v-if="isShowTime((list[index - 1] ? list[index - 1].time : undefined), msg.time)" :key="'notice-time-' + index" :data="{sub_type: 'time', time: msg.time}"></NoticeBody>
                     <!-- 消息体 -->
@@ -126,6 +148,12 @@
                         </div>
                     </Transition>
                 </div>
+                <!-- 搜索指示器 -->
+                 <div :class="details[3].open ? 'search-tag show' : 'search-tag'">
+                    <font-awesome-icon :icon="['fas', 'search']" />
+                    <span>{{ $t('chat_fun_search_tag') }}</span>
+                    <div @click="closeSearch"><font-awesome-icon :icon="['fas', 'xmark']" /></div>
+                </div>
                 <!-- 回复指示器 -->
                 <div :class="tags.isReply ? 'replay-tag show' : 'replay-tag'">
                     <font-awesome-icon :icon="['fas', 'reply']" />
@@ -164,6 +192,9 @@
                         <font-awesome-icon :icon="['fas', 'bomb']" /></div>
                     <div :title="$t('chat_fun_menu_jin')" v-if="chat.show.type === 'group'" @click="showJin">
                         <font-awesome-icon :icon="['fas', 'star']" /></div>
+                    <div class="space"></div>
+                    <div :title="$t('chat_fun_menu_search')" @click="openSearch">
+                        <font-awesome-icon :icon="['fas', 'search']" /></div>    
                 </div>
             </div>
             <!-- 消息发送框 -->
@@ -184,7 +215,8 @@
                             time: Intl.DateTimeFormat(trueLang, getTimeConfig(new Date(chat.info.me_info.shut_up_timestamp * 1000))).format(new Date(chat.info.me_info.shut_up_timestamp * 1000)) }) : ''"
                             @paste="addImg"
                             @keyup="mainKeyUp"
-                            @click="selectSQIn()">
+                            @click="selectSQIn()"
+                            @input="searchMessage">
                         <textarea
                             v-else
                             id="main-input"
@@ -194,11 +226,13 @@
                             @paste="addImg"
                             @keydown="mainKey"
                             @keyup="mainKeyUp"
-                            @click="selectSQIn()">
+                            @click="selectSQIn()"
+                            @input="searchMessage">
                         </textarea>
                     </form>
                     <div @click="sendMsg">
-                        <font-awesome-icon :icon="['fas', 'angle-right']" />
+                        <font-awesome-icon v-if="details[3].open" :icon="['fas', 'search']" />
+                        <font-awesome-icon v-else :icon="['fas', 'angle-right']" />
                     </div>
                 </div>
             </div>
@@ -384,7 +418,7 @@ import NoticeBody from '@/components/NoticeBody.vue'
 import FacePan from '@/components/FacePan.vue'
 import imageCompression from 'browser-image-compression'
 
-import { defineComponent, markRaw } from 'vue'
+import { defineComponent, markRaw, reactive } from 'vue'
 import { v4 as uuid } from 'uuid'
 import { downloadFile, loadHistory as loadHistoryFirst } from '@/function/utils/appUtil'
 import { getTimeConfig, getTrueLang } from '@/function/utils/systemUtil'
@@ -439,6 +473,10 @@ export default defineComponent({
                     respond: false,
                     showRespond: true
                 },
+                search: {
+                    userId: -1,
+                    list: reactive(this.list)
+                },
                 msgTouch: {
                     x: -1,
                     y: -1,
@@ -446,7 +484,7 @@ export default defineComponent({
                     onMove: 'no'
                 }
             },
-            details: [{ open: false }, { open: false }, { open: false }],
+            details: [{ open: false }, { open: false }, { open: false }, { open: false }],
             msgMenus: [],
             NewMsgNum: 0,
             msg: '',
@@ -1382,6 +1420,10 @@ export default defineComponent({
          * 发送消息
          */
         sendMsg () {
+            // 在搜索消息的时候不允许发送消息
+            if(this.details[3].open) {
+                return
+            }
             // 关闭所有其他的已打开的更多功能弹窗
             this.details.forEach((item) => {
                 item.open = false
@@ -1642,6 +1684,29 @@ export default defineComponent({
                 }, 'getJin' )
             }
             this.tags.showMoreDetail = !this.tags.showMoreDetail
+        },
+
+        searchMessage(event: Event) {
+            if(this.details[3].open) {
+                const value = (event.target as HTMLInputElement).value
+                if(value.length == 0) {
+                    this.tags.search.list = reactive(this.list)
+                } else if(value.length > 0) {
+                    this.tags.search.list = this.list.filter((item: any) => {
+                        const rawMessage = getMsgRawTxt(item.message)
+                        return rawMessage.indexOf(value) !== -1
+                    })
+                }
+            }
+        },
+        openSearch() {
+            this.details[3].open = !this.details[3].open
+            this.tags.showMoreDetail = !this.tags.showMoreDetail
+        },
+        closeSearch() {
+            this.details[3].open = !this.details[3].open
+            this.msg = ''
+            this.tags.search.list = reactive(this.list)
         },
 
         /**

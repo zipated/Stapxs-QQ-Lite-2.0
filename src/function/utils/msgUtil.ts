@@ -434,3 +434,9 @@ export function updateLastestHistory(item: UserFriendElem & UserGroupElem) {
         'getChatHistoryOnMsg_' + id
     )
 }
+
+export function sendMsgAppendInfo(msg: any) {
+    msg.message.forEach((item: any) => {
+        // TODO
+    })
+}
