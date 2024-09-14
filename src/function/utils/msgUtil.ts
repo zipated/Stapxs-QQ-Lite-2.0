@@ -55,7 +55,7 @@ export function getMsgData(name: string, msg: { [key: string]: any }, map: strin
                     back = backList
                 }
             } catch (ex) {
-                logger.error(`解析消息 JSON 错误：${name} -> ${map}`)
+                logger.error(ex as Error, `解析消息 JSON 错误：${name} -> ${map}`)
                 // eslint-disable-next-line
                 console.log(ex)
             }
@@ -66,7 +66,7 @@ export function getMsgData(name: string, msg: { [key: string]: any }, map: strin
                     try {
                         data[key] = jp.query(msg, replaceJPValue(map[key]))[0]
                     } catch (ex) {
-                        logger.error(`解析 JSON 错误：${name} -> ${map}`)
+                        logger.error(ex as Error, `解析 JSON 错误：${name} -> ${map}`)
                         // eslint-disable-next-line
                         console.log(ex)
                     }
@@ -228,7 +228,7 @@ export function getMsgRawTxt(message: [{ [key: string]: any }]): string {
                 }
             }
         } catch (error) {
-            logger.error('解析消息短格式错误：' + JSON.stringify(message[i]))
+            logger.error(error as Error, '解析消息短格式错误：' + JSON.stringify(message[i]))
             // eslint-disable-next-line
             console.log(error)
         }
@@ -436,7 +436,7 @@ export function updateLastestHistory(item: UserFriendElem & UserGroupElem) {
 }
 
 export function sendMsgAppendInfo(msg: any) {
-    msg.message.forEach((item: any) => {
+    msg.message.forEach(() => {
         // TODO
     })
 }

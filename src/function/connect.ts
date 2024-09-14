@@ -158,7 +158,7 @@ export class Connector {
             }
         }
         
-        logger.error($t('pop_log_con_fail') + ': ' + code)
+        logger.error(null, $t('pop_log_con_fail') + ': ' + code)
         login.status = false
     }
 

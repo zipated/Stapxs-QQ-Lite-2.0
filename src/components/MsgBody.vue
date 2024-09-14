@@ -350,7 +350,7 @@ export default defineComponent({
                     })
                     .catch(error => {
                         if (error) {
-                            logger.error(this.$t('chat_link_view_fail') + ': ' + fistLink)
+                            logger.error(error as Error, this.$t('chat_link_view_fail') + ': ' + fistLink)
                             // UM：上传使用链接预览功能的事件用于分析（失败）
                             const reg1 = /\/\/(.*?)\//g
                             const getDom = fistLink.match(reg1)

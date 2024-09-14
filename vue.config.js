@@ -15,7 +15,7 @@ module.exports = {
     transpileDependencies: true,
     productionSourceMap: false,
     configureWebpack: {
-        devtool: 'source-map',
+        devtool: process.env.NODE_ENV == 'development' ? 'eval-source-map' : false,
         module: {
             rules: [
                 {

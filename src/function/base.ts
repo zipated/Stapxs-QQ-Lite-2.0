@@ -50,8 +50,12 @@ export class Logger {
     info(args: string) {
         this.add(LogType.INFO, args)
     }
-    error(args: string) {
-        this.add(LogType.ERR, args)
+    error(e: Error | null, args: string) {
+        if(e) {
+        this.add(LogType.ERR, args + '\n' + e.stack?.replaceAll('webpack-internal:///./', 'webpack-internal:///'))
+        } else {
+            this.add(LogType.ERR, args)
+        }
     }
     debug(args: string) {
         this.add(LogType.DEBUG, args)
@@ -63,8 +67,28 @@ export class Logger {
      * @param args 日志内容
      */
     private print(type: LogType, args: string) {
+        const error = new Error()
+        // 从调用栈中获取调用者信息
+        let from = ''
+        const stack = error.stack
+            if(stack) {
+            const stackArr = stack.split('\n')
+            // 找到第一个不是 at Logger 开头的调用者信息
+            for (let i = 1; i < stackArr.length; i++) {
+                if (!stackArr[i].includes('at Logger')) {
+                    // 取出链接部分，去除括号
+                    from = stackArr[i].replace(/\(|\)/g, '').split(' ').pop() || ''
+                    from = from.replace('webpack-internal:///./', 'webpack-internal:///')
+                    if(from.startsWith('webpack-internal:///node_modules')) {
+                        // node_modules 部分路径太长，一般也不需要；所以只显示 node_modules
+                        from = 'node_modules'
+                    }
+                    break
+                }
+            }
+        }
         // eslint-disable-next-line no-console
-        console.log(`%c${LogType[type]}%c ${args}`, `background:#${this.logTypeInfo[type][0]};color:#${this.logTypeInfo[type][1]};border-radius:7px 0 0 7px;display:inline-block;padding:2px 4px 2px 7px;`, '');
+        console.log(`%c${LogType[type]}%c${from}%c\n> ${args}`, `background:#${this.logTypeInfo[type][0]};color:#${this.logTypeInfo[type][1]};border-radius:7px 0 0 7px;padding:2px 4px 2px 7px;margin-bottom:7px;`, 'background:#e3e8ec;color:#000;padding:2px 7px 4px 4px;border-radius:0 7px 7px 0;margin-bottom:7px;', '');
     }
 }
 

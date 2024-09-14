@@ -62,7 +62,7 @@ export function parse(str: string) {
             noticeFunctions[type](type, msg)
         }
     } catch (e) {
-        logger.error(`处理消息或通知错误 - ${name}：${(e as Error).message}`)
+        logger.error(e as Error, `处理消息或通知错误 - ${name}：${(e as Error).message}`)
     }
 }
 
@@ -1156,7 +1156,7 @@ function revokeMsg(name: string, msg: any) {
             }
         }
     } else {
-        logger.error(app.config.globalProperties.$t('log_revoke_miss'))
+        logger.error(null, app.config.globalProperties.$t('log_revoke_miss'))
     }
     // 尝试撤回通知
     const notificationIndex = notificationList.findIndex((item) => {
