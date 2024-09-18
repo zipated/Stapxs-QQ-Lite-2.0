@@ -547,14 +547,15 @@ textarea:focus {
     width: 1rem !important;
 }
 .msg-menu-body > div > div > svg {
+    transition: color .3s, opacity .3s;
     color: var(--color-font-1);
-    transition: fill .3s;
     margin-top: 7px;
     height: 1rem;
     width: 1rem;
 }
 .msg-menu-body > div:hover > div > svg {
     color: var(--color-font-r);
+    opacity: 1;
 }
 .msg-menu-body > div > a {
     color: var(--color-font);
@@ -1126,7 +1127,7 @@ textarea:focus {
     }
     .friend-list > div:last-child.open > div > div,
     .friend-list > div:last-child.open > div.list > div > div > div {
-        display: block !important;
+        display: block;
     }
     .friend-body {
         background: transparent !important;
@@ -1154,9 +1155,11 @@ textarea:focus {
     .friend-body > div:nth-child(1) {
         transform: scaleY(1) !important;
         position: absolute;
+        display: none !important;
     }
     .friend-body > div:nth-child(1).new {
         border-radius: 100%;
+        display: block !important;
         height: 15px;
         width: 15px;
         right: -3px;

@@ -206,7 +206,7 @@ const noticeFunctions = {
                     if (user)
                         userInfo.push({
                             txt: `<span>${user.nickname}</span>`,
-                            isMe: true
+                            isMe: false
                         })
                 }
             })
@@ -1156,7 +1156,7 @@ function revokeMsg(name: string, msg: any) {
             }
         }
     } else {
-        logger.error(null, app.config.globalProperties.$t('log_revoke_miss'))
+        logger.error(null, '没有找到这条被撤回的消息 ……')
     }
     // 尝试撤回通知
     const notificationIndex = notificationList.findIndex((item) => {
