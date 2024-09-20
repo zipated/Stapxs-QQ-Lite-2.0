@@ -320,7 +320,7 @@ export function parseCQ(data: any) {
             }
         })
     }
-    logger.debug(app.config.globalProperties.$t('log_cq_msg_parsed') + ': ' + JSON.stringify(back))
+    logger.debug('解析 CQ 消息结果: ' + JSON.stringify(back))
     data.message = back
     return data
 }
@@ -341,7 +341,7 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
                 nickname: runtimeData.loginInfo.nickname
             },
             message: JSON.parse(JSON.stringify(msg)),
-            raw_message: app.config.globalProperties.$t('chat_msg_sending'),
+            raw_message: app.config.globalProperties.$t('发送中'),
         } as { [key: string]: any }
         if (showMsg.message_type == 'group') {
             showMsg.group_id = runtimeData.chatInfo.show.id

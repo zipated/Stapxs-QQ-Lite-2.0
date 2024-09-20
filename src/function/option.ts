@@ -19,7 +19,7 @@ import { markRaw, defineAsyncComponent } from 'vue'
 import { Logger, LogType, PopInfo, PopType } from './base'
 import { runtimeData } from './msg'
 import { initUITest, loadSystemThemeColor, loadWinColor, updateWinColor } from '@/function/utils/appUtil'
-import { getTrueLang } from '@/function/utils/systemUtil'
+import { getPortableFileLang, getTrueLang } from '@/function/utils/systemUtil'
 
 let cacheConfigs: { [key: string]: any }
 
@@ -126,19 +126,17 @@ function changeInitialScale(value: number) {
  * @param name 语言文件名（不是实际语言代码）
  */
 function setLanguage(name: string) {
-    // 加载主语言
-    import(`../assets/l10n/${name}.json`).then(lang => {
-        i18n.global.setLocaleMessage(name, lang)
-    })
+    // 加载语言文件
+    const lang = getPortableFileLang(name)
+    i18n.global.setLocaleMessage(name, lang)
     app.config.globalProperties.$i18n.locale = name
     // 检查是否设置了备选语言
     let get = false
     for(let i=0; i<languageConfig.length; i++) {
         if(languageConfig[i].value == name && (languageConfig[i] as any).fallback) {
             const fbname = (languageConfig[i] as any).fallback
-            import(`../assets/l10n/${fbname}.json`).then(lang => {
-                i18n.global.setLocaleMessage(fbname, lang)
-            })
+            const fbLang = getPortableFileLang(fbname)
+            i18n.global.setLocaleMessage(fbname, fbLang)
             get = true
             app.config.globalProperties.$i18n.fallbackLocale = fbname
             break
@@ -497,20 +495,20 @@ export function runASWEvent(event: Event) {
     if(sender.dataset.reload == 'true') {
         const $t = app.config.globalProperties.$t
 
-        let html = '<span>' + $t('option_dev_restart_tip1') + '</span>'
+        let html = '<span>' + $t('此操作将在重启应用后生效，现在就要重启吗？') + '</span>'
 
         // 模糊模式的特殊情况
         if(sender.title == 'vibrancy_mode') {
-            html += '<span>' + $t('option_dev_restart_tip2') + '</span>'
+            html += '<span>' + $t('此操作仅供娱乐，将会在下次关闭时恢复。') + '</span>'
         }
 
         const popInfo = {
             svg: 'trash-arrow-up',
             html: html,
-            title: $t('option_dev_restart'),
+            title: $t('重启应用'),
             button: [
                 {
-                    text: app.config.globalProperties.$t('btn_yes'),
+                    text: app.config.globalProperties.$t('确定'),
                     fun: () => {
                         if(runtimeData.tags.isElectron) {
                             if (runtimeData.reader) {
@@ -522,7 +520,7 @@ export function runASWEvent(event: Event) {
                     }
                 },
                 {
-                    text: app.config.globalProperties.$t('btn_no'),
+                    text: app.config.globalProperties.$t('取消'),
                     master: true,
                     fun: () => { runtimeData.popBoxList.shift() }
                 }

@@ -78,6 +78,13 @@
 .message-body.me a:link::before {
     text-shadow: 0 0 0 var(--color-font-1-r);
 }
+.message-body > span {
+    font-size: 0.7rem;
+    background: var(--color-main);
+    color: #fff;
+    border-radius: 10px;
+    padding: 1px 4px;
+}
 .message-body > a {
     color: var(--color-font-1);
     font-size: 0.9rem;

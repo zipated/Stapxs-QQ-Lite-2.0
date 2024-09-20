@@ -25,9 +25,11 @@ import './assets/css/msg.css'
 import './assets/css/options.css'
 import './assets/css/sys_notice.css'
 
-import zh from './assets/l10n/zh-CN.json'
+import { getPortableFileLang } from './function/utils/systemUtil'
 
 /* eslint-disable no-console */
+
+const zh = getPortableFileLang('zh-CN')
 
 // 载入 l10n
 const messages = { 'zh-CN': zh }

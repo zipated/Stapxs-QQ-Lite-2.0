@@ -23,7 +23,11 @@ module.exports = {
                     use: 'raw-loader',
                 },
                 {
-                    test: /\.yaml$/,
+                    test: /\.po$/i,
+                    use: 'raw-loader',
+                },
+                {
+                    test: /\.yaml$/i,
                     use: 'js-yaml-loader',
                 }
             ]

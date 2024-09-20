@@ -127,6 +127,7 @@ export interface GroupMemberInfoElem {
     role: string,
     sex: string,
     shutup_time: number,
+    py_start?: string
 }
 
 export interface SQCodeElem {

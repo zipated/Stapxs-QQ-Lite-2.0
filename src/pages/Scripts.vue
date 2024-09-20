@@ -10,11 +10,11 @@
         <div class="list">
             <header>
                 <div>
-                    <span>{{ $t('title_scripts') }}</span>
+                    <span>{{ $t('脚本') }}</span>
                     <font-awesome-icon :icon="['fas', 'globe']" style="margin-right: 15px;" />
                     <font-awesome-icon @click="cnewScript" :icon="['fas', 'add']" />
                 </div>
-                <span>{{ $t('scripts_tip') }}</span>
+                <span>{{ $t('脚本功能提供了一种简便的自动化操作方式，能够执行如自动回复等任务。') }}</span>
             </header>
             <div class="list-body">
                 <div v-for="(item, index) in savedList"
@@ -25,13 +25,13 @@
                         <div style="flex: 1" @click="selectItem(item)">
                             <h2>
                                 {{ item.title }}
-                                <span style="font-size: 0.7rem;" v-if="item.enabled">{{ $t('statue_enabled') }}</span>
-                                <span style="font-size: 0.7rem;" v-else>{{ $t('statue_disabled') }}</span>
+                                <span style="font-size: 0.7rem;" v-if="item.enabled">{{ $t('已启用') }}</span>
+                                <span style="font-size: 0.7rem;" v-else>{{ $t('已禁用') }}</span>
                             </h2>
                             <span>
                                 <font-awesome-icon v-if="item.inner" style="margin-right: 5px;" :icon="['fas', 'star']" />
                                 <font-awesome-icon :icon="['fas', 'code-branch']" />
-                                {{ $t('scripts_run_' + item.condition) }}{{ $t('scripts_run_trigger') }}
+                                {{ $t('脚本类型_' + item.condition) }}{{ $t('触发') }}
                             </span>
                         </div>
                         <div :style="item.enabled ? 'color: #ed6a5e;' : ''" @click="item.enabled = !item.enabled;updateSave();">
@@ -44,23 +44,23 @@
         <div class="editor-main" v-if="editScript">
             <div v-if="select?.inner" class="inner">
                 <font-awesome-icon :icon="['fas', 'info']" />
-                <span>{{ $t('a_inner_script') }}</span>
+                <span>{{ $t('这是个内嵌示例脚本，你可以修改它并保存使用。') }}</span>
             </div>
             <div class="save-controller">
                 <font-awesome-icon :icon="['fas', 'code-branch']" />
-                <span>{{ $t('scripts_run_condition') }}</span>
+                <span>{{ $t('条件') }}</span>
                 <div class="opt-item">
                     <select v-model="condition">
-                        <option value="message">{{ $t('scripts_run_message') }}</option>
-                        <option value="userFlush">{{ $t('scripts_run_userFlush') }}</option>
-                        <option value="newNotice">{{ $t('scripts_run_newNotice') }}</option>
+                        <option value="message">{{ $t('脚本类型_message') }}</option>
+                        <option value="userFlush">{{ $t('脚本类型_userFlush') }}</option>
+                        <option value="newNotice">{{ $t('脚本类型_newNotice') }}</option>
                     </select>
                 </div>
                 <div style="flex: 1;"></div>
                 <button class="ss-button"
                     @click="save">
                     <font-awesome-icon :icon="['fas', 'save']" />
-                    <span>{{ $t('scripts_run_save') }}</span>
+                    <span>{{ $t('保存') }}</span>
                 </button>
                 <button class="ss-button" v-if="!select?.inner"
                     @click="editScript = false;remove(select?.title);">
@@ -74,7 +74,7 @@
         <div class="editor-main notice" v-else>
             <div class="ss-card">
                 <font-awesome-icon :icon="['fas', 'info-circle']" />
-                <span>{{ $t('scripts_run_notice') }}</span>
+                <span>{{ $t('脚本方法将限制在当前页面内，你可以参考当前页面的源代码来了解可用的方法可用。') }}</span>
                 <button class="ss-button" style="width: 100%; margin-top: 10px;"
                     @click="openLink('https://github.com/Stapxs/Stapxs-QQ-Lite-2.0/blob/next/src/pages/Scripts.vue')">
                     Github
@@ -193,7 +193,7 @@ export default defineComponent({
             // title 获取 script 第二行 title: 后的内容
             const title = this.script.split('\n')[1].split(':')[1].trim()
             if(title == '') {
-                new PopInfo().add(PopType.ERR, this.$t('scripts_run_title_err'))
+                new PopInfo().add(PopType.ERR, this.$t('脚本标题已存在'))
                 return
             }
             if(this.savedList.find((item) => item.title == title)) {

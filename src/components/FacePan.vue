@@ -24,7 +24,7 @@
                         :key="'stickers-' + index" :src="url">
                     <div v-show="runtimeData.stickerCache && runtimeData.stickerCache.length <= 0" class="ss-card">
                         <font-awesome-icon :icon="['fas', 'face-dizzy']" />
-                        <span>{{ $t('chat_face_pan_none').split('|')[0] }}</span>
+                        <span>{{ $t('一无所有') }}</span>
                     </div>
                 </div>
             </div>

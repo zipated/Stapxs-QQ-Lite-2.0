@@ -1,6 +1,6 @@
 <template>
     <div class="update-info">
-        <span>{{ updated ? $t('update_history') : $t('new_update') }}</span>
+        <span>{{ updated ? $t('更新记录') : $t('新版本') }}</span>
         <a>{{ version }}</a>
         <div class="title">
             <img :src="user.avatar">

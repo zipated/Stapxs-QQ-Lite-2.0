@@ -360,7 +360,7 @@ export default defineComponent({
                         }
                     }
                 } else {
-                    popInfo.add(PopType.INFO, this.$t('pop_chat_image_toooo_big'))
+                    popInfo.add(PopType.INFO, this.$t('图片过大'))
                 }
             }
         }

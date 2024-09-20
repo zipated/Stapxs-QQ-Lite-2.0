@@ -122,7 +122,7 @@ const noticeFunctions = {
         switch (msg.sub_type) {
             case 'increase': {
                 // 添加系统通知
-                new PopInfo().add(PopType.INFO, app.config.globalProperties.$t('pop_friend_added', { name: msg.nickname }))
+                new PopInfo().add(PopType.INFO, app.config.globalProperties.$t('添加好友 {name} 成功！', { name: msg.nickname }))
                 break
             }
             case 'decrease': {
@@ -195,7 +195,7 @@ const noticeFunctions = {
             userIds.forEach((id) => {
                 if (id == runtimeData.loginInfo.uin) {
                     userInfo.push({
-                        txt: $t('you'),
+                        txt: $t('你'),
                         isMe: true
                     })
                 } else {
@@ -363,15 +363,35 @@ const msgFunctons = {
      */
     getGroupMemberList: (name: string, msg: { [key: string]: any }) => {
         const data = msg.data as GroupMemberInfoElem[]
+        data.forEach((item: any) => {
+            const name = item.card ? item.card : item.nickname
+            // 获取拼音首字母
+            const first = name.substring(0, 1)
+            const pyConfig = { style: 0 } as IPinyinOptions
+            item.py_start = (pinyin(first, pyConfig).join('')).substring(0, 1).toUpperCase()
+        })
         // 筛选列表
         const adminList = data.filter((item: GroupMemberInfoElem) => {
             return item.role === 'admin'
+        })
+        adminList.sort((a, b) => { 
+            if(a.py_start && b.py_start) {
+                return a.py_start.charCodeAt(0) - b.py_start.charCodeAt(0)
+            }
+            return 0
         })
         const createrList = data.filter((item: GroupMemberInfoElem) => {
             return item.role === 'owner'
         })
         const memberList = data.filter((item: GroupMemberInfoElem) => {
             return item.role !== 'admin' && item.role !== 'owner'
+        })
+        memberList.sort((a, b) => { 
+            if(a.py_start && b.py_start) {
+                return a.py_start.charCodeAt(0) - b.py_start.charCodeAt(0)
+            }
+            return 0
+            // return a.user_id - b.user_id
         })
         // 拼接列表
         const back = createrList.concat(adminList.concat(memberList))
@@ -416,7 +436,7 @@ const msgFunctons = {
      */
     getForwardMsg: (name: string, msg: { [key: string]: any }) => {
         if (msg.error !== null && (msg.error !== undefined || msg.status === 'failed')) {
-            popInfo.add(PopType.ERR, app.config.globalProperties.$t('pop_get_forward_fail'))
+            popInfo.add(PopType.ERR, app.config.globalProperties.$t('获取合并转发消息失败'))
         } else {
             let list = getMsgData('forward_message_list', msg, msgPath.forward_msg)
             list = getMessageList(list)
@@ -431,7 +451,7 @@ const msgFunctons = {
      */
     sendMsgBack: (name: string, msg: { [key: string]: any }, echoList: string[]) => {
         if (msg.error !== null && msg.error !== undefined) {
-            popInfo.add(PopType.ERR, app.config.globalProperties.$t('pop_chat_send_msg_err', { code: msg.error }))
+            popInfo.add(PopType.ERR, app.config.globalProperties.$t('发送消息失败（{code}），可能是由于禁言或者对象无效（冻结、解散）', { code: msg.error }))
         } else {
             if (msg.message_id == undefined) {
                 msg.message_id = msg.data.message_id
@@ -446,7 +466,7 @@ const msgFunctons = {
             }
             if (echoList[1] == 'forward') {
                 // PS：这儿写是写了转发成功，事实上不确定消息有没有真的发送出去（x
-                popInfo.add(PopType.INFO, app.config.globalProperties.$t('chat_chat_forward_success'))
+                popInfo.add(PopType.INFO, app.config.globalProperties.$t('消息已转发'))
             } else if (echoList[1] == 'uuid') {
                 const messageId = echoList[2]
                 // 去 messagelist 里找到这条消息
@@ -521,7 +541,7 @@ const msgFunctons = {
         if (data.ec !== 0) {
             popInfo.add(
                 PopType.ERR,
-                app.config.globalProperties.$t('pop_chat_chat_info_load_file_err', { code: xss(div.innerHTML) })
+                app.config.globalProperties.$t('加载群文件失败（{code}）', { code: xss(div.innerHTML) })
             )
         } else {
             runtimeData.chatInfo.info.group_files = data
@@ -716,7 +736,7 @@ const msgFunctons = {
                 if (echoList[1] !== msgInfo.message_id.toString()) {
                     // 返回的不是这条消息，重新请求
                     // popInfo.add(PopType.ERR,
-                    //     app.config.globalProperties.$t('pop_chat_get_msg_err') + ' ( A' + echoList[2] + ' )')
+                    //     app.config.globalProperties.$t('获取消息失败，正在重试') + ' ( A' + echoList[2] + ' )')
                     setTimeout(() => {
                         Connector.send(
                             runtimeData.jsonMap.get_message.name ?? 'get_msg',
@@ -738,13 +758,13 @@ const msgFunctons = {
                     }
                 }
             } else {
-                popInfo.add(PopType.ERR, app.config.globalProperties.$t('pop_chat_get_msg_err_fin'))
+                popInfo.add(PopType.ERR, app.config.globalProperties.$t('获取消息失败'))
             }
         } else {
             if (Number(echoList[2]) < 5) {
                 // 看起来没获取到，再试试
                 // popInfo.add(PopType.ERR,
-                //     app.config.globalProperties.$t('pop_chat_get_msg_err') + ' ( B' + echoList[2] + ' )')
+                //     app.config.globalProperties.$t('获取消息失败，正在重试') + ' ( B' + echoList[2] + ' )')
                 setTimeout(() => {
                     Connector.send(
                         runtimeData.jsonMap.get_message.name ?? 'get_msg',
@@ -753,7 +773,7 @@ const msgFunctons = {
                     )
                 }, 5000)
             } else {
-                popInfo.add(PopType.ERR, app.config.globalProperties.$t('pop_chat_get_msg_err_fin'))
+                popInfo.add(PopType.ERR, app.config.globalProperties.$t('获取消息失败'))
             }
         }
     },
@@ -994,7 +1014,7 @@ function saveUser(msg: { [key: string]: any }, type: string) {
         updateMenu({
             id: 'userList',
             action: 'label',
-            value: app.config.globalProperties.$t('menu_user_list', { count: runtimeData.userList.length })
+            value: app.config.globalProperties.$t('用户列表（{count}）', { count: runtimeData.userList.length })
         })
     }
     // 如果获取次数大于 0 并且是双数，刷新一下历史会话
@@ -1044,7 +1064,7 @@ function saveClassInfo(list: { class_id: number, class_name: string, sort_id?: n
 
 function saveMsg(msg: any, append = undefined as undefined | string) {
     if (msg.error !== null && (msg.error !== undefined || msg.status === 'failed')) {
-        popInfo.add(PopType.ERR, app.config.globalProperties.$t('pop_chat_load_msg_err', { code: msg.error | msg.retcode }))
+        popInfo.add(PopType.ERR, app.config.globalProperties.$t('加载消息失败（{code}）', { code: msg.error | msg.retcode }))
     } else {
         let list = getMsgData('message_list', msg, msgPath.message_list)
         list = getMessageList(list)
@@ -1380,7 +1400,7 @@ function newMsg(name: string, data: any) {
                     const user = {
                         user_id: sender,
                         // 因为临时消息没有返回昵称
-                        nickname: app.config.globalProperties.$t('chat_temp'),
+                        nickname: app.config.globalProperties.$t('临时会话'),
                         remark: data.sender.user_id,
                         new_msg: true,
                         message_id: data.message_id,
