@@ -1320,7 +1320,7 @@ function newMsg(name: string, data: any) {
                 raw = raw === '' ? data.raw_message : raw
                 if (data.group_name === undefined) {
                     // 检查消息内是否有群名，去列表里寻找
-                    runtimeData.userList.filter((item) => {
+                    runtimeData.userList.forEach((item) => {
                         if (item.group_id == data.group_id) {
                             data.group_name = item.group_name
                         }

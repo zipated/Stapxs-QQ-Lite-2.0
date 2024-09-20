@@ -123,7 +123,7 @@
                 {{ $t('我们使用 Umami 对应用的使用情况进行分析，它将不会上传精确到用户的信息；你也可以在这儿控制分析功能的开关和额外分析项。同时我们的统计信息公开展示在此处以便查阅：') }}
                 <div class="ga-share">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 428 389.11"><circle cx="214.15" cy="181" r="171" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="20"></circle><path d="M413 134.11H15.29a15 15 0 0 0-15 15v15.3C.12 168 0 171.52 0 175.11c0 118.19 95.81 214 214 214 116.4 0 211.1-92.94 213.93-208.67 0-.44.07-.88.07-1.33v-30a15 15 0 0 0-15-15Z"></path></svg>
-                    <a :href="shareLink" target="_blank">{{ $t('Stapxs QQ Lite') }} {{ $t('访问统计信息') }}</a>
+                    <a target="_blank" @click="showStatus">{{ $t('Stapxs QQ Lite') }} {{ $t('访问统计信息') }}</a>
                 </div>
             </div>
             <div class="opt-item" v-if="runtimeData.sysConfig.close_ga !== true">
@@ -148,6 +148,7 @@
 import { defineComponent } from 'vue'
 import { runASWEvent as save } from '@/function/option'
 import { runtimeData } from '@/function/msg'
+import { openLink } from '@/function/utils/appUtil';
 
 export default defineComponent({
     name: 'ViewOptFunction',
@@ -156,8 +157,7 @@ export default defineComponent({
             runtimeData: runtimeData,
             save: save,
             ndt: 0,
-            ndv: false,
-            shareLink: process.env.VUE_APP_MU_SHARE
+            ndv: false
         }
     },
     methods: {
@@ -182,6 +182,11 @@ export default defineComponent({
                     ]
                 }
                 runtimeData.popBoxList.push(popInfo)
+            }
+        },
+        showStatus() {
+            if(process.env.VUE_APP_MU_SHARE) {
+                openLink(process.env.VUE_APP_MU_SHARE, true)
             }
         }
     }

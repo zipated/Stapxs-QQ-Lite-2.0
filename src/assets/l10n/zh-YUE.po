@@ -1057,7 +1057,7 @@ msgstr ""
 msgid "加载中"
 msgstr ""
 
-#: src/function/utils/msgUtil.ts:344
+#: src/function/utils/msgUtil.ts:345
 msgid "发送中"
 msgstr ""
 

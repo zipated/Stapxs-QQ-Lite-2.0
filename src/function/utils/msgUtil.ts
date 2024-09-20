@@ -110,14 +110,15 @@ export function buildMsgList(msgList: { [key: string]: any }): { [key: string]: 
         }
     })
     const result = {} as any
-    keys.reduce((acc, key, index) => {
+    let acc = result
+    keys.forEach((key, index) => {
         if (index === keys.length - 1) {
             acc[key] = msgList
         } else {
             acc[key] = {}
         }
-        return acc[key]
-    }, result)
+        acc = acc[key]
+    })
     return result
 }
 
@@ -352,26 +353,9 @@ export function sendMsgRaw(id: string, type: string, msg: string | { type: strin
     }
     // 检查消息体是否需要处理
     if (runtimeData.tags.msgType == BotMsgType.Array) {
-        const map = runtimeData.jsonMap.message_list.type
-        const path = jp.parse(map)
-        const keys = [] as string[]
-        path.forEach((item) => {
-            if (item.expression.value != '*' && item.expression.value != '$') {
-                keys.push(item.expression.value)
-            }
-        })
         if (msg && typeof msg != 'string') {
             const newMsg = [] as any
             msg.forEach((item) => {
-                const result = {} as any
-                keys.reduce((acc, key, index) => {
-                    if (index === keys.length - 1) {
-                        acc[key] = item
-                    } else {
-                        acc[key] = {}
-                    }
-                    return acc[key]
-                }, result)
                 const newResult = {} as { [key: string]: any }
                 newResult.type = item.type
                 newResult.data = item
