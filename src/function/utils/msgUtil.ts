@@ -198,12 +198,28 @@ export function parseMsgList(list: any, map: string, valueMap: { [key: string]: 
  * @param message 待处理的消息对象
  * @returns 字符串
  */
-export function getMsgRawTxt(message: [{ [key: string]: any }]): string {
+export function getMsgRawTxt(data: any): string {
+    const message = data.message as [{ [key: string]: any }]
+    const fromId = data.group_id ?? data.user_id
     let back = ''
     for (let i = 0; i < message.length; i++) {
         try {
             switch (message[i].type) {
-                case 'at': if (message[i].text == undefined) { break }
+                case 'at': if (message[i].text == undefined) {
+                    // 群内才可以 at，如果 at 消息中没有 text 字段
+                    // 尝试去群成员列表中找到对应的昵称，群成员列表只在当前打开的群才有
+                    if(runtimeData.chatInfo.show.id == fromId && runtimeData.chatInfo.info.group_members) {
+                        const user = runtimeData.chatInfo.info.group_members.find((item) => 
+                            item.user_id == message[i].qq
+                        )
+                        if(user) {
+                            back += '@' + (user.card && user.card != '' ? user.card : user.nickname)
+                            break
+                        }
+                    }
+                    back += '[提及]'
+                    break
+                }
                 // eslint-disable-next-line
                 case 'text': back += message[i].text.replaceAll('\n', ' ').replaceAll('\r', ' '); break
                 case 'face': back += '[表情]'; break

@@ -157,7 +157,7 @@
                 <!-- 回复指示器 -->
                 <div :class="tags.isReply ? 'replay-tag show' : 'replay-tag'">
                     <font-awesome-icon :icon="['fas', 'reply']" />
-                    <span>{{ selectedMsg === null ? '' : (selectedMsg.sender.nickname + ': ' + fun.getMsgRawTxt(selectedMsg.message))
+                    <span>{{ selectedMsg === null ? '' : (selectedMsg.sender.nickname + ': ' + fun.getMsgRawTxt(selectedMsg))
                     }}</span>
                     <div @click="cancelReply"><font-awesome-icon :icon="['fas', 'xmark']" /></div>
                 </div>
@@ -188,7 +188,7 @@
                         @click="details[1].open = !details[1].open, tags.showMoreDetail = false">
                         <font-awesome-icon :icon="['fas', 'face-laugh']" />
                     </div>
-                    <div :title="$t('chat_fun_menu_poke')" v-if="chat.show.type === 'user'" @click="sendPoke">
+                    <div :title="$t('戳一戳')" v-if="chat.show.type === 'user'" @click="sendPoke">
                         <font-awesome-icon :icon="['fas', 'bomb']" /></div>
                     <div :title="$t('精华消息')" v-if="chat.show.type === 'group'" @click="showJin">
                         <font-awesome-icon :icon="['fas', 'star']" /></div>
@@ -1058,7 +1058,7 @@ export default defineComponent({
             if (msg !== null) {
                 // 如果消息体没有简述消息的话 ……
                 if(!msg.raw_message) {
-                    msg.raw_message = getMsgRawTxt(msg.message)
+                    msg.raw_message = getMsgRawTxt(msg)
                 }
                 const popInfo = new PopInfo()
                 app.config.globalProperties.$copyText(msg.raw_message).then(() => {
@@ -1693,7 +1693,7 @@ export default defineComponent({
                     this.tags.search.list = reactive(this.list)
                 } else if(value.length > 0) {
                     this.tags.search.list = this.list.filter((item: any) => {
-                        const rawMessage = getMsgRawTxt(item.message)
+                        const rawMessage = getMsgRawTxt(item)
                         return rawMessage.indexOf(value) !== -1
                     })
                 }

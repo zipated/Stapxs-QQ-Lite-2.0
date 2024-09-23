@@ -15,8 +15,8 @@ msgstr "喵喵喵！这是喵星文化与宣传部提供的 Stapxs QQ Lite 默�
 
 #: src/pages/options/OptView.vue:15
 # 这是当前语言的名字，请自行修改
-msgid "中文（简体）"
-msgstr "中文（喵体）"
+msgid "简体中文"
+msgstr "简体中文（喵体）"
 
 #: src/pages/Friends.vue:23
 #: src/pages/Friends.vue:32
@@ -109,7 +109,7 @@ msgstr "喵喵"
 msgid "选择联系人开始聊天"
 msgstr "选择喵开始聊天"
 
-#: src/components/MsgBody.vue:83
+#: src/components/MsgBody.vue:86
 msgid "不支持的消息"
 msgstr "不支持的喵喵"
 
@@ -254,7 +254,7 @@ msgstr "没有找到匹配的猫猫"
 msgid "作者："
 msgstr "作者猫："
 
-#: src/components/MsgBody.vue:77
+#: src/components/MsgBody.vue:80
 msgid "（点击查看合并转发消息）"
 msgstr "（点击查看合并转发喵喵）"
 
@@ -282,7 +282,7 @@ msgstr "正在从喵星数据中心下载存档……"
 msgid "导入设置项失败"
 msgstr "啊哦，装载数据失败"
 
-#: src/components/MsgBody.vue:0
+#: src/components/MsgBody.vue:83
 msgid "（查看回复消息）"
 msgstr "（查看回复喵喵）"
 
@@ -290,7 +290,7 @@ msgstr "（查看回复喵喵）"
 msgid "群组"
 msgstr "喵圈"
 
-#: src/function/msg.ts:499
+#: src/function/msg.ts:466
 msgid "消息已转发"
 msgstr "喵喵已转发"
 
@@ -331,7 +331,7 @@ msgstr "移出喵圈"
 msgid "真的要将 {user} 移出群聊吗"
 msgstr "真的要将 {user} 移出喵圈吗"
 
-#: src/function/msg.ts:1383
+#: src/function/msg.ts:1403
 #: src/pages/Info.vue:194
 msgid "临时会话"
 msgstr "临时喵喵"
@@ -344,7 +344,7 @@ msgstr "添加喵友 {name} 成功！"
 msgid "来自群聊：{group}"
 msgstr "来自 {group} 喵圈"
 
-#: src/function/msg.ts:419
+#: src/function/msg.ts:439
 msgid "获取合并转发消息失败"
 msgstr "获取合并转发喵喵失败"
 
@@ -373,7 +373,7 @@ msgstr "还没有连接到猫星耶"
 msgid "啊吧啊吧（智慧）"
 msgstr "好奇心害死猫！"
 
-#: src/components/MsgBody.vue:422
+#: src/components/MsgBody.vue:426
 msgid "（获取回复消息失败）"
 msgstr "（获取回复喵喵失败）"
 
@@ -401,7 +401,7 @@ msgstr "请求加为喵友"
 msgid "邀请你加入群聊"
 msgstr "邀请你加入喵圈"
 
-#: src/components/MsgBody.vue:191
+#: src/components/MsgBody.vue:195
 msgid "全体成员"
 msgstr "全体猫猫"
 
@@ -417,7 +417,7 @@ msgstr "搜索已加载的喵喵"
 msgid "账户"
 msgstr "喵号"
 
-#: src/function/msg.ts:997
+#: src/function/msg.ts:1017
 #: src/function/utils/appUtil.ts:410
 msgid "用户列表（{count}）"
 msgstr "猫猫列表（{count}）"

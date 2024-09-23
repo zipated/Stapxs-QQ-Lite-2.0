@@ -746,7 +746,15 @@ export function loadJsonMap(name: string) {
             msgPath = require(`@/assets/pathMap/${name}.yaml`)
             logger.debug('加载映射表：' + msgPath.name)
             if(msgPath.redirect) {
-                msgPath = require(`@/assets/pathMap/${msgPath.redirect}.yaml`)
+                // eslint-disable-next-line
+                const newMsgPath = require(`@/assets/pathMap/${msgPath.redirect}.yaml`)
+                // 合并映射表
+                Object.keys(msgPath).forEach((key) => {
+                    if (key != 'name' && newMsgPath[key]) {
+                        newMsgPath[key] = msgPath[key]
+                    }
+                })
+                msgPath = newMsgPath
                 logger.debug('加载映射表（重定向）：' + msgPath.name)
             }
             runtimeData.jsonMap = msgPath

@@ -330,7 +330,7 @@ export default defineComponent({
                 }
                 const list = this.list.map((data: any) => {
                     return {
-                        text: getMsgRawTxt(data.message),
+                        text: getMsgRawTxt(data),
                         id: data.sender.user_id
                     }
                 })
@@ -343,7 +343,7 @@ export default defineComponent({
             } else {
                 // 只添加最后一条
                 (this.$refs.danmakuRef as any)?.push({
-                    text: getMsgRawTxt(this.list[this.list.length - 1].message),
+                    text: getMsgRawTxt(this.list[this.list.length - 1]),
                     id: this.list[this.list.length - 1].sender.user_id
                 })
             }

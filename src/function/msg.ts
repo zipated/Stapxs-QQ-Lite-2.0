@@ -415,7 +415,7 @@ const msgFunctons = {
             let list = getMsgData('message_list', msg, msgPath.message_list)
             if (list != undefined) {
                 list = parseMsgList(list, msgPath.message_list.type, msgPath.message_value)
-                const raw = getMsgRawTxt(list[0].message)
+                const raw = getMsgRawTxt(list[0])
                 const sender = list[0].sender
                 const time = list[0].time
                 // 更新消息列表
@@ -450,34 +450,30 @@ const msgFunctons = {
      * 发送消息后处理
      */
     sendMsgBack: (name: string, msg: { [key: string]: any }, echoList: string[]) => {
-        if (msg.error !== null && msg.error !== undefined) {
-            popInfo.add(PopType.ERR, app.config.globalProperties.$t('发送消息失败（{code}），可能是由于禁言或者对象无效（冻结、解散）', { code: msg.error }))
-        } else {
-            if (msg.message_id == undefined) {
-                msg.message_id = msg.data.message_id
-            }
-            if (msg.message_id !== undefined && Option.get('send_reget') !== true) {
-                // 请求消息内容
-                Connector.send(
-                    runtimeData.jsonMap.get_message.name ?? 'get_msg',
-                    { 'message_id': msg.message_id },
-                    'getSendMsg_' + msg.message_id + '_0'
-                )
-            }
-            if (echoList[1] == 'forward') {
-                // PS：这儿写是写了转发成功，事实上不确定消息有没有真的发送出去（x
-                popInfo.add(PopType.INFO, app.config.globalProperties.$t('消息已转发'))
-            } else if (echoList[1] == 'uuid') {
-                const messageId = echoList[2]
-                // 去 messagelist 里找到这条消息
-                runtimeData.messageList.forEach((item) => {
-                    if (item.message_id == messageId) {
-                        item.message_id = msg.message_id
-                        item.fake_msg = false
-                        return
-                    }
-                })
-            }
+        if (msg.message_id == undefined) {
+            msg.message_id = msg.data.message_id
+        }
+        if (msg.message_id !== undefined && Option.get('send_reget') !== true) {
+            // 请求消息内容
+            Connector.send(
+                runtimeData.jsonMap.get_message.name ?? 'get_msg',
+                { 'message_id': msg.message_id },
+                'getSendMsg_' + msg.message_id + '_0'
+            )
+        }
+        if (echoList[1] == 'forward') {
+            // PS：这儿写是写了转发成功，事实上不确定消息有没有真的发送出去（x
+            popInfo.add(PopType.INFO, app.config.globalProperties.$t('消息已转发'))
+        } else if (echoList[1] == 'uuid') {
+            const messageId = echoList[2]
+            // 去 messagelist 里找到这条消息
+            runtimeData.messageList.forEach((item) => {
+                if (item.message_id == messageId) {
+                    item.message_id = msg.message_id
+                    item.fake_msg = false
+                    return
+                }
+            })
         }
     },
 
@@ -966,7 +962,11 @@ function saveUser(msg: { [key: string]: any }, type: string) {
             // 构建分类
             if (type == 'friend') {
                 if (item.class_id != undefined && item.class_name) {
-                    groupNames[item.class_id] = item.class_name
+                    if(typeof item.class_name == 'string') {
+                        groupNames[item.class_id] = item.class_name
+                    } else {
+                        groupNames[item.class_id] = item.class_name[0]
+                    }
                 }
                 delete item.group_name
             } else {
@@ -1120,9 +1120,9 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
             })
             if (user) {
                 if (runtimeData.chatInfo.show.type == 'group') {
-                    user.raw_msg = lastMsg.sender.nickname + ': ' + getMsgRawTxt(lastMsg.message)
+                    user.raw_msg = lastMsg.sender.nickname + ': ' + getMsgRawTxt(lastMsg)
                 } else {
-                    user.raw_msg = getMsgRawTxt(lastMsg.message)
+                    user.raw_msg = getMsgRawTxt(lastMsg)
                 }
                 user.time = getViewTime(Number(lastMsg.time))
             }
@@ -1281,9 +1281,9 @@ function newMsg(name: string, data: any) {
                 runtimeData.onMsgList[index].message_id = data.message_id
                 if (data.message_type === 'group') {
                     const name = (data.sender.card && data.sender.card !== '') ? data.sender.card : data.sender.nickname
-                    runtimeData.onMsgList[index].raw_msg = name + ': ' + getMsgRawTxt(data.message)
+                    runtimeData.onMsgList[index].raw_msg = name + ': ' + getMsgRawTxt(data)
                 } else {
-                    runtimeData.onMsgList[index].raw_msg = getMsgRawTxt(data.message)
+                    runtimeData.onMsgList[index].raw_msg = getMsgRawTxt(data)
                 }
                 runtimeData.onMsgList[index].time = getViewTime(Number(data.time))
                 return true
@@ -1316,7 +1316,7 @@ function newMsg(name: string, data: any) {
             // (发送者没有被打开 || 窗口没有焦点 || 窗口被最小化 || 在特别关心列表里) 这些情况需要进行消息通知
             if (id !== showId || !document.hasFocus() || document.hidden || isImportant) {
                 // 准备消息内容
-                let raw = getMsgRawTxt(data.message)
+                let raw = getMsgRawTxt(data)
                 raw = raw === '' ? data.raw_message : raw
                 if (data.group_name === undefined) {
                     // 检查消息内是否有群名，去列表里寻找

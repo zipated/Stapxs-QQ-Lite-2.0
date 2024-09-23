@@ -10,13 +10,13 @@
  -->
 
 <template>
-    <div :class="'message' + (type ? ' ' + type : '') + (data.revoke ? ' revoke' : '') + (isMe ? ' me': '')" :data-raw="getMsgRawTxt(data.message)"
+    <div :class="'message' + (type ? ' ' + type : '') + (data.revoke ? ' revoke' : '') + (isMe ? ' me': '')" :data-raw="getMsgRawTxt(data)"
         :id="'chat-' + data.message_id" :data-sender="data.sender.user_id" :data-time="data.time"
         @mouseleave="hiddenUserInfo">
         <img name="avatar" :src="'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + data.sender.user_id" v-show="!isMe || type == 'merge'">
         <div class="message-space" v-if="isMe && type != 'merge'"></div>
         <div :class="isMe ? (type == 'merge' ? 'message-body' : 'message-body me') : 'message-body'">
-            <template v-if="runtimeData.chatInfo.show.type == 'group' && senderInfo && senderInfo?.title != ''">
+            <template v-if="runtimeData.chatInfo.show.type == 'group' && !isMe && senderInfo?.title && senderInfo?.title != ''">
                 <span>{{ senderInfo?.title }}</span>
             </template>
             <a v-if="data.sender.card || data.sender.nickname" v-show="!isMe || type == 'merge'">
@@ -421,7 +421,7 @@ export default defineComponent({
             })
             if (list.length === 1) {
                 if(list[0].message.length > 0)
-                    return list[0].sender.nickname + ': ' + getMsgRawTxt(list[0].message)
+                    return list[0].sender.nickname + ': ' + getMsgRawTxt(list[0])
                 else
                     return this.$t('（获取回复消息失败）')
             }

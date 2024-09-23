@@ -33,7 +33,7 @@ msgstr "Hello world! This is the official English translation of Stapxs QQ Lite!
 
 #: src/pages/options/OptView.vue:15
 # 这是当前语言的名字，请自行修改
-msgid "中文（简体）"
+msgid "简体中文"
 msgstr "English (United States)"
 
 #: src/pages/Friends.vue:23
@@ -112,7 +112,7 @@ msgstr "No Stickers Available"
 msgid "表情"
 msgstr "Emotes"
 
-#: src/components/MsgBody.vue:40
+#: src/components/MsgBody.vue:35
 #: src/pages/Chat.vue:179
 msgid "图片"
 msgstr "Image"
@@ -189,12 +189,12 @@ msgstr "Send Image"
 msgid "选择联系人开始聊天"
 msgstr "Select a contact to start massaging"
 
-#: src/components/MsgBody.vue:83
+#: src/components/MsgBody.vue:86
 msgid "不支持的消息"
 msgstr "(Unsupported message)"
 
-#: src/components/MsgBody.vue:32
-#: src/components/MsgBody.vue:301
+#: src/components/MsgBody.vue:35
+#: src/components/MsgBody.vue:305
 msgid "预览图片"
 msgstr "Image Preview"
 
@@ -512,7 +512,7 @@ msgstr "Show test interfaces"
 msgid "加载历史消息失败（构建消息 ID 失败）"
 msgstr "Message history failed to load (message ID failed to merge)"
 
-#: src/components/MsgBody.vue:252
+#: src/components/MsgBody.vue:256
 msgid "定位图片失败"
 msgstr "Failed to locate picture"
 
@@ -526,25 +526,21 @@ msgstr "Connection failed"
 msgid "合并消息层级过多，解析失败。"
 msgstr ""
 
-#: src/function/msg.ts:524
+#: src/function/msg.ts:540
 msgid "加载群文件失败（{code}）"
 msgstr ""
 
-#: src/function/msg.ts:1047
+#: src/function/msg.ts:1067
 msgid "加载消息失败（{code}）"
 msgstr ""
 
-#: src/function/msg.ts:434
-msgid "发送消息失败（{code}），可能是由于禁言或者对象无效（冻结、解散）。"
-msgstr "Group storage failed to load ({code}), the group may be banned or deleted."
-
-#: src/function/msg.ts:719
-#: src/function/msg.ts:747
+#: src/function/msg.ts:735
+#: src/function/msg.ts:763
 msgid "获取消息失败，正在重试"
 msgstr "Messages failed to load. Retrying ..."
 
-#: src/function/msg.ts:741
-#: src/function/msg.ts:756
+#: src/function/msg.ts:757
+#: src/function/msg.ts:772
 msgid "获取消息失败"
 msgstr "Messages failed to load"
 
@@ -605,7 +601,7 @@ msgstr "Error during service worker registration"
 msgid "没有网络"
 msgstr "No internet connection found."
 
-#: src/components/MsgBody.vue:291
+#: src/components/MsgBody.vue:295
 msgid "加载图片失败"
 msgstr "Image failed to load"
 
@@ -656,7 +652,7 @@ msgstr "Tail"
 msgid "只会追加在最后一段话后面"
 msgstr "A text that will be attached to your messages"
 
-#: src/components/MsgBody.vue:77
+#: src/components/MsgBody.vue:80
 msgid "（点击查看合并转发消息）"
 msgstr "(Click here to view chat history)"
 
@@ -783,7 +779,7 @@ msgstr "Reset app"
 msgid "sudo rm -rf /localStorage"
 msgstr "sudo rm -rf /localStorage"
 
-#: src/components/MsgBody.vue:0
+#: src/components/MsgBody.vue:83
 msgid "（查看回复消息）"
 msgstr "(Replied message)"
 
@@ -827,7 +823,7 @@ msgstr "Marked as read"
 msgid "群组"
 msgstr "Group"
 
-#: src/function/msg.ts:499
+#: src/function/msg.ts:466
 msgid "消息已转发"
 msgstr "Message forwarded"
 
@@ -975,11 +971,11 @@ msgstr "Error when sending files"
 msgid "正在发送文件 {percent}%"
 msgstr "Sending ..."
 
-#: src/components/MsgBody.vue:66
+#: src/components/MsgBody.vue:69
 msgid "文件预览"
 msgstr "File preview"
 
-#: src/function/msg.ts:1383
+#: src/function/msg.ts:1403
 #: src/pages/Info.vue:194
 msgid "临时会话"
 msgstr "Temporary chat session"
@@ -1008,7 +1004,7 @@ msgstr "Delete"
 msgid "标记已读"
 msgstr "Mark as read"
 
-#: src/function/msg.ts:419
+#: src/function/msg.ts:439
 msgid "获取合并转发消息失败"
 msgstr "Error loading combined messages"
 
@@ -1124,7 +1120,7 @@ msgstr ""
 msgid "如果你不想用它或者 bot 不支持，可以关闭这个功能"
 msgstr ""
 
-#: src/components/MsgBody.vue:422
+#: src/components/MsgBody.vue:426
 msgid "（获取回复消息失败）"
 msgstr ""
 
@@ -1267,7 +1263,7 @@ msgstr ""
 msgid "邀请你加入群聊"
 msgstr ""
 
-#: src/components/MsgBody.vue:191
+#: src/components/MsgBody.vue:195
 msgid "全体成员"
 msgstr ""
 
@@ -1369,7 +1365,7 @@ msgstr ""
 msgid "连接"
 msgstr ""
 
-#: src/function/msg.ts:997
+#: src/function/msg.ts:1017
 #: src/function/utils/appUtil.ts:410
 msgid "用户列表（{count}）"
 msgstr ""
@@ -1439,4 +1435,8 @@ msgstr ""
 #: src/pages/Scripts.vue:56
 # 新通知
 msgid "脚本类型_newNotice"
+msgstr ""
+
+#: src/pages/Chat.vue:191
+msgid "戳一戳"
 msgstr ""

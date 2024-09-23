@@ -35,37 +35,46 @@
             </div>
             <div :class="(runtimeData.tags.openSideBar ? 'open' : '')">
                 <template v-if="runtimeData.showList.length <= 0">
-                    <template v-for="info in runtimeData.tags.classes"
-                        :key="'class-' + info.class_id">
-                        <div :class="'list exp-body' + (classStatus[info.class_id] == true ? ' open' : '')">
-                            <header :title="info.class_name" :class="'exp-header' + (runtimeData.tags.openSideBar ? ' open' : '')" @click="classClick(info.class_id)">
+                    <template v-if="runtimeData.tags.classes.length > 0">
+                        <template v-for="info in runtimeData.tags.classes"
+                            :key="'class-' + info.class_id">
+                            <div :class="'list exp-body' + (classStatus[info.class_id] == true ? ' open' : '')">
+                                <header :title="info.class_name" :class="'exp-header' + (runtimeData.tags.openSideBar ? ' open' : '')" @click="classClick(info.class_id)">
+                                    <div></div>
+                                    <span>{{ info.class_name }}</span>
+                                    <a>{{ info.user_count ?? runtimeData.userList.filter((get) => { return get.class_id == info.class_id }).length }}</a>
+                                </header>
+                                <div :id="'class-' + info.class_id">
+                                    <FriendBody 
+                                        v-for="item in runtimeData.userList.filter((get) => { return get.class_id == info.class_id })"
+                                        :key="'fb-' + (item.user_id ? item.user_id : item.group_id)" :data="item" from="friend"
+                                        @click="userClick(item, $event)">
+                                    </FriendBody>
+                                </div>
+                            </div>
+                        </template>
+                        <div :class="'list exp-body' + (classStatus['-1'] == true ? ' open' : '')">
+                            <header :title="$t('群组')" :class="'exp-header' + (runtimeData.tags.openSideBar ? ' open' : '')" @click="classClick('-1')">
                                 <div></div>
-                                <span>{{ info.class_name }}</span>
-                                <a>{{ info.user_count ?? runtimeData.userList.filter((get) => { return get.class_id == info.class_id }).length }}</a>
+                                <span>{{ $t('群组') }}</span>
+                                <a>{{ runtimeData.userList.filter((get) => { return get.class_id == undefined }).length }}</a>
                             </header>
-                            <div :id="'class-' + info.class_id">
+                            <div>
                                 <FriendBody 
-                                    v-for="item in runtimeData.userList.filter((get) => { return get.class_id == info.class_id })"
+                                    v-for="item in runtimeData.userList.filter((get) => { return get.class_id == undefined })"
                                     :key="'fb-' + (item.user_id ? item.user_id : item.group_id)" :data="item" from="friend"
                                     @click="userClick(item, $event)">
                                 </FriendBody>
                             </div>
                         </div>
                     </template>
-                    <div :class="'list exp-body' + (classStatus['-1'] == true ? ' open' : '')">
-                        <header :title="$t('群组')" :class="'exp-header' + (runtimeData.tags.openSideBar ? ' open' : '')" @click="classClick('-1')">
-                            <div></div>
-                            <span>{{ $t('群组') }}</span>
-                            <a>{{ runtimeData.userList.filter((get) => { return get.class_id == undefined }).length }}</a>
-                        </header>
-                        <div>
-                            <FriendBody 
-                                v-for="item in runtimeData.userList.filter((get) => { return get.class_id == undefined })"
-                                :key="'fb-' + (item.user_id ? item.user_id : item.group_id)" :data="item" from="friend"
-                                @click="userClick(item, $event)">
-                            </FriendBody>
-                        </div>
-                    </div>
+                    <template v-else>
+                        <FriendBody 
+                            v-for="item in runtimeData.userList"
+                            :key="'fb-' + (item.user_id ? item.user_id : item.group_id)" :data="item" from="friend"
+                            @click="userClick(item, $event)">
+                        </FriendBody>
+                    </template>
                 </template>
                 <!-- 搜索用的 -->
                 <div v-else class="list">
