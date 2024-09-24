@@ -9,7 +9,7 @@ const popInfo = new PopInfo()
 const logger = new Logger()
 
 if (process.env.NODE_ENV === 'production') {
-    register(`${process.env.BASE_URL}service-worker.js`, {
+    register(`${process.env.BASE_URL}sw.js`, {
         ready() {
             logger.debug(app.config.globalProperties.$t('应用已通过 service worker 服务从缓存中加载，更多信息请查看 https://goo.gl/AFskqB。'))
         },

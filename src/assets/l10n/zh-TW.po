@@ -67,6 +67,7 @@ msgstr "天後"
 
 #: src/pages/Info.vue:108
 #: src/pages/Chat.vue:183
+#: src/function/utils/msgUtil.ts:232
 msgid "文件"
 msgstr "檔案"
 
@@ -109,12 +110,13 @@ msgid "一无所有"
 msgstr "沒有貼圖"
 
 #: src/pages/Chat.vue:187
+#: src/function/utils/msgUtil.ts:226
 msgid "表情"
 msgstr "表情"
 
 #: src/components/MsgBody.vue:35
 #: src/pages/Chat.vue:179
-#: src/components/MsgBody.vue:35
+#: src/function/utils/msgUtil.ts:229
 msgid "图片"
 msgstr "圖片"
 
@@ -1437,4 +1439,12 @@ msgstr ""
 
 #: src/pages/Chat.vue:191
 msgid "戳一戳"
+msgstr ""
+
+#: src/function/utils/msgUtil.ts:230
+msgid "语音"
+msgstr ""
+
+#: src/function/utils/msgUtil.ts:231
+msgid "视频"
 msgstr ""

@@ -958,7 +958,10 @@ function saveUser(msg: { [key: string]: any }, type: string) {
                 py_name = pinyin(item.nickname, pyConfig).join('') + ',' +
                     pinyin(item.remark, pyConfig).join('')
             }
-            if(list && list[index]) list[index].py_name = py_name
+            if(list && list[index]) {
+                list[index].py_name = py_name
+                list[index].py_start = py_name.substring(0, 1).toUpperCase()
+            }
             // 构建分类
             if (type == 'friend') {
                 if (item.class_id != undefined && item.class_name) {
@@ -982,6 +985,13 @@ function saveUser(msg: { [key: string]: any }, type: string) {
             }
             saveClassInfo(groupNamesList)
         }
+        // 按照首字母排序
+        list.sort((a, b) => {
+            if(a.py_start && b.py_start) {
+                return a.py_start.charCodeAt(0) - b.py_start.charCodeAt(0)
+            }
+            return 0
+        })
         runtimeData.userList = runtimeData.userList.concat(list)
         // 刷新置顶列表
         const info = runtimeData.sysConfig.top_info as { [key: string]: number[] } | null

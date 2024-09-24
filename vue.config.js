@@ -31,6 +31,11 @@ module.exports = {
                     use: 'js-yaml-loader',
                 }
             ]
+        },
+        resolve: {
+            fallback: {
+                util: require.resolve('util/')
+            }
         }
     },
     pwa: {

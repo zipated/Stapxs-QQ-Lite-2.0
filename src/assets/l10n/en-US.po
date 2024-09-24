@@ -67,6 +67,7 @@ msgstr "d"
 
 #: src/pages/Info.vue:108
 #: src/pages/Chat.vue:183
+#: src/function/utils/msgUtil.ts:232
 msgid "文件"
 msgstr "Files"
 
@@ -109,11 +110,13 @@ msgid "一无所有"
 msgstr "No Stickers Available"
 
 #: src/pages/Chat.vue:187
+#: src/function/utils/msgUtil.ts:226
 msgid "表情"
 msgstr "Emotes"
 
 #: src/components/MsgBody.vue:35
 #: src/pages/Chat.vue:179
+#: src/function/utils/msgUtil.ts:229
 msgid "图片"
 msgstr "Image"
 
@@ -1439,4 +1442,12 @@ msgstr ""
 
 #: src/pages/Chat.vue:191
 msgid "戳一戳"
+msgstr ""
+
+#: src/function/utils/msgUtil.ts:230
+msgid "语音"
+msgstr ""
+
+#: src/function/utils/msgUtil.ts:231
+msgid "视频"
 msgstr ""

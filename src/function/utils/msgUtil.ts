@@ -199,6 +199,8 @@ export function parseMsgList(list: any, map: string, valueMap: { [key: string]: 
  * @returns 字符串
  */
 export function getMsgRawTxt(data: any): string {
+    const $t = app.config.globalProperties.$t
+
     const message = data.message as [{ [key: string]: any }]
     const fromId = data.group_id ?? data.user_id
     let back = ''
@@ -217,18 +219,17 @@ export function getMsgRawTxt(data: any): string {
                             break
                         }
                     }
-                    back += '[提及]'
                     break
                 }
                 // eslint-disable-next-line
                 case 'text': back += message[i].text.replaceAll('\n', ' ').replaceAll('\r', ' '); break
-                case 'face': back += '[表情]'; break
+                case 'face': back += '[' + $t('表情') + ']'; break
                 case 'mface': back += message[i].summary ?? message[i].text; break
                 case 'bface': back += message[i].text; break
-                case 'image': back += '[图片]'; break
-                case 'record': back += '[语音]'; break
-                case 'video': back += '[视频]'; break
-                case 'file': back += '[文件]'; break
+                case 'image': back += '[' + $t('图片') + ']'; break
+                case 'record': back += '[' + $t('语音') + ']'; break
+                case 'video': back += '[' + $t('视频') + ']'; break
+                case 'file': back += '[' + $t('文件') + ']'; break
                 case 'json': {
                     try {
                         back += JSON.parse(message[i].data).prompt;
