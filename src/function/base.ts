@@ -33,32 +33,33 @@ export class Logger {
      * @param mode 日志类型
      * @param args 日志内容
      */
-    add(type: LogType, args: string) {
+    add(type: LogType, args: string, data = '' as any, hidden = false) {
         const logLevel = Option.get('log_level')
         // PS：WS, UI, ERR, INFO, DEBUG
         // all 将会输出以上全部类型，debug 将会输出 DEBUG、UI，info 将会输出 INFO，err 将会输出 ERR
         if (logLevel === 'all') {
-            this.print(type, args)
+            this.print(type, args, data, hidden)
         } else if (logLevel === 'debug' && (type === LogType.DEBUG || type === LogType.UI)) {
-            this.print(type, args)
+            this.print(type, args, data, hidden)
         } else if (logLevel === 'info' && type === LogType.INFO) {
-            this.print(type, args)
+            this.print(type, args, data, hidden)
         } else if (logLevel === 'err' && type === LogType.ERR) {
-            this.print(type, args)
+            this.print(type, args, data, hidden)
         }
     }
-    info(args: string) {
-        this.add(LogType.INFO, args)
+    info(args: string, hidden = false) {
+        this.add(LogType.INFO, args, undefined, hidden)
     }
-    error(e: Error | null, args: string) {
+    error(e: Error | null, args: string, hidden = false) {
         if(e) {
-        this.add(LogType.ERR, args + '\n' + e.stack?.replaceAll('webpack-internal:///./', 'webpack-internal:///'))
+        // this.add(LogType.ERR, args + '\n' + e.stack?.replaceAll('webpack-internal:///./', 'webpack-internal:///'), undefined, hidden)
+        this.add(LogType.ERR, args + '\n', e, hidden)
         } else {
-            this.add(LogType.ERR, args)
+            this.add(LogType.ERR, args, undefined, hidden)
         }
     }
-    debug(args: string) {
-        this.add(LogType.DEBUG, args)
+    debug(args: string, hidden = false) {
+        this.add(LogType.DEBUG, args, undefined, hidden)
     }
 
     /**
@@ -66,10 +67,10 @@ export class Logger {
      * @param type 日志类型
      * @param args 日志内容
      */
-    private print(type: LogType, args: string) {
+    private print(type: LogType, args: string, data: any, hidden: boolean) {
         const error = new Error()
         // 从调用栈中获取调用者信息
-        let from = ''
+        let from = undefined
         const stack = error.stack
             if(stack) {
             const stackArr = stack.split('\n')
@@ -80,15 +81,31 @@ export class Logger {
                     from = stackArr[i].replace(/\(|\)/g, '').split(' ').pop() || ''
                     from = from.replace('webpack-internal:///./', 'webpack-internal:///')
                     if(from.startsWith('webpack-internal:///node_modules')) {
-                        // node_modules 部分路径太长，一般也不需要；所以只显示 node_modules
-                        from = 'node_modules'
+                        from = undefined
                     }
                     break
                 }
             }
         }
-        // eslint-disable-next-line no-console
-        console.log(`%c${LogType[type]}%c${from}%c\n> ${args}`, `background:#${this.logTypeInfo[type][0]};color:#${this.logTypeInfo[type][1]};border-radius:7px 0 0 7px;padding:2px 4px 2px 7px;margin-bottom:7px;`, 'background:#e3e8ec;color:#000;padding:2px 7px 4px 4px;border-radius:0 7px 7px 0;margin-bottom:7px;', '');
+        // 打印日志
+        let  typeStr = LogType[type]
+        if(typeStr === 'WS') {
+            if(args.startsWith('GET')) {
+                args = args.substring(4)
+                typeStr = '<<<'
+            } else if(args.startsWith('PUT')) {
+                args = args.substring(4)
+                typeStr = '>>>'
+            }
+        }
+
+        if(!hidden && from) {
+            // eslint-disable-next-line no-console
+            console.log(`%c${typeStr}%c${from}%c\n${args}`, `background:#${this.logTypeInfo[type][0]};color:#${this.logTypeInfo[type][1]};border-radius:7px 0 0 7px;padding:2px 4px 2px 7px;margin-bottom:7px;`, 'background:#e3e8ec;color:#000;padding:2px 7px 4px 4px;border-radius:0 7px 7px 0;margin-bottom:7px;', '', data);
+        } else {
+            // eslint-disable-next-line no-console
+            console.log(`%c${typeStr}%c ${args}`, `background:#${this.logTypeInfo[type][0]};color:#${this.logTypeInfo[type][1]};border-radius:7px;padding:2px 4px 2px 7px;margin-bottom:7px;`, '', data);
+        }
     }
 }
 

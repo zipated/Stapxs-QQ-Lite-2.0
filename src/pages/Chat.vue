@@ -18,7 +18,7 @@
         <div class="info">
             <font-awesome-icon @click="openLeftBar" :icon="['fas', 'bars-staggered']" /><img :src="chat.show.avatar">
             <div class="info">
-                <p>{{ chat.show.name }}</p>
+                <p>{{ chat.show.name }}<template v-if="runtimeData.chatInfo.show.type == 'group'"> ({{ runtimeData.chatInfo.info.group_members.length }})</template></p>
                 <span v-if="chat.show.temp">
                     {{ $t('来自群聊：{group}', { group: chat.show.temp }) }}
                 </span>
@@ -48,7 +48,7 @@
                 <a>{{ $t('没有更多消息了') }}</a>
             </div>
             <!-- 时间戳，在下滑加载的时候会显示，方便在大段的相连消息上让用户知道消息时间 -->
-            <NoticeBody v-if="tags.nowGetHistroy" :data="{sub_type: 'time', time: list[0].time}"></NoticeBody>
+            <NoticeBody v-if="tags.nowGetHistroy && list.length > 0" :data="{sub_type: 'time', time: list[0].time}"></NoticeBody>
             <TransitionGroup name="msglist" tag="div">
                 <template v-for="(msg, index) in list">
                     <!-- 时间戳 -->

@@ -534,10 +534,6 @@ msgstr "合併訊息層數過多，解析失敗。"
 msgid "加载群文件失败（{code}）"
 msgstr "無法載入 group file（{code}）"
 
-#: src/function/msg.ts:1067
-msgid "加载消息失败（{code}）"
-msgstr "無法載入訊息（{code}）"
-
 #: src/function/msg.ts:735
 #: src/function/msg.ts:763
 msgid "获取消息失败，正在重试"
@@ -1191,10 +1187,6 @@ msgstr ""
 
 #: src/pages/options/OptDev.vue:454
 msgid "Array 数组"
-msgstr ""
-
-#: src/function/connect.ts:37
-msgid "使用后端连接模式"
 msgstr ""
 
 #: src/pages/Messages.vue:34

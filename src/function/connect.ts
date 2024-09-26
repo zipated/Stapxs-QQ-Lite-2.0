@@ -34,7 +34,7 @@ export class Connector {
 
         // Electron 默认使用后端连接模式
         if(runtimeData.tags.isElectron) {
-            logger.add(LogType.WS, $t('使用后端连接模式'))
+            logger.add(LogType.WS, '使用后端连接模式')
             const reader = runtimeData.reader
             if(reader) {
                 reader.send('onebot:connect', { address: address, token: token })
@@ -111,10 +111,6 @@ export class Connector {
     }
 
     static onmessage(message: string) {
-        // 心跳包输出到日志里太烦人了
-        if ((message as string).indexOf('"meta_event_type":"heartbeat"') < 0) {
-            logger.add(LogType.WS, 'GET：' + message)
-        }
         parse(message)
     }
 
@@ -151,8 +147,6 @@ export class Connector {
             }
             default: {
                 popInfo.add(PopType.ERR, $t('连接失败') + ': ' + code, false)
-                // eslint-disable-next-line no-console
-                console.log(message)
             }
         }
         
@@ -200,9 +194,9 @@ export class Connector {
         }
 
         if (Option.get('log_level') === 'debug') {
-            logger.debug('PUT：' + json)
+            logger.add(LogType.DEBUG, 'PUT：', JSON.parse(json))
         } else {
-            logger.add(LogType.WS, 'PUT：' + json)
+            logger.add(LogType.WS, 'PUT：', JSON.parse(json))
         }
     }
 }

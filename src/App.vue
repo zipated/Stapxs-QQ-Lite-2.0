@@ -505,6 +505,10 @@ export default defineComponent({
                 if(app) app.classList.add('withBar')
             }
             Option.runAS('opt_auto_gtk', Option.get('opt_auto_gtk'))
+
+            // 基础初始化完成
+            logger.debug('欢迎使用 Stapxs QQ Lite！')
+            logger.debug('当前启动模式为: ' + process.env.NODE_ENV)
             // 加载额外样式
             App.loadAppendStyle()
             // 加载密码保存和自动连接
@@ -518,8 +522,6 @@ export default defineComponent({
             }
             // =========================================================================
             // 初始化完成
-            logger.debug('欢迎使用 Stapxs QQ Lite！')
-            logger.debug('当前启动模式为: ' + process.env.NODE_ENV)
             // UM：加载 Umami 统计功能
             if (!Option.get('close_ga') && process.env.NODE_ENV == 'production') {
                 // 给页面添加一个来源域名方便在 electron 中获取

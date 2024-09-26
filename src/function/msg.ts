@@ -44,9 +44,22 @@ let heartbeatTime = -1
  * @param str 原始消息
  */
 export function parse(str: string) {
-    const msg = JSON.parse(str)
     let name = 'unknown'
+    let msg = undefined as { [key: string]: any } | undefined
+
     try {
+        msg = JSON.parse(str)
+        if ((str as string).indexOf('"meta_event_type":"heartbeat"') < 0) {
+            logger.add(LogType.WS, 'GET：', msg)
+        }
+    } catch(e) {
+        if ((str as string).indexOf('"meta_event_type":"heartbeat"') < 0) {
+            logger.add(LogType.WS, 'GET：' + str)
+        }
+    }
+
+    try {
+        if(msg) {
         if (msg.echo !== undefined) {
             const echoList = msg.echo.split('_')
             const head = echoList[0]
@@ -61,8 +74,9 @@ export function parse(str: string) {
             name = type
             noticeFunctions[type](type, msg)
         }
+    }
     } catch (e) {
-        logger.error(e as Error, `处理消息或通知错误 - ${name}：${(e as Error).message}`)
+        logger.error(e as Error, `处理消息或通知错误 - ${name}：`)
     }
 }
 
@@ -405,7 +419,7 @@ const msgFunctons = {
         saveMsg(msg, 'top')
     },
     getChatHistory: (name: string, msg: { [key: string]: any }) => {
-        saveMsg(msg)
+        saveMsg(msg, 'top')
     },
 
     getChatHistoryOnMsg: (name: string, msg: { [key: string]: any }, echoList: string[]) => {
@@ -1073,54 +1087,51 @@ function saveClassInfo(list: { class_id: number, class_name: string, sort_id?: n
 }
 
 function saveMsg(msg: any, append = undefined as undefined | string) {
-    if (msg.error !== null && (msg.error !== undefined || msg.status === 'failed')) {
-        popInfo.add(PopType.ERR, app.config.globalProperties.$t('加载消息失败（{code}）', { code: msg.error | msg.retcode }))
-    } else {
-        let list = getMsgData('message_list', msg, msgPath.message_list)
-        list = getMessageList(list)
-        if (list != undefined) {
-            // 检查消息是否是当前聊天的消息
-            const firstMsg = list[0]
-            const infoList = getMsgData('message_info', firstMsg, msgPath.message_info)
-            if (infoList != undefined) {
-                const info = infoList[0]
-                const id = info.group_id ?? info.private_id
-                if (id != undefined && id != runtimeData.chatInfo.show.id) {
-                    return
-                }
+    let list = getMsgData('message_list', msg, msgPath.message_list)
+    list = getMessageList(list)
+    if (list != undefined) {
+        // 检查消息是否是当前聊天的消息
+        const firstMsg = list[0]
+        const infoList = getMsgData('message_info', firstMsg, msgPath.message_info)
+        if (infoList != undefined) {
+            const info = infoList[0]
+            const id = info.group_id ?? info.private_id
+            if (id != undefined && id != runtimeData.chatInfo.show.id) {
+                return
             }
-            // 如果分页不是增量的，就不使用追加
-            if(append == 'top' && runtimeData.jsonMap.message_list?.pagerType == 'full') {
-                append = undefined
-            }
-            // 追加处理
-            if (append != undefined) {
-                // 没有更旧的消息能加载了，禁用允许加载标志
-                if (list.length < 1) {
-                    runtimeData.tags.canLoadHistory = false
-                    return
-                }
-                if (append == 'top') {
-                    // 判断 list 的最后一条消息是否和 runtimeData.messageList 的第一条消息 id 相同
-                    if (runtimeData.messageList.length > 0 && list.length > 0) {
-                        if (runtimeData.messageList[0].message_id == list[list.length - 1].message_id) {
-                            list.pop() // 去掉重复的消息
-                        }
-                    }
-                    runtimeData.messageList = list.concat(runtimeData.messageList)
-                } else if (append == 'bottom') {
-                    runtimeData.messageList = runtimeData.messageList.concat(list)
-                }
-            } else {
-                runtimeData.messageList = []
-                runtimeData.messageList = list
-            }
-            // 消息后处理
-            // PS: 部分消息类型可能需要获取附加内容，在此处进行处理
-            runtimeData.messageList.forEach((item) => {
-                sendMsgAppendInfo(item)
-            })
         }
+        // 如果分页不是增量的，就不使用追加
+        if (append == 'top' && runtimeData.jsonMap.message_list?.pagerType == 'full') {
+            append = undefined
+        }
+        // 追加处理
+        if (append != undefined) {
+            // 没有更旧的消息能加载了，禁用允许加载标志
+            if (list.length < 1) {
+                runtimeData.tags.canLoadHistory = false
+                return
+            }
+            if (append == 'top') {
+                // 判断 list 的最后一条消息是否和 runtimeData.messageList 的第一条消息 id 相同
+                if (runtimeData.messageList.length > 0 && list.length > 0) {
+                    if (runtimeData.messageList[0].message_id == list[list.length - 1].message_id) {
+                        list.pop() // 去掉重复的消息
+                    }
+                }
+                runtimeData.messageList = list.concat(runtimeData.messageList)
+            } else if (append == 'bottom') {
+                runtimeData.messageList = runtimeData.messageList.concat(list)
+            }
+        } else {
+            runtimeData.messageList = []
+            runtimeData.messageList = list
+        }
+        // 消息后处理
+        // PS: 部分消息类型可能需要获取附加内容，在此处进行处理
+        runtimeData.messageList.forEach((item) => {
+            sendMsgAppendInfo(item)
+        })
+
         // 将消息列表的最后一条 raw_message 保存到用户列表中
         const lastMsg = runtimeData.messageList[runtimeData.messageList.length - 1]
         if (lastMsg) {
@@ -1137,7 +1148,6 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
                 user.time = getViewTime(Number(lastMsg.time))
             }
         }
-
     }
 }
 
@@ -1261,7 +1271,7 @@ function newMsg(name: string, data: any) {
             // 抽个签
             const num = randomNum(0, 10000)
             if (num >= 4500 && num <= 5500) {
-                logger.add(LogType.INFO, num.toString() + '，这只是个神秘的数字...')
+                logger.add(LogType.INFO, num.toString() + '，这只是个神秘的数字...', undefined, true)
             }
             if (num === 5000) {
                 const popInfo = {

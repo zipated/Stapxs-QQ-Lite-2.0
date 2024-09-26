@@ -837,6 +837,7 @@ textarea:focus {
 /* 图片预览器覆盖样式 */
 .viewer {
     overflow: hidden;
+    position: absolute;
 }
 
 .viewer-button {

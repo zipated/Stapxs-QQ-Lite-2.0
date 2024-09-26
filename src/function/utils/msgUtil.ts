@@ -56,8 +56,6 @@ export function getMsgData(name: string, msg: { [key: string]: any }, map: strin
                 }
             } catch (ex) {
                 logger.error(ex as Error, `解析消息 JSON 错误：${name} -> ${map}`)
-                // eslint-disable-next-line
-                console.log(ex)
             }
         } else {
             const data = {} as { [key: string]: any }
@@ -67,8 +65,6 @@ export function getMsgData(name: string, msg: { [key: string]: any }, map: strin
                         data[key] = jp.query(msg, replaceJPValue(map[key]))[0]
                     } catch (ex) {
                         logger.error(ex as Error, `解析 JSON 错误：${name} -> ${map}`)
-                        // eslint-disable-next-line
-                        console.log(ex)
                     }
             })
             back = [data]
@@ -247,8 +243,6 @@ export function getMsgRawTxt(data: any): string {
             }
         } catch (error) {
             logger.error(error as Error, '解析消息短格式错误：' + JSON.stringify(message[i]))
-            // eslint-disable-next-line
-            console.log(error)
         }
     }
     return back

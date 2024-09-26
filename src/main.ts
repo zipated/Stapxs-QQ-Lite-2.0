@@ -58,10 +58,6 @@ app.mount('#app')
 export default app
 export const uptime = new Date().getTime()
 
-console.log(' _____ _____ _____ _____ __ __  \n' +
-            '|   __|_   _|  _  |  _  |  |  | \n' +
-            '|__   | | | |     |   __|-   -| \n' +
-            '|_____| |_| |__|__|__|  |__|__| CopyRight © Stapx Steve')
 const strList = ['VERSION', 'WELCOME', 'HELLO']
 const colorList = ['50534f', 'f9a633', '8076a3', 'f0a1a8', '92aa8a', '606E7A', '7abb7e', 'b573f7', 'ff5370', '99b3db', '677480']
 const color = colorList[Math.floor(Math.random() * colorList.length)]

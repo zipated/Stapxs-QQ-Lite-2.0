@@ -106,6 +106,7 @@ export default defineComponent({
     },
     data() {
         return {
+            cacheValues: {} as {[key: string]: any},
             runtimeData: runtimeData,
             openLink: openLink,
             script: '',
