@@ -1,17 +1,2 @@
 name: LLOneBot
 redirect: NapCat.Onebot
-
-# 好友分组；llob 没有更新 napcat 的分离好友分组，覆盖掉
-friend_category: 
-
-# 群、好友列表
-friend_list:
-    name: get_friends_with_category
-    source: $.data[*]
-    list:
-        class_id: /categoryId
-        class_name: /categroyName
-        user_id: /user_id
-        nickname: /nickname
-        remark: /remark
-        longNick: null
