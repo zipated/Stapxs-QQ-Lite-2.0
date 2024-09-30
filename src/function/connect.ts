@@ -34,7 +34,7 @@ export class Connector {
 
         // Electron 默认使用后端连接模式
         if(runtimeData.tags.isElectron) {
-            logger.add(LogType.WS, $t('log_con_backend'))
+            logger.add(LogType.WS, '使用后端连接模式')
             const reader = runtimeData.reader
             if(reader) {
                 reader.send('onebot:connect', { address: address, token: token })
@@ -47,8 +47,8 @@ export class Connector {
         // 最多自动重试连接五次
         if(retry > 5) return
         
-        logger.debug($t('log_ws_log_debug'))
-        logger.add(LogType.WS, $t('log_we_log_all'))
+        logger.debug('当前处于 debug 日志模式。连接器将仅输出发出的消息 ……')
+        logger.add(LogType.WS, '当前处于 all 日志模式。连接器将输出全部收发消息 ……')
 
         let url = `ws://${address}?access_token=${token}`
         if(address.startsWith('ws://') || address.startsWith('wss://')) {
@@ -82,7 +82,7 @@ export class Connector {
             this.onclose(e.code, e.reason, address, token)
         }
         websocket.onerror = (e) => {
-            popInfo.add(PopType.ERR, $t('pop_log_con_fail') + ': ' + e.type, false)
+            popInfo.add(PopType.ERR, $t('连接失败') + ': ' + e.type, false)
             return
         }
     }
@@ -90,9 +90,7 @@ export class Connector {
     // 连接事件 =====================================================
 
     static onopen(address: string, token: string | undefined) {
-        const $t = app.config.globalProperties.$t
-
-        logger.add(LogType.WS, $t('log_con_success'))
+        logger.add(LogType.WS, '连接成功')
         // 保存登录信息
         Option.save('address', address)
         // 保存密钥
@@ -113,10 +111,6 @@ export class Connector {
     }
 
     static onmessage(message: string) {
-        // 心跳包输出到日志里太烦人了
-        if ((message as string).indexOf('"meta_event_type":"heartbeat"') < 0) {
-            logger.add(LogType.WS, 'GET：' + message)
-        }
         parse(message)
     }
 
@@ -132,7 +126,7 @@ export class Connector {
         updateMenu({
             id: 'userName',
             action: 'label',
-            value: $t('menu_login')
+            value: $t('连接')
         })
 
         switch (code) {
@@ -152,13 +146,11 @@ export class Connector {
                 break;
             }
             default: {
-                popInfo.add(PopType.ERR, $t('pop_log_con_fail') + ': ' + code, false)
-                // eslint-disable-next-line no-console
-                console.log(message)
+                popInfo.add(PopType.ERR, $t('连接失败') + ': ' + code, false)
             }
         }
         
-        logger.error($t('pop_log_con_fail') + ': ' + code)
+        logger.error(null, $t('连接失败') + ': ' + code)
         login.status = false
     }
 
@@ -174,7 +166,7 @@ export class Connector {
                 reader.send('onebot:close')
             }
         } else {
-            popInfo.add(PopType.INFO, app.config.globalProperties.$t('pop_log_con_close'))
+            popInfo.add(PopType.INFO, app.config.globalProperties.$t('正在断开链接……'))
             if(websocket) websocket.close(1000)
         }
     }
@@ -202,9 +194,9 @@ export class Connector {
         }
 
         if (Option.get('log_level') === 'debug') {
-            logger.debug('PUT：' + json)
+            logger.add(LogType.DEBUG, 'PUT：', JSON.parse(json))
         } else {
-            logger.add(LogType.WS, 'PUT：' + json)
+            logger.add(LogType.WS, 'PUT：', JSON.parse(json))
         }
     }
 }

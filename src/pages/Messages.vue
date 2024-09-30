@@ -14,12 +14,12 @@
         <div :class="'friend-list' + (runtimeData.tags.openSideBar ? ' open' : '')" id="message-list">
             <div>
                 <div class="base only">
-                    <span>{{ $t('message_title') }}</span>
+                    <span>{{ $t('消息') }}</span>
                     <div style="flex: 1;"></div>
                     <font-awesome-icon @click="cleanList" :icon="['fas', 'trash-can']" />
                 </div>
                 <div class="small">
-                    <span v-show="runtimeData.tags.openSideBar">{{ $t('message_title') }}</span>
+                    <span v-show="runtimeData.tags.openSideBar">{{ $t('消息') }}</span>
                     <div @click="openLeftBar">
                         <font-awesome-icon :icon="['fas', 'bars-staggered']" />
                     </div>
@@ -27,12 +27,12 @@
             </div>
             <BcMenu :data="listMenu" @close="listMenuClose" name="messages-menu">
                 <ul>
-                    <li icon="fa-solid fa-thumbtack" id="top">{{ $t('list_menu_top') }}</li>
-                    <li icon="fa-solid fa-grip-lines" id="canceltop">{{ $t('list_menu_canceltop') }}</li>
-                    <li icon="fa-solid fa-trash-can" id="remove">{{ $t('list_menu_remove') }}</li>
-                    <li icon="fa-solid fa-check-to-slot" id="readed">{{ $t('list_menu_readed') }}</li>
-                    <li icon="fa-solid fa-volume-high" id="notice_open">{{ $t('list_menu_notice') }}</li>
-                    <li icon="fa-solid fa-volume-xmark" id="notice_close">{{ $t('list_menu_notice_close') }}</li>
+                    <li icon="fa-solid fa-thumbtack" id="top">{{ $t('置顶') }}</li>
+                    <li icon="fa-solid fa-grip-lines" id="canceltop">{{ $t('取消置顶') }}</li>
+                    <li icon="fa-solid fa-trash-can" id="remove">{{ $t('删除') }}</li>
+                    <li icon="fa-solid fa-check-to-slot" id="readed">{{ $t('标记已读') }}</li>
+                    <li icon="fa-solid fa-volume-high" id="notice_open">{{ $t('开启通知') }}</li>
+                    <li icon="fa-solid fa-volume-xmark" id="notice_close">{{ $t('关闭通知') }}</li>
                 </ul>
             </BcMenu>
             <div id="message-list-body" :class="(runtimeData.tags.openSideBar ? 'open' : '')" style="overflow-y: scroll;">
@@ -40,7 +40,7 @@
                 <FriendBody key="inMessage--10000"
                     v-if="runtimeData.systemNoticesList && Object.keys(runtimeData.systemNoticesList).length > 0"
                     :select="chat.show.id === -10000"
-                    :data="{ user_id: -10000, always_top: true, nickname: $t('list_system_notice'), remark: $t('list_system_notice') }"
+                    :data="{ user_id: -10000, always_top: true, nickname: $t('系统通知'), remark: $t('系统通知') }"
                     @click="systemNoticeClick"></FriendBody>
                 <!-- 其他消息 -->
                 <FriendBody v-for="item in runtimeData.onMsgList"
@@ -58,7 +58,7 @@
         <div v-show="!loginInfo.status || runtimeData.chatInfo.show.id == 0" :class="'friend-list-space' + (runtimeData.tags.openSideBar ? ' open' : '')">
             <div class="ss-card">
                 <font-awesome-icon :icon="['fas', 'inbox']" />
-                <span>{{ $t('chat_space') }}</span>
+                <span>{{ $t('选择联系人开始聊天') }}</span>
             </div>
         </div>
     </div>
@@ -185,7 +185,7 @@ export default defineComponent({
             loadHistoryMessage(id, type, 1, 'readMemberMessage')
             // pop
             new PopInfo().add(
-                PopType.INFO, app.config.globalProperties.$t('chat_readed'))
+                PopType.INFO, app.config.globalProperties.$t('已标记为已读'))
         },
 
         /**

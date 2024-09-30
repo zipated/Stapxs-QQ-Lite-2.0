@@ -2,7 +2,7 @@ import Store from 'electron-store'
 import path from 'path'
 import os from 'os'
 
-import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions, Notification as ELNotification, screen as sysScreen } from 'electron'
+import { ipcMain, shell, systemPreferences, app, Menu, MenuItemConstructorOptions, Notification as ELNotification } from 'electron'
 import { GtkTheme, GtkData } from '@jakejarrett/gtk-theme'
 import { runCommand } from './util'
 import { win, touchBarInstance } from '@/background'

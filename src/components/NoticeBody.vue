@@ -9,24 +9,24 @@
     <div :id="'notice-' + id" class="note">
         <div class="note-recall note-base" v-if="data.notice_type && data.notice_type.indexOf('recall') >= 0">
             <a>{{ info.name }}</a>
-            <span>{{ $t('chat_notice_recall') }}</span>
+            <span>{{ $t('撤回了一条消息') }}</span>
             <div></div>
         </div>
         <div v-if="data.notice_type == 'group_ban'" class="note-ban note-base">
             <template v-if="data.sub_type === 'ban'">
                 <template v-if="isMe(data.user_id)">
-                    <span>{{ $t('chat_member_type_admin') }}</span>
+                    <span>{{ $t('成员类型_admin') }}</span>
                     <a>&nbsp;{{ getName(data.operator_id) }}&nbsp;</a>
-                    <span>{{ $t('note_ban_you') }}</span>
+                    <span>{{ $t('禁言了你') }}</span>
                     <span>&nbsp;{{ fTime(data.duration) }}</span>
                 </template>
                 <template v-else>
-                    <span>{{ $t('note_ban_others') }}</span>
+                    <span>{{ $t('管理员禁言了') }}</span>
                     <a>&nbsp;{{ getName(data.user_id) }}&nbsp;</a>
                     <span>{{ fTime(data.duration) }}</span>
                 </template>
             </template>
-            <span v-else>{{ $t('note_unban', { name: isMe(data.user_id) ? $t('you') : getName(data.user_id) }) }}</span>
+            <span v-else>{{ $t('管理员解除了 {name} 的禁言', { name: isMe(data.user_id) ? $t('你') : getName(data.user_id) }) }}</span>
         </div>
         <div v-if="data.sub_type === 'poke'" class="note-notify note-base" v-html="data.str + '<div class=\'space\'</div>'"></div>
         <div v-if="data.sub_type === 'time'" class="note-time note-base">
@@ -77,16 +77,16 @@ export default defineComponent({
 
             let back = ''
             if (day > 0) {
-                back += `${day} ${this.$t('days')} `
+                back += `${day} ${this.$t('天')} `
             }
             if (hour > 0) {
-                back += `${hour} ${this.$t('hours')} `
+                back += `${hour} ${this.$t('小时')} `
             }
             if (minute > 0) {
-                back += `${minute} ${this.$t('minutes')} `
+                back += `${minute} ${this.$t('分钟')} `
             }
             if (second > 0) {
-                back += `${second} ${this.$t('seconds')} `
+                back += `${second} ${this.$t('秒')} `
             }
             return back
         }

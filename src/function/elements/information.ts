@@ -102,6 +102,7 @@ export interface UserFriendElem extends UserElem {
     group_id: number,
     group_name: string,
     py_name?: string,
+    py_start?: string,
     member_count?: number,
     admin_flag?: boolean
 }
@@ -111,6 +112,7 @@ export interface UserGroupElem extends UserElem {
     nickname: string,
     remark: string,
     py_name?: string,
+    py_start?: string,
     class_id?: number,
     class_name?: string
 }
@@ -127,6 +129,7 @@ export interface GroupMemberInfoElem {
     role: string,
     sex: string,
     shutup_time: number,
+    py_start?: string
 }
 
 export interface SQCodeElem {
