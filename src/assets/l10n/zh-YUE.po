@@ -504,10 +504,6 @@ msgstr "{readNum} 人已讀 | {isRead}"
 msgid "公告"
 msgstr "公告"
 
-#: src/pages/options/OptDev.vue:139
-msgid "页面测试"
-msgstr "頁面測試"
-
 #: src/pages/options/OptDev.vue:140
 msgid "让我康康 ~"
 msgstr "點解我要 OT 啊？"
@@ -1439,4 +1435,12 @@ msgstr ""
 
 #: src/function/utils/msgUtil.ts:231
 msgid "视频"
+msgstr ""
+
+#: src/pages/Chat.vue:159
+msgid "合并转发"
+msgstr ""
+
+#: src/pages/Chat.vue:163
+msgid "截图"
 msgstr ""

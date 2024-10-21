@@ -10,7 +10,7 @@
  -->
 
 <template>
-    <div :class="'message' + (type ? ' ' + type : '') + (data.revoke ? ' revoke' : '') + (isMe ? ' me': '')" :data-raw="getMsgRawTxt(data)"
+    <div :class="'message' + (type ? ' ' + type : '') + (data.revoke ? ' revoke' : '') + (isMe ? ' me': '') + (selected ? ' selected' : '')" :data-raw="getMsgRawTxt(data)"
         :id="'chat-' + data.message_id" :data-sender="data.sender.user_id" :data-time="data.time"
         @mouseleave="hiddenUserInfo">
         <img name="avatar" :src="'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + data.sender.user_id" v-show="!isMe || type == 'merge'">
@@ -131,7 +131,6 @@
 import Option from '@/function/option'
 import CardMessage from './msg-component/CardMessage.vue'
 import app from '@/main'
-import Umami from '@stapxs/umami-logger-typescript'
 
 import { MsgBodyFuns as ViewFuns } from '@/function/model/msg-body'
 import { defineComponent } from 'vue'
@@ -140,12 +139,12 @@ import { runtimeData } from '@/function/msg'
 import { Logger, PopInfo, PopType } from '@/function/base'
 import { StringifyOptions } from 'querystring'
 import { getFace, getMsgRawTxt } from '@/function/utils/msgUtil'
-import { openLink, downloadFile } from '@/function/utils/appUtil'
+import { openLink, downloadFile, sendStatEvent } from '@/function/utils/appUtil'
 import { getSizeFromBytes } from '@/function/utils/systemUtil'
 
 export default defineComponent({
     name: 'MsgBody',
-    props: ['data', 'type'],
+    props: ['data', 'type', 'selected'],
     components: { CardMessage },
     data () {
         return {
@@ -343,25 +342,23 @@ export default defineComponent({
                             }
                             this.pageViewInfo = pageData
                         }
-                        // UM：上传使用链接预览功能的事件用于分析（成功）
                         const reg1 = /\/\/(.*?)\//g
                         const getDom = fistLink.match(reg1)
                         if (getDom !== null) {
-                            Umami.trackEvent('link_view', { domain: RegExp.$1, statue: true })
+                            sendStatEvent('link_view', { domain: RegExp.$1, statue: true })
                         } else {
-                            Umami.trackEvent('link_view', { domain: '', statue: true })
+                            sendStatEvent('link_view', { domain: '', statue: true })
                         }
                     })
                     .catch(error => {
                         if (error) {
                             logger.error(error as Error, '获取链接预览失败: ' + fistLink)
-                            // UM：上传使用链接预览功能的事件用于分析（失败）
                             const reg1 = /\/\/(.*?)\//g
                             const getDom = fistLink.match(reg1)
                             if (getDom !== null) {
-                                Umami.trackEvent('link_view', { domain: RegExp.$1, statue: false })
+                                sendStatEvent('link_view', { domain: RegExp.$1, statue: false })
                             } else {
-                                Umami.trackEvent('link_view', { domain: '', statue: false })
+                                sendStatEvent('link_view', { domain: '', statue: false })
                             }
                         }
                     })

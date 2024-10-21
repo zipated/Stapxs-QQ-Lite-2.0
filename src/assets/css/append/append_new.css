@@ -566,7 +566,7 @@
     max-width: 30%;
 }
 .app-msg > div > a {
-    font-size: 0.87rem;
+    font-size: 0.75rem;
 }
 .app-msg > div > div:first-child > svg {
     margin-top: 3px;
