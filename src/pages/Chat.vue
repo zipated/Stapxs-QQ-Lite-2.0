@@ -357,10 +357,6 @@
                     <div><font-awesome-icon :icon="['fas', 'floppy-disk']" /></div>
                     <a>{{ $t('下载图片') }}</a>
                 </div>
-                <div @click="addStoreFace" v-show="tags.menuDisplay.addStoreFace != false">
-                    <div><font-awesome-icon :icon="['fas', 'heart']" /></div>
-                    <a>{{ $t('收藏商城表情') }}</a>
-                </div>
                 <div @click="revokeMsg" v-show="tags.menuDisplay.revoke">
                     <div><font-awesome-icon :icon="['fas', 'xmark']" /></div>
                     <a>{{ $t('撤回') }}</a>
@@ -454,7 +450,6 @@ import { Logger, LogType, PopInfo, PopType } from '@/function/base'
 import { Connector, login as loginInfo } from '@/function/connect'
 import { runtimeData} from '@/function/msg'
 import { BaseChatInfoElem, MsgItemElem, SQCodeElem, GroupMemberInfoElem, UserFriendElem, UserGroupElem } from '@/function/elements/information'
-import option from '@/function/option'
 
 export default defineComponent({
     name: 'ViewChat',
@@ -493,7 +488,6 @@ export default defineComponent({
                     copy: true,
                     copySelect: false,
                     downloadImg: false as string | false,
-                    addStoreFace: false,
                     revoke: false,
                     at: true,
                     remove: false,
@@ -854,9 +848,7 @@ export default defineComponent({
                             this.tags.menuDisplay.add = false
                         }
                     })
-                    if(data.message[0].type == 'mface') {
-                        this.tags.menuDisplay.addStoreFace = true
-                    } else if(select.nodeName == 'IMG') {
+                    if(select.nodeName == 'IMG') {
                         // 右击图片需要显示的内容，这边特例设置为链接
                         this.tags.menuDisplay.downloadImg = (select as HTMLImageElement).src
                     }
@@ -913,7 +905,6 @@ export default defineComponent({
                 copy: true,
                 copySelect: false,
                 downloadImg: false,
-                addStoreFace: false,
                 revoke: false,
                 at: false,
                 remove: false,
@@ -1105,30 +1096,6 @@ export default defineComponent({
                     user.click()
                 }
             })
-        },
-
-        /**
-         * 添加商城表情
-         */
-        addStoreFace() {
-            const popInfo = new PopInfo()
-            const msg = this.selectedMsg
-            if (msg !== null) {
-            const mface = msg.message[0]
-                const storeFaceList = option.get('store_face') ?? []
-                const face = storeFaceList.find((item: any) => {
-                    return item.emoji_package_id == mface.emoji_package_id && 
-                        item.emoji_id == mface.emoji_id
-                })
-                if(face) {
-                    popInfo.add(PopType.INFO, this.$t('表情已被收藏'))
-                } else {
-                    storeFaceList.push(mface)
-                    option.save('store_face', storeFaceList)
-                    popInfo.add(PopType.INFO, this.$t('表情收藏成功'))
-                }
-            }
-            this.closeMsgMenu()
         },
 
         /**
@@ -1625,7 +1592,7 @@ export default defineComponent({
                     this.list.forEach((item: any) => {
                         if (item.message !== undefined) {
                             item.message.forEach((msg: MsgItemElem) => {
-                                if (msg.type === 'image' && !msg.asface) {
+                                if (msg.type === 'image' && msg.file != 'marketface') {
                                     const info = {
                                         index: item.message_id,
                                         message_id: item.message_id,

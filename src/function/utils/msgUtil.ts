@@ -220,9 +220,8 @@ export function getMsgRawTxt(data: any): string {
                 // eslint-disable-next-line
                 case 'text': back += message[i].text.replaceAll('\n', ' ').replaceAll('\r', ' '); break
                 case 'face': back += '[' + $t('表情') + ']'; break
-                case 'mface': back += message[i].summary ?? message[i].text; break
                 case 'bface': back += message[i].text; break
-                case 'image': back += '[' + $t('图片') + ']'; break
+                case 'image': back += message[i].summary ?? '[' + $t('图片') + ']'; break
                 case 'record': back += '[' + $t('语音') + ']'; break
                 case 'video': back += '[' + $t('视频') + ']'; break
                 case 'file': back += '[' + $t('文件') + ']'; break
@@ -430,7 +429,6 @@ export function updateLastestHistory(item: UserFriendElem & UserGroupElem) {
 }
 
 export function sendMsgAppendInfo(msg: any) {
-    msg.message.forEach(() => {
-        // TODO
-    })
+    msg
+    // TODO
 }

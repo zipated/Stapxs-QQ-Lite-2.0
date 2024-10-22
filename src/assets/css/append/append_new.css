@@ -184,9 +184,6 @@
 .face-pan {
     border: 1px solid var(--color-card-2);
 }
-.store-face-list > div {
-    width: calc(20% - 10px) !important;
-}
 .face-pan div.tab-main {
     margin-top: 10px !important;
 }
@@ -594,9 +591,6 @@
     margin: 8px;
     height: 19px;
     width: 19px;
-}
-.store-face-list {
-    height: calc(300px - 90px) !important;
 }
 
 .face-stickers {
