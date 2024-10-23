@@ -13,7 +13,7 @@
     <div :class="'message' + (type ? ' ' + type : '') + (data.revoke ? ' revoke' : '') + (isMe ? ' me': '') + (selected ? ' selected' : '')" :data-raw="getMsgRawTxt(data)"
         :id="'chat-' + data.message_id" :data-sender="data.sender.user_id" :data-time="data.time"
         @mouseleave="hiddenUserInfo">
-        <img name="avatar" :src="'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + data.sender.user_id" v-show="!isMe || type == 'merge'">
+        <img @dblclick="sendPoke" name="avatar" :src="'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + data.sender.user_id" v-show="!isMe || type == 'merge'">
         <div class="message-space" v-if="isMe && type != 'merge'"></div>
         <div :class="isMe ? (type == 'merge' ? 'message-body' : 'message-body me') : 'message-body'">
             <template v-if="runtimeData.chatInfo.show.type == 'group' && !isMe && senderInfo?.title && senderInfo?.title != ''">
@@ -531,6 +531,11 @@ export default defineComponent({
                     hasCard = true
             }})
             return hasCard
+        },
+
+        sendPoke() {
+            // 调用上级组件的 poke 方法
+            this.$emit('sendPoke', this.data.sender.user_id)
         }
     },
     mounted () {

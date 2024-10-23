@@ -65,7 +65,8 @@
                         @contextmenu.prevent="showMsgMeun($event, msg)"
                         @touchstart="msgStartMove($event, msg)"
                         @touchmove="msgOnMove"
-                        @touchend="msgMoveEnd($event, msg)">
+                        @touchend="msgMoveEnd($event, msg)"
+                        @sendPoke="sendPoke">
                     </MsgBody>
                     <!-- 其他通知消息 -->
                     <NoticeBody :id="uuid()" v-if="msg.post_type === 'notice'" :key="'notice-' + index" :data="msg"></NoticeBody>
@@ -216,7 +217,7 @@
                         @click="details[1].open = !details[1].open, tags.showMoreDetail = false">
                         <font-awesome-icon :icon="['fas', 'face-laugh']" />
                     </div>
-                    <div :title="$t('戳一戳')" v-if="chat.show.type === 'user'" @click="sendPoke">
+                    <div :title="$t('戳一戳')" v-if="chat.show.type === 'user'" @click="sendPoke(chat.show.id)">
                         <font-awesome-icon :icon="['fas', 'fa-hand-point-up']" /></div>
                     <div :title="$t('精华消息')" v-if="chat.show.type === 'group'" @click="showJin">
                         <font-awesome-icon :icon="['fas', 'star']" /></div>
@@ -365,6 +366,10 @@
                     <div><font-awesome-icon :icon="['fas', 'at']" /></div>
                     <a>{{ $t('提及') }}</a>
                 </div>
+                <div @click="sendPoke(selectedMsg ? selectedMsg.sender.user_id : undefined)" v-show="tags.menuDisplay.poke">
+                    <div><font-awesome-icon :icon="['fas', 'fa-hand-point-up']" /></div>
+                    <a>{{ $t('戳一戳') }}</a>
+                </div>
                 <div @click="removeUser" v-show="tags.menuDisplay.remove">
                     <div><font-awesome-icon :icon="['fas', 'trash-can']" /></div>
                     <a>{{ $t('移出群聊') }}</a>
@@ -490,6 +495,7 @@ export default defineComponent({
                     downloadImg: false as string | false,
                     revoke: false,
                     at: true,
+                    poke: false,
                     remove: false,
                     respond: false,
                     showRespond: true
@@ -786,6 +792,7 @@ export default defineComponent({
                     })
                     this.tags.menuDisplay.showRespond = false
                     this.tags.menuDisplay.at = true
+                    this.tags.menuDisplay.poke = true
                     this.tags.menuDisplay.remove = true
                     if(runtimeData.chatInfo.show.type != 'group' ||
                         data.sender.user_id === runtimeData.loginInfo.uin ||
@@ -907,6 +914,7 @@ export default defineComponent({
                 downloadImg: false,
                 revoke: false,
                 at: false,
+                poke: false,
                 remove: false,
                 respond: false,
                 showRespond: true
@@ -1816,18 +1824,19 @@ export default defineComponent({
         /**
          * 发送戳一戳
          */
-        sendPoke() {
+        sendPoke(user_id: number) {
             if(runtimeData.jsonMap.poke) {
                 let name = runtimeData.jsonMap.poke.name
                 if(this.chat.show.type == 'user' && runtimeData.jsonMap.poke.private_name) {
                     name = runtimeData.jsonMap.poke.private_name
                 }
                 Connector.send(name, {
-                    user_id: this.chat.show.id,
+                    user_id: user_id,
                     group_id: this.chat.show.id
                 }, 'sendPoke')
             }
-            this.tags.showMoreDetail = !this.tags.showMoreDetail
+            this.tags.showMoreDetail = false
+            this.tags.menuDisplay.poke = false
         },
 
         /**

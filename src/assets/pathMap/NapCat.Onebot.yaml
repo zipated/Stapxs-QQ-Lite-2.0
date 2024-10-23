@@ -147,3 +147,7 @@ recent_contact:
         time: /msgTime
         chat_type: /chatType
         name: /peerName
+# 戳一戳
+poke:
+    name: group_poke
+    private_name: friend_poke

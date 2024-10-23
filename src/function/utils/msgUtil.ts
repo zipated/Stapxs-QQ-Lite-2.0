@@ -429,6 +429,10 @@ export function updateLastestHistory(item: UserFriendElem & UserGroupElem) {
 }
 
 export function sendMsgAppendInfo(msg: any) {
-    msg
-    // TODO
+    if(msg.message) {
+        msg.message.forEach(() => {
+            // TODO
+        }
+        )
+    }
 }
