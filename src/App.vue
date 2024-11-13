@@ -26,10 +26,7 @@
                     <font-awesome-icon :icon="['fas', 'user']" />
                 </li>
                 <div class="side-bar-space"></div>
-                <li v-show="runtimeData.sysConfig.append_scripts" id="bar-friends" @click="changeTab('脚本', 'Scripts', false)" :class="tags.page == 'Scripts' ? 'active' : ''">
-                    <font-awesome-icon :icon="['fas', 'file-code']" />
-                </li>
-                <li @click="changeTab('设置', 'Options', false);Connector.send('get_version_info', {}, 'getVersionInfo')"
+                <li @click="changeTab('设置', 'Options', false)"
                     :class="tags.page == 'Options' ? 'active' : ''">
                     <font-awesome-icon :icon="['fas', 'gear']" />
                 </li>
@@ -100,16 +97,11 @@
                         @userClick="changeChat">
                     </Friends>
                 </div>
-                <div v-show="tags.page == 'Scripts' && runtimeData.sysConfig.append_scripts">
-                    <Scripts></Scripts>
-                </div>
                 <div class="opt-main-tab">
                     <Options
                         :show="tags.page == 'Options'"
                         :class="tags.page == 'Options' ? 'active' : ''"
-                        :config="runtimeData.sysConfig"
-                        :info="runtimeData.loginInfo"
-                        :status="loginInfo">
+                        :config="runtimeData.sysConfig">
                     </Options>
                 </div>
             </div>
@@ -201,7 +193,6 @@ import { runtimeData, notificationList } from '@/function/msg'
 import { BaseChatInfoElem } from '@/function/elements/information'
 import * as App from './function/utils/appUtil'
 
-import Scripts from '@/pages/Scripts.vue'
 import Options from '@/pages/Options.vue'
 import Friends from '@/pages/Friends.vue'
 import Messages from '@/pages/Messages.vue'
@@ -210,7 +201,6 @@ import Chat from '@/pages/Chat.vue'
 export default defineComponent({
     name: 'App',
     components: {
-        Scripts,
         Options,
         Friends,
         Messages,
@@ -274,6 +264,13 @@ export default defineComponent({
             }
             this.tags.showChat = show
             this.tags.page = view
+            // 附加操作
+            switch(view) {
+                case 'Options': {
+                    Connector.send('get_version_info', {}, 'getVersionInfo')
+                    break
+                }
+            }
         },
         barMainClick() {
             if(loginInfo.status) {

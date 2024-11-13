@@ -20,7 +20,7 @@ import pinyin from 'pinyin'
 
 import Umami from '@stapxs/umami-logger-typescript'
 
-import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt, updateLastestHistory, sendMsgAppendInfo } from '@/function/utils/msgUtil'
+import { buildMsgList, getMsgData, parseMsgList, getMsgRawTxt, updateLastestHistory, sendMsgAppendInfo, orderOnMsgList } from '@/function/utils/msgUtil'
 import { getViewTime, escape2Html, randomNum } from '@/function/utils/systemUtil'
 import { reloadUsers, reloadCookies, downloadFile, updateMenu, jumpToChat, loadJsonMap, sendStatEvent } from '@/function/utils/appUtil'
 import { reactive, markRaw, defineAsyncComponent } from 'vue'
@@ -68,7 +68,6 @@ export function parse(str: string) {
         } else {
             let type = msg.post_type
             if(type == 'notice') {
-                runtimeData.watch.newNotice = msg
                 type = msg.notice_type ?? msg.sub_type
             }
             name = type
@@ -431,15 +430,20 @@ const msgFunctons = {
                 const raw = getMsgRawTxt(list[0])
                 const sender = list[0].sender
                 const time = list[0].time
+                let get = false
                 // 更新消息列表
                 runtimeData.onMsgList.forEach((item) => {
-                    if (item.user_id == id) {
+                    if (item.user_id == id || item.group_id == id) {
                         item.raw_msg = raw
-                    } else if(item.group_id == id) {
-                        item.raw_msg = sender.nickname + ': ' + raw
+                        item.time = getViewTime(Number(time))
+                        get = true
                     }
-                    item.time = getViewTime(Number(time))
                 })
+                // 重新排序列表
+                if(get) {
+                const newList = orderOnMsgList(runtimeData.onMsgList)
+                runtimeData.onMsgList = newList
+                }
             }
         }
     },
@@ -1129,7 +1133,6 @@ function saveMsg(msg: any, append = undefined as undefined | string) {
         runtimeData.messageList.forEach((item) => {
             sendMsgAppendInfo(item)
         })
-
         // 将消息列表的最后一条 raw_message 保存到用户列表中
         const lastMsg = runtimeData.messageList[runtimeData.messageList.length - 1]
         if (lastMsg) {
@@ -1229,7 +1232,6 @@ function newMsg(name: string, data: any) {
             return item.user_id == sender
         })
         const isImportant = senderInfo?.class_id == 9999
-        runtimeData.watch.newMsg = data
 
         // 消息回调检查
         // PS：如果在新消息中获取到了自己的消息，则自动打开“停止消息回调”设置防止发送的消息重复
@@ -1304,6 +1306,10 @@ function newMsg(name: string, data: any) {
                     runtimeData.onMsgList[index].raw_msg = getMsgRawTxt(data)
                 }
                 runtimeData.onMsgList[index].time = getViewTime(Number(data.time))
+
+                // 重新排序列表
+                const newList = orderOnMsgList(runtimeData.onMsgList)
+                runtimeData.onMsgList = newList
                 return true
             }
             return false
@@ -1442,21 +1448,6 @@ function newMsg(name: string, data: any) {
                     item.new_msg = true
                 }
             })
-            // 重新排序列表
-            const newList = [] as (UserFriendElem & UserGroupElem)[]
-            let topNum = 1
-            runtimeData.onMsgList.forEach((item) => {
-                // 排序操作
-                if (item.always_top === true) {
-                    newList.unshift(item)
-                    topNum++
-                } else if (item.new_msg === true) {
-                    newList.splice(topNum - 1, 0, item)
-                } else {
-                    newList.push(item)
-                }
-            })
-            runtimeData.onMsgList = newList
         }
     }
 }
@@ -1532,10 +1523,7 @@ const baseRuntime = {
         classes: [],
         darkMode: false
     },
-    watch: {
-        newMsg: {},
-        newNotice: {}
-    },
+    watch: {},
     chatInfo: {
         show: { type: '', id: 0, name: '', avatar: '' },
         info: {

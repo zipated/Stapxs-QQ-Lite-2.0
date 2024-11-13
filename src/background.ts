@@ -74,9 +74,7 @@ async function createWindow() {
             trafficLightPosition: { x: 11, y: 10 },
             vibrancy: vibrancyMode == 'transparent' ? undefined : 'fullscreen-ui',
             transparent: true,
-
-            visualEffectState: process.env.NODE_ENV 
-                    === 'development' ? 'active' : 'followWindow'
+            visualEffectState: 'followWindow'
         }
     } else if(process.platform === 'win32') {
         // Windows
