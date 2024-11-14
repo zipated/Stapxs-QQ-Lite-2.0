@@ -19,6 +19,7 @@ import { hslToRgb, rgbToHsl } from '@/function/utils/systemUtil'
 import { toRaw, nextTick } from 'vue'
 import { sendMsgRaw } from './msgUtil'
 import { parseMsg } from '../sender'
+import { Notify } from '../notify'
 
 const popInfo = new PopInfo()
 const logger = new Logger()
@@ -443,6 +444,7 @@ export function createIpc() {
         })
         runtimeData.reader.on('app:jumpChat', (event, info) => {
             jumpToChat(info.userId, info.msgId)
+            new Notify().closeAll(info.userId)
         })
         
         // 后端连接模式

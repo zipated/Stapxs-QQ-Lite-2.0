@@ -221,7 +221,7 @@ export function getMsgRawTxt(data: any): string {
                 case 'text': back += message[i].text.replaceAll('\n', ' ').replaceAll('\r', ' '); break
                 case 'face': back += '[' + $t('表情') + ']'; break
                 case 'bface': back += message[i].text; break
-                case 'image': back += (message[i].summary || message[i].summary == "") ? '[' + $t('图片') + ']' : message[i].summary ; break
+                case 'image': back += (message[i].summary || message[i].summary == '') ? '[' + $t('图片') + ']' : message[i].summary ; break
                 case 'record': back += '[' + $t('语音') + ']'; break
                 case 'video': back += '[' + $t('视频') + ']'; break
                 case 'file': back += '[' + $t('文件') + ']'; break
@@ -456,7 +456,7 @@ export function orderOnMsgList(list: (UserFriendElem & UserGroupElem)[]) {
 export function sendMsgAppendInfo(msg: any) {
     if(msg.message) {
         msg.message.forEach(() => {
-            // TODO
+            // TODO: 消息附加功能，暂时没用到
         }
         )
     }

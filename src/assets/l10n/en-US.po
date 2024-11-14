@@ -1371,3 +1371,6 @@ msgstr ""
 #: src/pages/Chat.vue:163
 msgid "截图"
 msgstr ""
+
+msgid "“{body}” 以及 {num} 条消息"
+msgstr ""

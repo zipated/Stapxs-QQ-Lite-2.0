@@ -189,7 +189,7 @@ import Umami from '@stapxs/umami-logger-typescript'
 import { defineComponent, defineAsyncComponent } from 'vue'
 import { Connector, login as loginInfo } from '@/function/connect'
 import { Logger, popList, PopInfo } from '@/function/base'
-import { runtimeData, notificationList } from '@/function/msg'
+import { runtimeData } from '@/function/msg'
 import { BaseChatInfoElem } from '@/function/elements/information'
 import * as App from './function/utils/appUtil'
 
@@ -197,6 +197,7 @@ import Options from '@/pages/Options.vue'
 import Friends from '@/pages/Friends.vue'
 import Messages from '@/pages/Messages.vue'
 import Chat from '@/pages/Chat.vue'
+import { Notify } from './function/notify'
 
 export default defineComponent({
     name: 'App',
@@ -218,7 +219,6 @@ export default defineComponent({
             loadHistory: App.loadHistory,
             loginInfo: loginInfo,
             runtimeData: runtimeData,
-            notificationList: notificationList,
             tags: {
                 page: 'Home',
                 showChat: false,
@@ -544,6 +544,10 @@ export default defineComponent({
             if(new Date().getMonth() == 3 && new Date().getDate() == 1) {
                 document.getElementById('connect_btn')?.classList.add('afd')
             }
+        }
+        // 页面关闭前
+        window.onbeforeunload = () => {
+            new Notify().clear()
         }
     }
 })

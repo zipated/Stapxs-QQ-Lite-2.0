@@ -6,7 +6,7 @@ import installExtension from 'electron-devtools-installer'
 
 import windowStateKeeper from 'electron-window-state'
 import packageInfo from '../package.json'
-import { noticeList, regIpcListener } from './function/electron/ipc'
+import { regIpcListener } from './function/electron/ipc'
 import { Menu, session, app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import { touchBar } from './function/electron/touchbar'
@@ -164,12 +164,6 @@ function sendUrlToWindow(url: string ,args: string[] = []) {
 }
 
 app.on('window-all-closed', () => {
-    // 清空通知
-    Object.keys(noticeList).forEach((key) => {
-        noticeList[key].forEach((notice) => {
-            notice.close()
-        })
-    })
     if (process.platform === 'win32')
     {
         app.removeAsDefaultProtocolClient('stapx-qq-lite')   // 取消默认协议

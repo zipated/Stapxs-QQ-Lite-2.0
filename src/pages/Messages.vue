@@ -75,7 +75,7 @@ import Menu from 'vue3-bcui/packages/bc-menu/index'
 import Option from '@/function/option'
 
 import { defineComponent } from 'vue'
-import { runtimeData, notificationList } from '@/function/msg'
+import { runtimeData } from '@/function/msg'
 import { UserFriendElem, UserGroupElem } from '@/function/elements/information'
 import { getRaw as getOpt, run as runOpt } from '@/function/option'
 import { loadHistoryMessage } from '@/function/utils/appUtil'
@@ -86,6 +86,7 @@ import { login as loginInfo } from '@/function/connect'
 
 import { faThumbTack, faTrashCan, faCheckToSlot, faGripLines } from '@fortawesome/free-solid-svg-icons'
 import { orderOnMsgList } from '@/function/utils/msgUtil'
+import { Notify } from '@/function/notify'
 
 export default defineComponent({
     name: 'VueMessages',
@@ -137,19 +138,9 @@ export default defineComponent({
                 }
                 // 清除新消息标记
                 runtimeData.onMsgList[index].new_msg = false
-                // 清除消息通知
-                const notificationIndex = notificationList.findIndex((item) => {
-                    const tag = item.tag
-                    const userId = Number(tag.split('/')[0])
-                    return userId == data.user_id || userId == data.group_id
-                })
-                if (notificationIndex != -1) {
-                    const notification = notificationList[notificationIndex]
-                    // PS：使用 close 方法关闭通知也会触发关闭事件，所以这儿需要先移除再关闭
-                    // 防止一些判断用户主动关闭通知的逻辑出现问题
-                    notificationList.splice(notificationIndex, 1)
-                    notification.close()
-                }
+                // 关闭所有通知
+                new Notify().closeAll((runtimeData.onMsgList[index].group_id 
+                    ?? runtimeData.onMsgList[index].user_id).toString())
             }
         },
 
