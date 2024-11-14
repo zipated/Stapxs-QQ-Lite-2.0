@@ -1614,7 +1614,10 @@ export default defineComponent({
                             })
                         }
                     })
-                    if(initMainList) runtimeData.chatInfo.info.image_list = this.getImgList
+                    const viewer = app.config.globalProperties.$viewer
+                    if(!viewer.isShown || initMainList) {
+                        runtimeData.chatInfo.info.image_list = this.getImgList
+                    }
                     // 处理跳入跳转预设
                     // 如果 jump 参数不是 undefined，则意味着这次加载历史记录的同时需要跳转到指定的消息
                     if (runtimeData.chatInfo.show && runtimeData.chatInfo.show.jump) {
