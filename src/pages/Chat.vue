@@ -1694,7 +1694,6 @@ export default defineComponent({
             setTimeout(() => {
                 logger.add(LogType.UI, '消息触屏长按判定：' + this.tags.msgTouch.msgOnTouchDown)
                 if (this.tags.msgTouch.msgOnTouchDown === true) {
-                    sender.style.background = '#00000008'
                     this.showMsgMeun(event, msg)
                 }
             }, 400)
