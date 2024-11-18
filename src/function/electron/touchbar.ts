@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { BrowserWindow, TouchBar, ScrubberItem, nativeImage } from 'electron'
+import { BrowserWindow, TouchBar, nativeImage } from 'electron'
 const { TouchBarButton, TouchBarScrubber, TouchBarPopover, TouchBarSpacer, TouchBarLabel } = TouchBar
 
 export class touchBar {
@@ -8,12 +8,12 @@ export class touchBar {
 
     touchBarScrubber = new TouchBarScrubber({
         overlayStyle: 'outline',
-        showArrowButtons: true,
-        continuous: false,
+        showArrowButtons: false,
+        continuous: true,
         mode: 'free',
         items: [],
         select: (index) => {
-            const id = Object.keys(this.itemList)[index]
+            const id = this.itemList[index].id
             this.win.webContents.send('app:jumpChat', {
                 userId: id,
                 messageId: 0
@@ -21,36 +21,47 @@ export class touchBar {
         }
     })
     search = new TouchBarButton({
-        icon: nativeImage.createFromDataURL('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEDSURBVHgBtZKBEYIwDEWDE7CB3UBGwA3cQDbQDWAD3AA3QSdQJygbwAY19cIRa0OLp//un7lLfElKABwZYxS6Rmsz6YZu0DksEYFCsmAlMRIGa/CnYLkL+oEe0Bv0juU69DZJkg6EyUpnPeWpsU9xZnWtBFOsSKNTmBHmT6y+8BU0rEBBQLYhuhenpBXlFfzQig3xttEKnVF8hXjdWaxc4DcaWPwxYUfxGuKVCfDXe4yn0Ie+MPtPO16FL5mzB64jYAdWX4U6WpWRMC2eGR23doqPNH1OMW86ag8z3V2opD4aSuDCTMfuguxBp1QTDyVwylZWQuNl0Iimf4f28AsRVKObJwdbHWO7DC5FAAAAAElFTkSuQmCC'),
+        icon: nativeImage.createFromNamedImage('NSImageNameTouchBarSearchTemplate', [-1, 0, 1]).resize({ width: 20, height: 20 }),
         click: () => {
             this.win.webContents.send('app:changeTab', 'Friends')
         }
     })
-    itemList: {[key: number]: ScrubberItem} = {}
 
+    baseView = [
+        this.search,
+        new TouchBarPopover({
+            icon: nativeImage.createFromNamedImage('NSImageNameListViewTemplate', [-1, 0, 1]).resize({ width: 20, height: 20 }),
+            items: new TouchBar({ items: [ this.touchBarScrubber ]
+        }), showCloseButton: true}),
+        new TouchBarSpacer({ size: 'flexible' })
+    ]
+
+    // ====================================
+
+    itemList: { id: number, name: string, image: string }[] = []
     constructor(win: BrowserWindow) {
         this.win = win
-        this.win.setTouchBar(new TouchBar({ items: [this.search, this.touchBarScrubber] }))
+        this.win.setTouchBar(new TouchBar({ items: [this.search]}))
     }
-    flush(messageList: {
-        id: number,
-        name: string,
-        image: string
-    }[]) {
-        this.itemList = {}
-        this.win.setTouchBar(new TouchBar({ items: [this.search, this.touchBarScrubber] }))
-        // 创建 item
-        messageList.forEach(async (message) => {
-            this.itemList[message.id] = { label: message.name }
+
+    flush(messageList: { id: number, name: string, image: string }[]) {
+        this.itemList = messageList
+        this.touchBarScrubber.items = messageList.map((item) => {
+            return {
+                label: item.name
+            }
         })
-        this.touchBarScrubber.items = Object.values(this.itemList)
+        this.win.setTouchBar(new TouchBar({ items: this.baseView}))
     }
-    async newMessage(data: {
-        id: number,
-        image: string,
-        name: string,
-        msg: string
-    }) {
+
+    newMsgNum = 0
+    async newMessage(data: { id: number, image: string, name: string, msg: string }) {
+        if(data === undefined) {
+            this.win.setTouchBar(new TouchBar({ items: this.baseView}))
+            this.newMsgNum = 0
+            return
+        }
+        this.newMsgNum++
         const response = await axios.get(data.image, {
             responseType: 'arraybuffer'
         })
@@ -58,17 +69,24 @@ export class touchBar {
         image = image.resize({ width: 25, height: 25 })
         // 创建 poper
         const popover = new TouchBarPopover({
-            label: '新消息',
+            icon: nativeImage.createFromNamedImage('NSImageNameTouchBarNewMessageTemplate', [-1, 0, 1]).resize({ width: 20, height: 20 }),
+            label: this.newMsgNum.toString(),
             items: new TouchBar({
                 items: [
                     new TouchBarButton({ icon: image, iconPosition: 'right', enabled: false, backgroundColor: '#000'}),
-                    new TouchBarButton({ label: data.name ?? '' }),
+                    new TouchBarButton({ label: data.name ?? '', click: () => {
+                        this.win.webContents.send('app:jumpChat', {
+                            userId: data.id,
+                            messageId: 0
+                        })
+                        this.win.setTouchBar(new TouchBar({ items: this.baseView}))
+                    }}),
                     new TouchBarSpacer({ size: 'small' }),
                     new TouchBarLabel({ label: data.msg ?? '' })
                 ]
             }),
             showCloseButton: true
         })
-        this.win.setTouchBar(new TouchBar({ items: [this.search, this.touchBarScrubber, popover] }))
+        this.win.setTouchBar(new TouchBar({ items: this.baseView.concat(popover)}))
     }
 }

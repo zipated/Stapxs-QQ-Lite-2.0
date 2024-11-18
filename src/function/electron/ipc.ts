@@ -425,13 +425,12 @@ export function regIpcListener() {
             }
         }
     }
-    // MacOS：刷新 touchBar 消息列表
+    // MacOS：TouchBar
     ipcMain.on('sys:flushTouchBar', (event, list) => {
         if(touchBarInstance) {
             touchBarInstance.flush(list)
         }
     })
-    // MacOS：新消息，刷新 touchBar
     ipcMain.on('sys:newMessage', (event, data) => {
         if(touchBarInstance) {
             touchBarInstance.newMessage(data)

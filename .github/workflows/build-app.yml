@@ -1,5 +1,4 @@
-# 在主分支上构建
-name: build
+name: build-app
 on:
   push: # push 触发
     branches:
@@ -11,8 +10,6 @@ jobs:
     name: 初始化构建
     runs-on: ubuntu-latest
     outputs:
-      build_web: ${{ steps.step_init.outputs.BUILD_WEB }}
-      build_electron: ${{ steps.step_init.outputs.BUILD_ELECTRON }}
       version: ${{ steps.step_init.outputs.VERSION }}
     steps:
     # 拉取代码
@@ -24,9 +21,7 @@ jobs:
     # 初始化一些流程需要的环境变量
     - name: Init Env
       id: step_init
-      run: |
-        # 获取版本号
-        echo VERSION=$(node -p "require('./package.json').version") >> $GITHUB_OUTPUT
+      run: echo VERSION=$(node -p "require('./package.json').version") >> $GITHUB_OUTPUT
 
   # ========================= 构建 Web 版本 =========================
 
