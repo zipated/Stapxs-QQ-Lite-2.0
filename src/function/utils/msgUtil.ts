@@ -438,11 +438,11 @@ export function orderOnMsgList(list: (UserFriendElem & UserGroupElem)[]) {
     const normalList = list.filter((item) => !item.always_top)
     // 将两个数组按照 item.time 降序排序
     // item.time 不存在或者相同时按照 item.py_start 降序排序
-
     const sortFun = (a: UserFriendElem & UserGroupElem, b: UserFriendElem & UserGroupElem) => {
         if (a.time == b.time || a.time == undefined || b.time == undefined) {
             if(a.py_start == undefined || b.py_start == undefined) {
-                return 0
+                // 排序失败的话排到最后面
+                return 1
             }
             return b.py_start.charCodeAt(0) - a.py_start.charCodeAt(0)
         }

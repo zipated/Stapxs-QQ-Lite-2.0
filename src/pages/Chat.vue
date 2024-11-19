@@ -1541,6 +1541,8 @@ export default defineComponent({
                         'setMessageRead'
                     )
                 }
+                // 将焦点移动到发送框
+                this.toMainInput()
             }
 
             // =================== 刷新统计数据 ===================
