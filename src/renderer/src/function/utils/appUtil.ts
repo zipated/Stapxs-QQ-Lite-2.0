@@ -74,8 +74,7 @@ export function openLink(url: string, external = false) {
                     {
                         text: app.config.globalProperties.$t('打开…'),
                         fun: () => {
-                            const electron = window.require('electron')
-                            const shell = electron ? electron.shell : null
+                            const shell = window.electron.shell
                             if (shell) {
                                 shell.openExternal(url)
                             }
@@ -93,8 +92,7 @@ export function openLink(url: string, external = false) {
             }
             runtimeData.popBoxList.push(popInfo)
         } else {
-            const electron = window.require('electron')
-            const shell = electron ? electron.shell : null
+            const shell = window.electron.shell
             if (shell) {
                 shell.openExternal(url)
             }
@@ -266,7 +264,8 @@ export async function loadWinColor() {
 }
 
 export function updateWinColor(color: string) {
-    if (process.platform == 'win32') {
+    const process = window.electron.process
+    if (process && process.platform == 'win32') {
         const red = parseInt(color.substr(0, 2), 16)
         const green = parseInt(color.substr(2, 2), 16)
         const blue = parseInt(color.substr(4, 2), 16)
@@ -796,7 +795,7 @@ export function loadJsonMap(name: string) {
 
 // UM：统计事件统一上传方法
 export function sendStatEvent(event: string, data: any) {
-    if (!option.get('close_ga') && process.env.NODE_ENV == 'production') {
+    if (!option.get('close_ga') && import.meta.env.DEV) {
         Umami.trackEvent(event, data)
     }
 }

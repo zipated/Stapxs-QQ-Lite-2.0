@@ -288,13 +288,7 @@
                       <img
                         v-if="context.msg_type === 2"
                         class="face"
-                        :src="
-                          require(
-                            './../assets/img/qq-face/gif/s' +
-                              context.face_index +
-                              '.gif',
-                          )
-                        ">
+                        :src="getFace(context.face_index)">
                       <img
                         v-if="context.msg_type === 3"
                         :src="context.image_url">

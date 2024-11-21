@@ -1,6 +1,7 @@
 import app from '@renderer/main'
 
 import l10nConfig from '@renderer/assets/l10n/_l10nconfig.json'
+import PO from 'pofile'
 
 /**
  * 区分安卓、iOS、MacOS 和其他
@@ -38,23 +39,18 @@ export function getTrueLang(): string {
  * @param name 文件名
  */
 export function getPortableFileLang(name: string) {
-    // // eslint-disable-next-line @typescript-eslint/no-var-requires
-    // const file = require(`@renderer/assets/l10n/${name}.po`)
-    // const pot = getText.po.parse(file.default)
-    // // 将翻译平铺为一个对象 {msgid: msgstr}
-    // const back = {} as Record<string, string>
-    // for (const item of Object.keys(pot.translations[''])) {
-    //     if (item !== '') {
-    //         // 如果不存在则不添加，防止影响到 vue-i18n 的 fallback
-    //         if (pot.translations[''][item].msgstr) {
-    //             back[item] =
-    //                 pot.translations[''][item].msgstr[0] != ''
-    //                     ? pot.translations[''][item].msgstr[0]
-    //                     : item
-    //         }
-    //     }
-    // }
-    return {}
+    const files = import.meta.glob('@renderer/assets/l10n/*.po', { eager: true, as: 'raw' })
+    const filePath = Object.keys(files).find(
+        (item) => item.includes(name))
+    const final = {} as { [key: string]: string }
+    if(filePath) {
+        const file = files[filePath]
+        const items = PO.parse(file).items
+        for(const item of items) {
+            final[item.msgid] = item.msgstr[0] == '' ? item.msgid : item.msgstr[0]
+        }
+    }
+    return final
 }
 
 /**

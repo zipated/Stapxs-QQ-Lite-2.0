@@ -16,3 +16,9 @@ declare interface Window {
         lng: number
     }) => void
 }
+
+// po 文件，按字符串处理
+declare module '*.po' {
+    const value: string
+    export default value
+}

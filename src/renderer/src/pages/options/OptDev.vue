@@ -356,7 +356,8 @@
                     runtimeData.reader &&
                     runtimeData.tags.release
                 ) {
-                    switch (process.platform) {
+                    const process = window.electron.process
+                    switch (process && process.platform) {
                         case 'linux': {
                             // archlinux
                             if (
@@ -392,7 +393,6 @@
                 info += 'Application Info:\n'
                 info += `    Uptime           -> ${Math.floor(((new Date().getTime() - uptime) / 1000) * 100) / 100} s\n`
                 info += `    Package Version  -> ${packageInfo.version}\n`
-                info += `    Runtime env      -> ${process.env.NODE_ENV}\n`
                 info += `    Service Work     -> ${runtimeData.tags.sw}\n`
 
                 info += 'Backend Info:\n'

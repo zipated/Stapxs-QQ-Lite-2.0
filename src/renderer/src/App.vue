@@ -365,7 +365,7 @@
         },
         data() {
             return {
-                dev: process.env.NODE_ENV == 'development',
+                dev: import.meta.env.DEV,
                 Connector: Connector,
                 defineAsyncComponent: defineAsyncComponent,
                 save: Option.runASWEvent,
@@ -411,14 +411,13 @@
             window.onload = async () => {
                 // 初始化全局参数
                 runtimeData.tags.isElectron = window.electron != undefined
-                // const reader = electron ? electron.ipcRenderer : null
-                // runtimeData.reader = reader
-                // if (reader) {
-                //     runtimeData.tags.platform =
-                //         await reader.invoke('sys:getPlatform')
-                //     runtimeData.tags.release =
-                //         await reader.invoke('sys:getRelease')
-                // }
+                runtimeData.reader = window.electron.ipcRenderer
+                if (runtimeData.reader) {
+                    runtimeData.tags.platform =
+                        await runtimeData.reader.invoke('sys:getPlatform')
+                    runtimeData.tags.release =
+                        await runtimeData.reader.invoke('sys:getRelease')
+                }
                 app.config.globalProperties.$viewer = this.viewerBody
                 // 初始化波浪动画
                 runtimeData.tags.loginWaveTimer = this.waveAnimation(
@@ -431,7 +430,7 @@
                 App.createMenu() // Electron：创建菜单
                 App.createIpc() // Electron：创建 IPC 通信
                 // 加载开发者相关功能
-                if (process.env.NODE_ENV == 'development') {
+                if (this.dev) {
                     document.title = 'Stapxs QQ Lite (Dev)'
                     // 布局检查工具
                     Spacing.start()
@@ -456,7 +455,7 @@
 
                 // 基础初始化完成
                 logger.debug('欢迎使用 Stapxs QQ Lite！')
-                logger.debug('当前启动模式为: ' + process.env.NODE_ENV)
+                logger.debug('当前启动模式为: ' + this.dev ? 'development' : 'production')
                 logger.debug('Electron 环境: ' + runtimeData.tags.isElectron)
                 // 加载额外样式
                 App.loadAppendStyle()
@@ -475,20 +474,17 @@
                 // =============================================================
                 // 初始化完成
                 // UM：加载 Umami 统计功能
-                if (
-                    !Option.get('close_ga') &&
-                    process.env.NODE_ENV == 'production'
-                ) {
+                if (!Option.get('close_ga') && this.dev) {
                     // 给页面添加一个来源域名方便在 electron 中获取
                     const config = {
-                        baseUrl: process.env.VUE_APP_MU_ADDRESS,
-                        websiteId: process.env.VUE_APP_MU_ID,
+                        baseUrl: import.meta.env.VITE_UMAMI_URL,
+                        websiteId: import.meta.env.VITE_UMAMI_ID,
                     } as any
                     if (runtimeData.tags.isElectron) {
                         config.hostName = 'electron.stapxs.cn'
                     }
                     Umami.initialize(config)
-                } else if (process.env.NODE_ENV == 'development') {
+                } else if (this.dev) {
                     logger.debug('由于运行在调试模式下，分析组件并未初始化 ……')
                 } else if (Option.get('close_ga')) {
                     logger.debug('统计功能已被关闭，分析组件并未初始化 ……')
@@ -533,7 +529,7 @@
                 // UM：发送页面路由分析
                 if (
                     !Option.get('close_ga') &&
-                    process.env.NODE_ENV == 'production'
+                    this.dev
                 ) {
                     Umami.trackPageView('/' + view)
                 }

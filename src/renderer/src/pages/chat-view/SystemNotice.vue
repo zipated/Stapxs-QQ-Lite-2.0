@@ -100,7 +100,7 @@
         </div>
         <div
           v-else
-          v-show="NODE_ENV == 'development'">
+          v-show="dev">
           <div>
             <img>
             <div>
@@ -133,7 +133,7 @@
             return {
                 trueLang: getTrueLang(),
                 runtimeData: runtimeData,
-                NODE_ENV: process.env.NODE_ENV,
+                dev: import.meta.env.DEV,
             }
         },
         methods: {

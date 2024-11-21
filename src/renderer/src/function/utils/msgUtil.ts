@@ -109,12 +109,12 @@ function replaceJPValue(jpStr: string) {
 export function getFace(id: number) {
     const pathList = import.meta.glob('@renderer/assets/img/qq-face/public/*/s*.*')
     for(const path in pathList) {
-        if (path.includes(`/${id}.gif`)) {
+        if (path.includes(`/s${id}.gif`)) {
             return path
         }
     }
     for(const path in pathList) {
-        if (path.includes(`/${id}.png`)) {
+        if (path.includes(`/s${id}.png`)) {
             return path
         }
     }

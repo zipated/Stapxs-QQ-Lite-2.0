@@ -206,7 +206,7 @@
                 getMsgRawTxt: getMsgRawTxt,
                 popInfo: new PopInfo(),
                 packageInfo: packageInfo,
-                runMode: process.env.NODE_ENV,
+                runMode: import.meta.env.DEV,
                 timeLoad: markRaw({
                     time: Intl.DateTimeFormat(getTrueLang(), {
                         hour: 'numeric',

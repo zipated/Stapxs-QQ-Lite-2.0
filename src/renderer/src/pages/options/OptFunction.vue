@@ -261,8 +261,8 @@
                 }
             },
             showStatus() {
-                if (process.env.VUE_APP_MU_SHARE) {
-                    openLink(process.env.VUE_APP_MU_SHARE, true)
+                if (import.meta.env.VITE_APP_MU_SHARE) {
+                    openLink(import.meta.env.VITE_APP_MU_SHARE, true)
                 }
             },
         },

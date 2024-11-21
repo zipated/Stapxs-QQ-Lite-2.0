@@ -15,9 +15,7 @@ export class Notify {
      */
     public notify(info: NotifyInfo) {
         const $t = app.config.globalProperties.$t
-        const isElectron =
-            (process.env.IS_ELECTRON as unknown as boolean) &&
-            window.require != undefined
+        const isElectron = runtimeData.tags.isElectron
         // 判断当前 userId 是否已存在通知
         const userId = info.tag.split('/')[0]
         if (Notify.userNotifyList[userId] === undefined) {
@@ -61,9 +59,7 @@ export class Notify {
      * @param info 通知信息
      */
     public notifySingle(info: NotifyInfo) {
-        const isElectron =
-            (process.env.IS_ELECTRON as unknown as boolean) &&
-            window.require != undefined
+        const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
             if (runtimeData.reader)
                 runtimeData.reader.send('sys:sendNotice', info)
@@ -92,9 +88,7 @@ export class Notify {
      * @param userId 用户 ID
      */
     public closeAll(userId: string) {
-        const isElectron =
-            (process.env.IS_ELECTRON as unknown as boolean) &&
-            window.require != undefined
+        const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
             if (runtimeData.reader)
                 runtimeData.reader.send('sys:closeAllNotice', userId)
@@ -113,9 +107,7 @@ export class Notify {
      * 关闭所有通知
      */
     public clear() {
-        const isElectron =
-            (process.env.IS_ELECTRON as unknown as boolean) &&
-            window.require != undefined
+        const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
             if (runtimeData.reader) runtimeData.reader.send('sys:clearNotice')
         } else {
@@ -133,9 +125,7 @@ export class Notify {
      * @param tag 通知标签
      */
     private close(tag: string) {
-        const isElectron =
-            (process.env.IS_ELECTRON as unknown as boolean) &&
-            window.require != undefined
+        const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
             if (runtimeData.reader)
                 runtimeData.reader.send('sys:closeNotice', tag)

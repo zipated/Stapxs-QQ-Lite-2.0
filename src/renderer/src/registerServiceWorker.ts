@@ -8,8 +8,8 @@ import { runtimeData } from './function/msg'
 const popInfo = new PopInfo()
 const logger = new Logger()
 
-if (process.env.NODE_ENV === 'production') {
-    register(`${process.env.BASE_URL}sw.js`, {
+if (import.meta.env.DEV) {
+    register('/sw.js', {
         ready() {
             logger.debug(
                 app.config.globalProperties.$t(

@@ -116,7 +116,7 @@
              */
             createMap() {
                 const json = JSON.parse(this.item.data)
-                window.createMap(process.env.VUE_APP_AMAP_KEY, this.id, {
+                window.createMap(import.meta.env.VITE_AMAP_KEY, this.id, {
                     lat: json.meta['Location.Search'].lat,
                     lng: json.meta['Location.Search'].lng,
                 })

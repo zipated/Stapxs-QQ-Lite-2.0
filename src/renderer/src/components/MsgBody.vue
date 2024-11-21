@@ -612,7 +612,7 @@
                     const fistLink = linkList[0]
                     // 获取链接预览
                     fetch(
-                        process.env.VUE_APP_LINK_VIEW +
+                        import.meta.env.VITE_APP_LINK_VIEW +
                             encodeURIComponent(fistLink),
                     )
                         .then((res) => res.json())
