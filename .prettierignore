@@ -1,8 +1,0 @@
-.github
-.vscode
-out
-dist
-pnpm-lock.yaml
-LICENSE.md
-tsconfig.json
-tsconfig.*.json
