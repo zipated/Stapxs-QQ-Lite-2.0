@@ -209,14 +209,15 @@
         <div class="ss-range">
           <input
             v-model="runtimeData.sysConfig.chat_background_blur"
-            :style="`background-size: ${runtimeData.sysConfig.chat_background_blur}% 100%;`"
+            :style="`background-size:
+                ${runtimeData.sysConfig.chat_background_blur}% 100%;`"
             type="range"
             name="chat_background_blur"
             @input="save">
           <span
-            :style="`color: var(--color-font${runtimeData.sysConfig.chat_background_blur > 50 ? '-r' : ''})`">{{
-            runtimeData.sysConfig.chat_background_blur
-          }}
+            :style="`color: var(--color-font${
+              runtimeData.sysConfig.chat_background_blur > 50 ? '-r' : ''})`">
+            {{ runtimeData.sysConfig.chat_background_blur }}
             px</span>
         </div>
       </div>
@@ -243,7 +244,9 @@
             @change="save"
             @input="setInitialScaleShow">
           <span
-            :style="`color: var(--color-font${initialScaleShow / 0.05 > 50 ? '-r' : ''})`">{{ initialScaleShow }}</span>
+            :style="`color: var(--color-font${
+              initialScaleShow / 0.05 > 50 ? '-r' : ''})`">
+            {{ initialScaleShow }}</span>
         </div>
       </div>
       <div
@@ -266,7 +269,10 @@
             @change="save"
             @input="setFsAdaptationShow">
           <span
-            :style="`color: var(--color-font${fsAdaptationShow / 50 > 0.5 ? '-r' : ''})`">{{ fsAdaptationShow }} px</span>
+            :style="`color: var(--color-font${
+              fsAdaptationShow / 50 > 0.5 ? '-r' : ''})`">
+            {{ fsAdaptationShow }} px
+          </span>
         </div>
       </div>
       <div

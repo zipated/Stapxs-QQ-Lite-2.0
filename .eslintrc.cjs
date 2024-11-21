@@ -42,5 +42,7 @@ module.exports = {
         'vue/v-for-delimiter-style': ['error', 'in'],         // v-for 分隔符
         'vue/require-name-property': 'warn',                  // 组件 name 属性
         'vue/prefer-true-attribute-shorthand': 'warn',        // 属性简写
+        'vue/require-prop-types': 'off',                      // prop 类型
+        'vue/no-v-html': 'off',                               // v-html
     },
 }

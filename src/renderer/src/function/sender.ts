@@ -40,7 +40,7 @@ export function parseMsg(msg: string, cache: MsgItemElem[], img: string[]) {
         })
     }
     // 处理消息
-    let back = undefined
+    let back = undefined as any
     if (runtimeData.tags.msgType == BotMsgType.Array) {
         back = parseMsgToJSON(msg, cache)
     } else if (runtimeData.tags.msgType == BotMsgType.CQCode) {
@@ -73,7 +73,7 @@ export default {
  * @returns
  */
 function parseMsgToJSON(msg: string, cache: MsgItemElem[]) {
-    const back = []
+    const back = [] as MsgItemElem[]
     // 处理消息文本
     const specialList = getSQList(msg)
     if (specialList !== null) {

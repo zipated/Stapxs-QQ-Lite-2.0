@@ -38,6 +38,7 @@ export class MsgBodyFuns {
             case 'xml':
                 return false
         }
+        return false
     }
     /**
      * 尝试解析渲染 XML 消息
@@ -96,7 +97,7 @@ export class MsgBodyFuns {
             const header = document.createElement('div')
             header.innerHTML = msgHeader
             // 处理特殊的出处
-            let sourceBody = undefined
+            let sourceBody = undefined as HTMLElement | undefined
             for (let i = 0; i < div.children.length; i++) {
                 if (div.children[i].nodeName === 'SOURCE') {
                     sourceBody = div.children[i] as HTMLElement

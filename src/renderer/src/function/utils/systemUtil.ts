@@ -275,9 +275,9 @@ export function getRandom(
     minlA: boolean,
     fqy: number,
 ): string {
-    const arr = []
-    const arr1 = []
-    const arr2 = []
+    const arr = [] as number[]
+    const arr1 = [] as number[]
+    const arr2 = [] as number[]
     if (num) {
         for (let m = 0; m <= 9; m++) {
             arr.push(m)

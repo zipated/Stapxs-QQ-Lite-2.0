@@ -4,6 +4,7 @@
  * @Date: 2024/04/22
  * @Version: 1.0
 -->
+ <!-- eslint-disable max-len -->
 
 <template>
   <div class="about-pan">

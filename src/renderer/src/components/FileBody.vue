@@ -37,7 +37,7 @@
           item.dead_time - item.create_time / 86400 - 1 + $t('天后')
         }}</span>
         <span v-if="item.type === 2">{{
-          $t('共 {num} 个文件', item.size, { num: item.size })
+          $t('共 {num} 个文件', { num: item.size })
         }}</span>
         <span v-if="item.type === 1">{{ getSize(item.size) }}</span>
       </div>
@@ -68,7 +68,8 @@
         :stroke-dasharray="
           item.downloadingPercentage === undefined
             ? '0,10000'
-            : `${(Math.floor(2 * Math.PI * 25) * item.downloadingPercentage) / 100},10000`
+            : `${(Math.floor(2 * Math.PI * 25) *
+              item.downloadingPercentage) / 100},10000`
         " />
     </svg>
     <div

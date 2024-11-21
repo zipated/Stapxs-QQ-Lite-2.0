@@ -12,7 +12,7 @@
         <div class="base-face">
           <div
             v-for="num in baseFaceMax"
-            v-show="getFace(num) != false"
+            v-show="getFace(num) != ''"
             :key="'base-face-' + num"
             :data-id="num"
             @click="addBaseFace(num)">
@@ -68,6 +68,7 @@
             BcTab,
         },
         props: ['display'],
+        emits: ['addSpecialMsg'],
         data() {
             return {
                 getFace: getFace,

@@ -63,7 +63,7 @@ const msgPaths = import.meta.glob("@renderer/assets/pathMap/*.yaml", { eager: tr
 const msgPathAt = Object.keys(msgPaths).find((item) => {
     return item.indexOf('Lagrange.OneBot.yaml') > 0
 })
-let msgPath = {}
+let msgPath = {} as { [key: string]: any }
 if(msgPathAt != undefined) {
     msgPath = (msgPaths[msgPathAt] as any).default
 }
@@ -119,7 +119,7 @@ const noticeFunctions = {
     /**
      * 心跳包
      */
-    meta_event: (name: string, msg: { [key: string]: any }) => {
+    meta_event: (_: string, msg: { [key: string]: any }) => {
         if (firstHeartbeatTime == -1) {
             firstHeartbeatTime = 0
             runtimeData.watch.heartbeatTime = 0
@@ -152,7 +152,7 @@ const noticeFunctions = {
     /**
      * 请求
      */
-    request: (name: string, msg: { [key: string]: any }) => {
+    request: (_: string, msg: { [key: string]: any }) => {
         if (runtimeData.systemNoticesList) {
             runtimeData.systemNoticesList.push(msg)
         } else {
@@ -163,7 +163,7 @@ const noticeFunctions = {
     /**
      * 好友变动
      */
-    friend: (name: string, msg: { [key: string]: any }) => {
+    friend: (_: string, msg: { [key: string]: any }) => {
         // 重新加载联系人列表
         reloadUsers()
         switch (msg.sub_type) {
@@ -203,7 +203,7 @@ const noticeFunctions = {
     /**
      * 表情回应
      */
-    group_msg_emoji_like: (name: string, msg: { [key: string]: any }) => {
+    group_msg_emoji_like: (_: string, msg: { [key: string]: any }) => {
         const msgId = msg.message_id
         const emojiList = msg.likes
         // 寻找消息
@@ -217,7 +217,7 @@ const noticeFunctions = {
     /**
      * 群禁言
      */
-    group_ban: (name: string, msg: { [key: string]: any }) => {
+    group_ban: (_: string, msg: { [key: string]: any }) => {
         const groupId = msg.group_id
         const userId = msg.user_id
         const status = msg.sub_type === 'ban' ? true : false
@@ -242,7 +242,7 @@ const noticeFunctions = {
     /**
      * 群戳一戳
      */
-    notify: (name: string, msg: { [key: string]: any }) => {
+    notify: (_: string, msg: { [key: string]: any }) => {
         const $t = app.config.globalProperties.$t
 
         const groupId = msg.group_id
@@ -336,7 +336,7 @@ const msgFunctons = {
     /**
      * 保存账号信息
      */
-    getLoginInfo: (name: string, msg: { [key: string]: any }) => {
+    getLoginInfo: (_: string, msg: { [key: string]: any }) => {
         const msgBody = getMsgData('login_info', msg, msgPath.login_info)
         if (msgBody) {
             const data = msgBody[0]
@@ -377,24 +377,24 @@ const msgFunctons = {
      * 补充登录信息
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    getMoreLoginInfo: (name: string, msg: { [key: string]: any }) => {
+    getMoreLoginInfo: (_: string, msg: { [key: string]: any }) => {
         runtimeData.loginInfo.info = msg.data.data.result.buddy.info_list[0]
     },
 
     /**
      * 保存好友列表
      */
-    getGroupList: (name: string, msg: { [key: string]: any }) => {
+    getGroupList: (_: string, msg: { [key: string]: any }) => {
         saveUser(msg, 'group')
     },
-    getFriendList: (name: string, msg: { [key: string]: any }) => {
+    getFriendList: (_: string, msg: { [key: string]: any }) => {
         saveUser(msg, 'friend')
     },
 
     /**
      * 保存分组信息（独立保存）
      */
-    getFriendCategory: (name: string, msg: { [key: string]: any }) => {
+    getFriendCategory: (_: string, msg: { [key: string]: any }) => {
         const list = getMsgData(
             'friend_category',
             msg,
@@ -424,7 +424,7 @@ const msgFunctons = {
     /**
      * 获取群成员信息
      */
-    getUserInfoInGroup: (name: string, msg: { [key: string]: any }) => {
+    getUserInfoInGroup: (_: string, msg: { [key: string]: any }) => {
         const data = getMsgData(
             'group_member_info',
             msg,
@@ -443,7 +443,7 @@ const msgFunctons = {
     /**
      * 保存群成员列表
      */
-    getGroupMemberList: (name: string, msg: { [key: string]: any }) => {
+    getGroupMemberList: (_: string, msg: { [key: string]: any }) => {
         const data = msg.data as GroupMemberInfoElem[]
         data.forEach((item: any) => {
             const name = item.card ? item.card : item.nickname
@@ -485,15 +485,15 @@ const msgFunctons = {
     /**
      * 保存聊天记录
      */
-    getChatHistoryFist: (name: string, msg: { [key: string]: any }) => {
+    getChatHistoryFist: (_: string, msg: { [key: string]: any }) => {
         saveMsg(msg, 'top')
     },
-    getChatHistory: (name: string, msg: { [key: string]: any }) => {
+    getChatHistory: (_: string, msg: { [key: string]: any }) => {
         saveMsg(msg, 'top')
     },
 
     getChatHistoryOnMsg: (
-        name: string,
+        _: string,
         msg: { [key: string]: any },
         echoList: string[],
     ) => {
@@ -531,7 +531,7 @@ const msgFunctons = {
     /**
      * 保存合并转发消息
      */
-    getForwardMsg: (name: string, msg: { [key: string]: any }) => {
+    getForwardMsg: (_: string, msg: { [key: string]: any }) => {
         if (
             msg.error !== null &&
             (msg.error !== undefined || msg.status === 'failed')
@@ -557,7 +557,7 @@ const msgFunctons = {
      * 发送消息后处理
      */
     sendMsgBack: (
-        name: string,
+        _: string,
         msg: { [key: string]: any },
         echoList: string[],
     ) => {
@@ -595,7 +595,7 @@ const msgFunctons = {
      * 获取收藏表情
      */
     getRoamingStamp: (
-        name: string,
+        _: string,
         msg: { [key: string]: any },
         echoList: string[],
     ) => {
@@ -622,7 +622,7 @@ const msgFunctons = {
      * 保存群补充信息
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    getMoreGroupInfo: (name: string, msg: { [key: string]: any }) => {
+    getMoreGroupInfo: (_: string, msg: { [key: string]: any }) => {
         runtimeData.chatInfo.info.group_info = msg.data.data
     },
 
@@ -630,7 +630,7 @@ const msgFunctons = {
      * 保存好友补充信息
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    getMoreUserInfo: (name: string, msg: { [key: string]: any }) => {
+    getMoreUserInfo: (_: string, msg: { [key: string]: any }) => {
         runtimeData.chatInfo.info.user_info =
             msg.data.data.result.buddy.info_list[0]
     },
@@ -638,7 +638,7 @@ const msgFunctons = {
     /**
      * 获取群通知
      */
-    getGroupNotices: (name: string, msg: { [key: string]: any }) => {
+    getGroupNotices: (_: string, msg: { [key: string]: any }) => {
         const list = getMsgData('group_notices', msg, msgPath.group_notices)
         if (list != undefined) {
             runtimeData.chatInfo.info.group_notices = list
@@ -649,7 +649,7 @@ const msgFunctons = {
      * 获取群文件列表
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    getGroupFiles: (name: string, msg: { [key: string]: any }) => {
+    getGroupFiles: (_: string, msg: { [key: string]: any }) => {
         const data = msg.data.data
         const div = document.createElement('div')
         div.innerHTML = data.em
@@ -669,7 +669,7 @@ const msgFunctons = {
      * 获取群文件列表（分页）
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    getMoreGroupFiles: (name: string, msg: { [key: string]: any }) => {
+    getMoreGroupFiles: (_: string, msg: { [key: string]: any }) => {
         const data = msg.data.data
         if (
             runtimeData.chatInfo.info !== undefined &&
@@ -689,7 +689,7 @@ const msgFunctons = {
      * 下载文件（聊天中）
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    downloadFile: (name: string, msg: { [key: string]: any }) => {
+    downloadFile: (_: string, msg: { [key: string]: any }) => {
         const info = msg.echo.split('_')
         const msgId = info[1]
         const url = msg.data.url
@@ -737,7 +737,7 @@ const msgFunctons = {
      * 下载文件（群文件）
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    downloadGroupFile: (name: string, msg: { [key: string]: any }) => {
+    downloadGroupFile: (_: string, msg: { [key: string]: any }) => {
         // 基本信息
         const info = msg.echo.split('_')
         const id = info[1]
@@ -811,7 +811,7 @@ const msgFunctons = {
      * 获取群文件文件夹文件
      * @deprecated 功能在后期更新中未被重构检查，可能存在问题
      */
-    getGroupDirFiles: (name: string, msg: { [key: string]: any }) => {
+    getGroupDirFiles: (_: string, msg: { [key: string]: any }) => {
         // TODO: 这边不分页直接拿全，还没写
         const id = msg.echo.split('_')[1]
         let fileIndex = -1
@@ -830,7 +830,7 @@ const msgFunctons = {
      * 文件预览下载
      */
     loadFileBase: (
-        name: string,
+        _: string,
         msg: { [key: string]: any },
         echoList: string[],
     ) => {
@@ -862,7 +862,7 @@ const msgFunctons = {
     /**
      * 保存精华消息
      */
-    getJin: (name: string, msg: { [key: string]: any }) => {
+    getJin: (_: string, msg: { [key: string]: any }) => {
         const jinList = getMsgData('group_essence', msg, msgPath.group_essence)
         const is_end = getMsgData(
             'is_end',
@@ -886,7 +886,7 @@ const msgFunctons = {
     /**
      * 保存系统消息
      */
-    getSystemMsg: (name: string, msg: { [key: string]: any }) => {
+    getSystemMsg: (_: string, msg: { [key: string]: any }) => {
         runtimeData.systemNoticesList = msg.data
     },
 
@@ -895,13 +895,13 @@ const msgFunctons = {
      * @deprecated 功能已被遗弃，暂时保留方法
      */
     getSendMsg: (
-        name: string,
+        _: string,
         msg: { [key: string]: any },
         echoList: string[],
     ) => {
         if (msg.status == 'ok') {
             const msgData = getMsgData('get_message', msg, msgPath.get_message)
-            let msgInfoData = undefined
+            let msgInfoData = undefined as any[] | undefined
             if (msgData) {
                 msgInfoData = getMsgData(
                     'message_info',
@@ -915,7 +915,8 @@ const msgFunctons = {
                 if (echoList[1] !== msgInfo.message_id.toString()) {
                     // 返回的不是这条消息，重新请求
                     // popInfo.add(PopType.ERR,
-                    //     app.config.globalProperties.$t('获取消息失败，正在重试') + ' ( A' + echoList[2] + ' )')
+                    //     app.config.globalProperties.$t('获取消息失败，正在重试') +
+                                // ' ( A' + echoList[2] + ' )')
                     setTimeout(() => {
                         Connector.send(
                             runtimeData.jsonMap.get_message.name ?? 'get_msg',
@@ -951,7 +952,8 @@ const msgFunctons = {
             if (Number(echoList[2]) < 5) {
                 // 看起来没获取到，再试试
                 // popInfo.add(PopType.ERR,
-                //     app.config.globalProperties.$t('获取消息失败，正在重试') + ' ( B' + echoList[2] + ' )')
+                //     app.config.globalProperties.$t('获取消息失败，正在重试') +
+                            // ' ( B' + echoList[2] + ' )')
                 setTimeout(() => {
                     Connector.send(
                         runtimeData.jsonMap.get_message.name ?? 'get_msg',
@@ -974,7 +976,7 @@ const msgFunctons = {
     /**
      * 获取群成员更多信息
      */
-    getGroupMemberInfo: (name: string, msg: { [key: string]: any }) => {
+    getGroupMemberInfo: (_: string, msg: { [key: string]: any }) => {
         if (msg.data != undefined) {
             const data = msg.data
             const pointInfo = msg.echo.split('_')
@@ -987,7 +989,7 @@ const msgFunctons = {
     /**
      * 设置消息已读
      */
-    readMemberMessage: (name: string, msg: { [key: string]: any }) => {
+    readMemberMessage: (_: string, msg: { [key: string]: any }) => {
         const data = msg.data[0]
         const msgName = runtimeData.jsonMap.set_message_read.private_name
         let private_name = runtimeData.jsonMap.set_message_read.private_name
@@ -1024,7 +1026,7 @@ const msgFunctons = {
     /**
      * 获取会话历史
      */
-    getRecentContact: (name: string, data: any) => {
+    getRecentContact: (_: string, data: any) => {
         const list = getMsgData('recent_contact', data, msgPath.recent_contact)
         if (list != undefined) {
             // user_id: /peerUin
@@ -1075,8 +1077,8 @@ const msgFunctons = {
      * 表情回应后处理
      */
     SendRespondBack: (
-        name: string,
-        msg: { [key: string]: any },
+        _: string,
+        __: { [key: string]: any },
         echoList: string[],
     ) => {
         const msgId = echoList[1]
@@ -1115,7 +1117,7 @@ const msgFunctons = {
      * @deprecated 暂时没用到他
      */
     getCookies: (
-        name: string,
+        _: string,
         msg: { [key: string]: any },
         echoList: string[],
     ) => {
@@ -1194,7 +1196,6 @@ function saveUser(msg: { [key: string]: any }, type: string) {
         }
     }
     if (list != undefined) {
-        const pyConfig = { style: 0 } as IPinyinOptions
         const groupNames = {} as { [key: number]: string }
         list.forEach((item, index) => {
             // 为所有项目追加拼音名称
@@ -1427,7 +1428,7 @@ function getMessageList(list: any[] | undefined) {
     return undefined
 }
 
-function revokeMsg(name: string, msg: any) {
+function revokeMsg(_: string, msg: any) {
     const chatId =
         msg.notice_type.indexOf('group') >= 0 ? msg.group_id : msg.user_id
     const msgId = msg.message_id
@@ -1465,7 +1466,7 @@ function revokeMsg(name: string, msg: any) {
 }
 
 let qed_try_times = 0
-function newMsg(name: string, data: any) {
+function newMsg(_: string, data: any) {
     // 没有对频道的支持计划
     if (data.detail_type == 'guild') {
         return
@@ -1616,6 +1617,7 @@ function newMsg(name: string, data: any) {
                 isGroupNotice = list.indexOf(id) >= 0
             }
         }
+        // eslint-disable-next-line max-len
         // (发送者不是自己 && (在特别关心列表里 || 发送者不是群组 || 群组 AT || 群组 AT 全体 || 群组开启了通知 || 打开了通知全部消息)) 这些情况需要进行新消息处理
         if (
             sender != loginId &&
@@ -1726,8 +1728,8 @@ function newMsg(name: string, data: any) {
  * 刷新系统通知和其他内容，给系统通知响应用的
  */
 function updateSysInfo(
-    name: string,
-    msg: { [key: string]: any },
+    _: string,
+    __: { [key: string]: any },
     echoList: string[],
 ) {
     const flag = echoList[1]

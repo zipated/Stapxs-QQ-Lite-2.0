@@ -97,7 +97,7 @@
       <TransitionGroup
         name="msglist"
         tag="div">
-        <template v-for="(msg, index) in list">
+        <template v-for="(msgIndex, index) in list">
           <!-- 时间戳 -->
           <NoticeBody
             v-if="
@@ -105,38 +105,38 @@
                 list[index - 1]
                   ? list[index - 1].time
                   : undefined,
-                msg.time,
+                msgIndex.time,
               )
             "
             :key="'notice-time-' + index"
-            :data="{ sub_type: 'time', time: msg.time }" />
+            :data="{ sub_type: 'time', time: msgIndex.time }" />
           <!-- 消息体 -->
           <MsgBody
             v-if="
-              (msg.post_type === 'message' ||
-                msg.post_type === 'message_sent') &&
-                msg.message.length > 0
+              (msgIndex.post_type === 'message' ||
+                msgIndex.post_type === 'message_sent') &&
+                msgIndex.message.length > 0
             "
-            :key="msg.message_id"
+            :key="msgIndex.message_id"
             :selected="
-              multipleSelectList.includes(msg.message_id) ||
-                tags.openedMenuMsg?.id == 'chat-' + msg.message_id
+              multipleSelectList.includes(msgIndex.message_id) ||
+                tags.openedMenuMsg?.id == 'chat-' + msgIndex.message_id
             "
-            :data="msg"
-            @click="msgClick($event, msg)"
+            :data="msgIndex"
+            @click="msgClick($event, msgIndex)"
             @scroll-to-msg="scrollToMsg"
             @scroll-buttom="imgLoadedScroll"
-            @contextmenu.prevent="showMsgMeun($event, msg)"
-            @touchstart="msgStartMove($event, msg)"
+            @contextmenu.prevent="showMsgMeun($event, msgIndex)"
+            @touchstart="msgStartMove($event, msgIndex)"
             @touchmove="msgOnMove"
-            @touchend="msgMoveEnd($event, msg)"
+            @touchend="msgMoveEnd($event, msgIndex)"
             @send-poke="sendPoke" />
           <!-- 其他通知消息 -->
           <NoticeBody
-            v-if="msg.post_type === 'notice'"
+            v-if="msgIndex.post_type === 'notice'"
             :id="uuid()"
             :key="'notice-' + index"
-            :data="msg" />
+            :data="msgIndex" />
         </template>
       </TransitionGroup>
     </div>
@@ -149,7 +149,7 @@
       <TransitionGroup
         name="msglist"
         tag="div">
-        <template v-for="(msg, index) in tags.search.list">
+        <template v-for="(msgIndex, index) in tags.search.list">
           <!-- 时间戳 -->
           <NoticeBody
             v-if="
@@ -157,36 +157,36 @@
                 list[index - 1]
                   ? list[index - 1].time
                   : undefined,
-                msg.time,
+                msgIndex.time,
               )
             "
             :key="'notice-time-' + index"
-            :data="{ sub_type: 'time', time: msg.time }" />
+            :data="{ sub_type: 'time', time: msgIndex.time }" />
           <!-- 消息体 -->
           <MsgBody
             v-if="
-              (msg.post_type === 'message' ||
-                msg.post_type === 'message_sent') &&
-                msg.message.length > 0
+              (msgIndex.post_type === 'message' ||
+                msgIndex.post_type === 'message_sent') &&
+                msgIndex.message.length > 0
             "
-            :key="msg.message_id"
+            :key="msgIndex.message_id"
             :selected="
-              multipleSelectList.includes(msg.message_id) ||
-                tags.openedMenuMsg?.id == 'chat-' + msg.message_id
+              multipleSelectList.includes(msgIndex.message_id) ||
+                tags.openedMenuMsg?.id == 'chat-' + msgIndex.message_id
             "
-            :data="msg"
+            :data="msgIndex"
             @scroll-to-msg="scrollToMsg"
             @scroll-buttom="imgLoadedScroll"
-            @contextmenu.prevent="showMsgMeun($event, msg)"
-            @touchstart="msgStartMove($event, msg)"
+            @contextmenu.prevent="showMsgMeun($event, msgIndex)"
+            @touchstart="msgStartMove($event, msgIndex)"
             @touchmove="msgOnMove"
-            @touchend="msgMoveEnd($event, msg)" />
+            @touchend="msgMoveEnd($event, msgIndex)" />
           <!-- 其他通知消息 -->
           <NoticeBody
-            v-if="msg.post_type === 'notice'"
+            v-if="msgIndex.post_type === 'notice'"
             :id="uuid()"
             :key="'notice-' + index"
-            :data="msg" />
+            :data="msgIndex" />
         </template>
       </TransitionGroup>
     </div>
@@ -344,7 +344,6 @@
             <span @click="multipleSelectList = []">{{
               multipleSelectList.length
             }}</span>
-            <!-- <font-awesome-icon @click="multipleSelectList = []" :icon="['fas', 'xmark']" /> -->
             <span>{{ $t('取消') }}</span>
           </div>
         </div>
@@ -541,7 +540,7 @@
         </div>
         <div>
           <template
-            v-for="(msg, index) in mergeList"
+            v-for="(msgIndex, index) in mergeList"
             :key="'merge-' + index">
             <NoticeBody
               v-if="
@@ -549,16 +548,16 @@
                   mergeList[index - 1]
                     ? mergeList[index - 1].time
                     : undefined,
-                  msg.time,
+                  msgIndex.time,
                   index == 0,
                 )
               "
               :id="uuid()"
               :key="'notice-time-' + index"
-              :data="{ sub_type: 'time', time: msg.time }" />
+              :data="{ sub_type: 'time', time: msgIndex.time }" />
             <!-- 合并转发消息忽略是不是自己的判定 -->
             <MsgBody
-              :data="msg"
+              :data="msgIndex"
               :type="'merge'" />
           </template>
         </div>
@@ -637,7 +636,7 @@
             v-for="(num, index) in respondIds"
             :key="'respond-' + num">
             <img
-              v-if="getFace(num) != false"
+              v-if="getFace(num) != ''"
               loading="lazy"
               :src="getFace(num) as any"
               @click="sendRespond(num)">
@@ -864,7 +863,8 @@
       class="bg"
       :style="
         runtimeData.sysConfig.option_view_background
-          ? `backdrop-filter: blur(${runtimeData.sysConfig.chat_background_blur}px);`
+          ? `backdrop-filter: blur(${runtimeData.sysConfig
+            .chat_background_blur}px);`
           : ''
       " />
   </div>
@@ -1208,8 +1208,8 @@
                                 .toLowerCase()
                             if (atInfo != '') {
                                 this.atFindList =
-                                    runtimeData.chatInfo.info.group_members.filter(
-                                        (item) => {
+                                    runtimeData.chatInfo.info.group_members
+                                        .filter((item) => {
                                             return (
                                                 (item.card != '' &&
                                                     item.card != null &&
@@ -2230,8 +2230,8 @@
                 // 为了减少对于复杂图文排版页面显示上的工作量，对于非纯文本的消息依旧处理为纯文本，如：
                 // "这是一段话 [SQ:0]，[SQ:1] 你要不要来试试 Stapxs QQ Lite？"
                 // 其中 [SQ:n] 结构代表着这是特殊消息以及这个消息具体内容在消息缓存中的 index，像是这样：
-                // const sendCache = [{type:"face",id:11},{type:"at",qq:1007028430}]
-                //                     ^^^^^^^ 0 ^^^^^^^   ^^^^^^^^^^ 1 ^^^^^^^^^^
+                // sendCache = [{type:"face",id:11},{type:"at",qq:1007028430}]
+                //               ^^^^^^^ 0 ^^^^^^^   ^^^^^^^^^^ 1 ^^^^^^^^^^
                 // 在发送操作触发之后，将会解析此条字符串排列出最终需要发送的消息结构用于发送。
                 const msg = SendUtil.parseMsg(
                     this.msg,
@@ -2405,7 +2405,7 @@
                 }
             },
 
-            msgClick(event: Event, data: any) {
+            msgClick(_: Event, data: any) {
                 const message_id = data.message_id
                 if (this.multipleSelectList.length > 0) {
                     if (this.multipleSelectList.indexOf(message_id) > -1) {

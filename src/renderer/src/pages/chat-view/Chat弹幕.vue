@@ -5,6 +5,7 @@
  * @Version: 1.0 - 初始版本
  * @Description: 这是个弹幕样式的聊天面板
 -->
+ <!-- eslint-disable max-len -->
 
 <template>
   <div
@@ -397,7 +398,8 @@
 
             sendMsg(event: KeyboardEvent) {
                 if (event.keyCode === 13 && this.msg != '') {
-                    const msg = parseMsg(this.msg, this.sendCache, this.imgCache)
+                    const msg = parseMsg(
+                        this.msg, this.sendCache, this.imgCache)
                     if (this.chat.show.temp) {
                         sendMsgRaw(
                             this.chat.show.id + '/' + this.chat.show.temp,

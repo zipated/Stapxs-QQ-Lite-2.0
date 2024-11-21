@@ -18,7 +18,6 @@ import { markRaw, defineAsyncComponent } from 'vue'
 import { Logger, LogType, PopInfo, PopType } from './base'
 import { runtimeData } from './msg'
 import {
-    loadSystemThemeColor,
     loadWinColor,
     sendStatEvent,
     updateWinColor,
@@ -55,7 +54,6 @@ const configFunction: { [key: string]: (value: any) => void } = {
     chatview_name: changeChatView,
     initial_scale: changeInitialScale,
     msg_type: setMsgType,
-    opt_auto_gtk: updateGTKColor,
     opt_auto_win_color: updateWinColorOpt,
     opt_revolve: viewRevolve,
     opt_always_top: viewAlwaysTop,
@@ -84,17 +82,11 @@ function viewRevolve(value: boolean) {
 function updateWinColorOpt(value: boolean) {
     if (value == true) {
         if (runtimeData.reader) {
-            runtimeData.reader.on('sys:WinColorChanged', (event, params) => {
+            runtimeData.reader.on('sys:WinColorChanged', (_, params) => {
                 updateWinColor(params)
             })
         }
         loadWinColor()
-    }
-}
-
-function updateGTKColor(value: boolean) {
-    if (value == true) {
-        loadSystemThemeColor()
     }
 }
 
@@ -480,7 +472,7 @@ export function runASWEvent(event: Event) {
     if (sender != null) {
         const type = sender.nodeName
         const name = sender.getAttribute('name')
-        let value = null
+        let value = null as any
         switch (type) {
             case 'SELECT': {
                 value = (sender as HTMLSelectElement).options[

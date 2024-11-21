@@ -357,18 +357,6 @@
                     runtimeData.tags.release
                 ) {
                     switch (process.platform) {
-                        case 'darwin': {
-                            // PS：在 macOS 下因为严格的进程权限，子线程环境无法获取到 brew 信息
-                            // 暂时注释掉，没有找到解决方案
-                            //     // homebrew
-                            //     const brewInfo = await runtimeData.reader.invoke('sys:runCommand', '$SHELL -c "brew list --cask stapxs-qq-lite"')
-                            //     if(brewInfo.success) {
-                            //         info += `    Install Type     -> homebrew\n`
-                            //     } else {
-                            //         logger.error('获取 homebrew 信息失败：' + brewInfo.message)
-                            //     }
-                            break
-                        }
                         case 'linux': {
                             // archlinux
                             if (

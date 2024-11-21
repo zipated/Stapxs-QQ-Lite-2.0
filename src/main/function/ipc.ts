@@ -24,7 +24,7 @@ const noticeList = {} as { [key: string]: ELNotification }
 
 export function regIpcListener() {
     // 后端连接模式
-    ipcMain.on('onebot:connect', (event, args) => {
+    ipcMain.on('onebot:connect', (_, args) => {
         if (!connector && win) {
             connector = new Connector(win)
         }
@@ -82,7 +82,7 @@ export function regIpcListener() {
         app.exit()
     })
     // 置顶窗口
-    ipcMain.on('win:alwaysTop', (event, args) => {
+    ipcMain.on('win:alwaysTop', (_, args) => {
         if (win) win.setAlwaysOnTop(args)
     })
     // 获取窗口信息
@@ -97,23 +97,29 @@ export function regIpcListener() {
                 height: height,
             }
         }
+        return {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+        }
     })
     // 移动窗口位置
-    ipcMain.on('win:move', (event, point) => {
+    ipcMain.on('win:move', (_, point) => {
         if (win) {
             win.setPosition(point.x, point.y)
         }
     })
     // 保存信息
-    ipcMain.on('sys:store', (event, arg) => {
+    ipcMain.on('sys:store', (_, arg) => {
         store.set(arg.key, arg.value)
     })
-    ipcMain.handle('sys:getStore', (event, key) => {
+    ipcMain.handle('sys:getStore', (_, key) => {
         return store.get(key)
     })
     // 保存设置
     // PS：升级至 electron 27 后 cookie 已完全无法持久化，只能进行保存
-    ipcMain.on('opt:saveAll', (event, arg) => {
+    ipcMain.on('opt:saveAll', (_, arg) => {
         store.store = arg
     })
     // 获取设置
@@ -139,7 +145,7 @@ export function regIpcListener() {
         if (win) win.webContents.openDevTools()
     })
     // 下载文件
-    ipcMain.on('sys:download', (evt, args) => {
+    ipcMain.on('sys:download', (_, args) => {
         const downloadPath = args.downloadPath
         const fileName = args.fileName
         const ext = path.extname(fileName)
@@ -151,8 +157,8 @@ export function regIpcListener() {
             }
         }
         if (win) {
-            win.webContents.session.on('will-download', (event, item) => {
-                item.on('updated', (event, state) => {
+            win.webContents.session.on('will-download', (_, item) => {
+                item.on('updated', (_, state) => {
                     if (state === 'progressing') {
                         if (!item.isPaused()) {
                             if (win) {
@@ -179,7 +185,7 @@ export function regIpcListener() {
         }
     })
     // 发送通知
-    ipcMain.on('sys:sendNotice', async (event, data) => {
+    ipcMain.on('sys:sendNotice', async (_, data) => {
         const userId = data.tag.split('/')[0]
         const msgId = data.tag.split('/')[1]
 
@@ -241,7 +247,7 @@ export function regIpcListener() {
                 msgId: msgId,
             })
         })
-        notification.on('reply', (event, reply) => {
+        notification.on('reply', (_, reply) => {
             win?.webContents.send('bot:quickReply', {
                 type: data.type,
                 id: userId,
@@ -253,7 +259,7 @@ export function regIpcListener() {
         noticeList[data.tag] = notification
     })
     // 关闭通知
-    ipcMain.on('sys:closeNotice', (event, tag) => {
+    ipcMain.on('sys:closeNotice', (_, tag) => {
         if (noticeList[tag]) {
             noticeList[tag].close()
         }
@@ -265,7 +271,7 @@ export function regIpcListener() {
         })
     })
     // 关闭指定 ID 的所有通知
-    ipcMain.on('sys:closeAllNotice', (event, id) => {
+    ipcMain.on('sys:closeAllNotice', (_, id) => {
         Object.keys(noticeList).forEach((key) => {
             if (key.startsWith(id)) {
                 noticeList[key].close()
@@ -273,7 +279,7 @@ export function regIpcListener() {
         })
     })
     // 运行命令
-    ipcMain.handle('sys:runCommand', async (event, cmd) => {
+    ipcMain.handle('sys:runCommand', async (_, cmd) => {
         try {
             const info = await runCommand(cmd)
             const str = info.stdout as string
@@ -302,7 +308,8 @@ export function regIpcListener() {
     })
 
     // Linux：获取 gnome extension 设置
-    // dconf dump /org/gnome/shell/extensions/ | awk -v RS='' '/\[blur-my-shell\/applications\]/'
+    // dconf dump /org/gnome/shell/extensions/ |
+    //          awk -v RS='' '/\[blur-my-shell\/applications\]/'
     ipcMain.handle('sys:getGnomeExt', async () => {
         try {
             const info = await runCommand(
@@ -325,7 +332,7 @@ export function regIpcListener() {
 
     // MacOS：初始化菜单
     // PS：由于本地化的存在，需要让 vue 获取到本地化信息之后再由 electron 构建
-    ipcMain.on('sys:createMenu', (event, args) => {
+    ipcMain.on('sys:createMenu', (_, args) => {
         if (process.platform === 'darwin') {
             template = [
                 {
@@ -426,7 +433,7 @@ export function regIpcListener() {
             Menu.setApplicationMenu(Menu.buildFromTemplate(template))
         }
     })
-    ipcMain.on('sys:updateMenu', (event, args) => {
+    ipcMain.on('sys:updateMenu', (_, args) => {
         if (process.platform === 'darwin') {
             const id = args.id
             const action = args.action
@@ -485,13 +492,13 @@ export function regIpcListener() {
         }
     }
     // MacOS：刷新 touchBar 消息列表
-    ipcMain.on('sys:flushTouchBar', (event, list) => {
+    ipcMain.on('sys:flushTouchBar', (_, list) => {
         if (touchBarInstance) {
             touchBarInstance.flush(list)
         }
     })
     // MacOS：新消息，刷新 touchBar
-    ipcMain.on('sys:newMessage', (event, data) => {
+    ipcMain.on('sys:newMessage', (_, data) => {
         if (touchBarInstance) {
             touchBarInstance.newMessage(data)
         }

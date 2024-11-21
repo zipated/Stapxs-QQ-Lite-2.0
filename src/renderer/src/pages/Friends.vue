@@ -208,6 +208,7 @@
         name: 'ViewFriends',
         components: { FriendBody },
         props: ['list'],
+        emits: ['userClick', 'loadHistory'],
         data() {
             return {
                 runtimeData: runtimeData,

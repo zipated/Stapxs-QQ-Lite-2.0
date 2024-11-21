@@ -47,13 +47,6 @@
               {{ item.tag }}
             </div>
           </div>
-          <!-- <header v-if="chat.info.group_info.gAdmins !== undefined">
-                        <span>{{ $t('成员类型_admin') }}</span>
-                    </header>
-                    <div class="admin" v-if="chat.info.group_info.gAdmins !== undefined">
-                        <img v-for="(item, index) in chat.info.group_info.gAdmins" :key="'chatinfoadmin-' + item"
-                            :src="`https://q1.qlogo.cn/g?b=qq&s=0&nk=${item}`" :title="chat.info.group_info.ns[index]">
-                    </div> -->
         </div>
         <div v-else-if="chat.show.type === 'user'">
           <header>
@@ -81,7 +74,9 @@
                       day: 'numeric',
                     }).format(
                       new Date(
-                        `${chat.info.user_info.birthday.year}-${chat.info.user_info.birthday.month}-${chat.info.user_info.birthday.day}`,
+                        `${chat.info.user_info.birthday.year}-${
+                          chat.info.user_info.birthday.month}-${
+                          chat.info.user_info.birthday.day}`,
                       ),
                     ) +
                       ` (${
@@ -96,7 +91,9 @@
             <span>{{ $t('地区') }}:
               <span>
                 {{
-                  `${chat.info.user_info.country}-${chat.info.user_info.province}-${chat.info.user_info.city}`
+                  `${chat.info.user_info.country}-${
+                    chat.info.user_info.province}-${
+                    chat.info.user_info.city}`
                 }}
               </span>
             </span>
@@ -211,6 +208,7 @@
         name: 'ViewInfo',
         components: { BulletinBody, FileBody, OptInfo, BcTab },
         props: ['tags', 'chat'],
+        emits: ['close', 'loadFile'],
         data() {
             return {
                 runtimeData: runtimeData,

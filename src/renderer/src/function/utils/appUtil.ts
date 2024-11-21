@@ -9,7 +9,6 @@ import AboutPan from '@renderer/components/AboutPan.vue'
 import UpdatePan from '@renderer/components/UpdatePan.vue'
 import WelPan from '@renderer/components/WelPan.vue'
 
-import { Rule, Stylesheet, Declaration } from 'css'
 import { LogType, Logger, PopInfo, PopType } from '@renderer/function/base'
 import { Connector, login } from '@renderer/function/connect'
 import { runtimeData } from '@renderer/function/msg'
@@ -256,114 +255,6 @@ export function downloadFile(
                 fileName: name,
             })
         }
-    }
-}
-
-/**
- * 使用 gtk CSS 更新 Border Card UI 配色表
- * @param cssStr css 字符串
- */
-function updateGTKTheme(cssStr: string) {
-    if (option.get('log_level') == 'debug') {
-        logger.add(LogType.UI, 'GTK 主题 CSS 字符串：' + cssStr)
-    }
-    const css = window.require('css')
-    let cssObj = undefined as Stylesheet | undefined
-    let color = '#000'
-    // color-main
-    color = cssStr.substring(
-        cssStr.indexOf('@define-color theme_fg_color') + 29,
-    )
-    color = color.substring(0, color.indexOf(';'))
-    document.documentElement.style.setProperty('--color-main', color)
-    // color-bg
-    color = cssStr.substring(
-        cssStr.indexOf('@define-color theme_bg_color') + 29,
-    )
-    color = color.substring(0, color.indexOf(';'))
-    document.documentElement.style.setProperty('--color-bg', color)
-    document.documentElement.style.setProperty('--color-card', color)
-    // color-card
-    color = cssStr.substring(cssStr.indexOf('.context-menu {'))
-    color = color.substring(0, color.indexOf('}') + 1)
-    cssObj = css.parse(color, { silent: true }) as Stylesheet
-    if (cssObj.stylesheet) {
-        const colorGet = (
-            (cssObj.stylesheet.rules[0] as Rule).declarations?.filter(
-                (item: Declaration) => {
-                    return item.property == 'background-color'
-                },
-            )[0] as Declaration
-        ).value
-        if (colorGet) {
-            document.documentElement.style.setProperty(
-                '--color-card-1',
-                colorGet,
-            )
-        }
-    }
-    // color-card-1
-    color = cssStr.substring(cssStr.indexOf('.context-menu .view:selected {'))
-    color = color.substring(0, color.indexOf('}') + 1)
-    cssObj = css.parse(color, { silent: true }) as Stylesheet
-    if (cssObj.stylesheet) {
-        const colorGet = (
-            (cssObj.stylesheet.rules[0] as Rule).declarations?.filter(
-                (item: Declaration) => {
-                    return item.property == 'background-color'
-                },
-            )[0] as Declaration
-        ).value
-        if (colorGet) {
-            document.documentElement.style.setProperty(
-                '--color-card-2',
-                colorGet,
-            )
-        }
-    }
-    // color-card-2
-    // color = cssStr.substring(
-            // cssStr.indexOf('.context-menu menuitem:hover {'))
-    // color = color.substring(0, color.indexOf('}') + 1)
-    // cssObj = css.parse(color, {silent: true}) as Stylesheet
-    // if(cssObj.stylesheet) {
-    //     const colorGet = ((cssObj.stylesheet.rules[0] as Rule)
-                    // .declarations?.filter((item: Declaration) => {
-    //         return item.property == 'background-color'
-    //     })[0] as Declaration).value
-    //     if(colorGet) {
-    //         document.documentElement.style
-    //             .setProperty('--color-card-2', colorGet)
-    //     }
-    // }
-    // color-font
-    color = cssStr.substring(
-        cssStr.indexOf('@define-color theme_text_color') + 31,
-    )
-    color = color.substring(0, color.indexOf(';'))
-    document.documentElement.style.setProperty('--color-font', color)
-    // color-font-1
-    color = cssStr.substring(
-        cssStr.indexOf('@define-color theme_unfocused_text_color') + 41,
-    )
-    color = color.substring(0, color.indexOf(';'))
-    document.documentElement.style.setProperty('--color-font-1', color)
-    document.documentElement.style.setProperty('--color-font-2', color)
-}
-
-/**
- * electron：加载系统主题适配
- */
-export async function loadSystemThemeColor() {
-    // 加载 GTK 主题适配（以及主题更新回调监听）
-    if (runtimeData.reader) {
-        // 主题更新回调
-        runtimeData.reader.on('sys:updateGTKTheme', (_, params) => {
-            if (option.get('opt_auto_gtk') == true) {
-                updateGTKTheme(params.css)
-            }
-        })
-        updateGTKTheme(await runtimeData.reader.invoke('sys:getGTKTheme'))
     }
 }
 

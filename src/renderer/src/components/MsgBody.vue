@@ -130,7 +130,9 @@
             </template>
             <span
               v-else-if="item.type == 'bface'"
-              style="font-style: italic; opacity: 0.7">[ {{ $t('图片') }}：{{ item.text }} ]</span>
+              style="font-style: italic; opacity: 0.7">
+              [ {{ $t('图片') }}：{{ item.text }} ]
+            </span>
             <div
               v-else-if="item.type == 'at'"
               :class="getAtClass(item.qq)">
@@ -188,7 +190,8 @@
                       item.downloadingPercentage ===
                         undefined
                         ? '0,10000'
-                        : `${(Math.floor(2 * Math.PI * 25) * item.downloadingPercentage) / 100},10000`
+                        : `${(Math.floor(2 * Math.PI * 25) *
+                          item.downloadingPercentage) / 100},10000`
                     " />
                 </svg>
               </div>
@@ -259,7 +262,9 @@
               v-else-if="item.type == 'forward'"
               class="msg-unknown"
               style="cursor: pointer"
-              @click="View.getForwardMsg(item.id)">{{ $t('（点击查看合并转发消息）') }}</span>
+              @click="View.getForwardMsg(item.id)">
+              {{ $t('（点击查看合并转发消息）') }}
+            </span>
             <div
               v-else-if="item.type == 'reply'"
               :class="
@@ -335,7 +340,7 @@
       <div class="emoji-like-body">
         <div
           v-for="info in data.emoji_like"
-          v-show="getFace(info.emoji_id) != false"
+          v-show="getFace(info.emoji_id) != ''"
           :key="'respond-' + data.message_id + '-' + info.emoji_id">
           <img
             loading="lazy"
@@ -371,6 +376,7 @@
         name: 'MsgBody',
         components: { CardMessage },
         props: ['data', 'type', 'selected'],
+        emits: ['scrollToMsg', 'scrollButtom', 'sendPoke'],
         data() {
             return {
                 getFace: getFace,

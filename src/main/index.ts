@@ -150,10 +150,10 @@ async function createWindow() {
     })
 }
 
-app.on('open-url', (event, url) => {
+app.on('open-url', (_, url) => {
     sendUrlToWindow(url)
 })
-app.on('second-instance', (event, cmd, workingDirectory) => {
+app.on('second-instance', (_, cmd, workingDirectory) => {
     sendUrlToWindow(workingDirectory, cmd)
 })
 function sendUrlToWindow(url: string ,args: string[] = []) {

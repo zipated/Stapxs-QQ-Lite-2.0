@@ -4,6 +4,7 @@
  * @Date: 2022/11/07
  * @Version: 1.0
 -->
+<!-- eslint-disable max-len -->
 
 <template>
   <div class="opt-page">

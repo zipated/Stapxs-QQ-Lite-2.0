@@ -25,70 +25,70 @@
       class="shell-pan">
       <div>
         <template
-          v-for="(msg, index) in runtimeData.messageList"
-          :key="msg.message_id">
+          v-for="(msgItem, index) in runtimeData.messageList"
+          :key="msgItem.message_id">
           <div
-            v-if="
-              msg.post_type == 'message' ||
-                msg.post_type == 'message_sent'
-            "
+            v-if="msgItem.post_type == 'message'
+              || msgItem.post_type == 'message_sent'"
             :class="
               'shell-msg' +
-                (msg.revoke ? ' revoke' : '') +
-                (tags.replyId == msg.message_id ? ' reply' : '')
+                (msgItem.revoke ? ' revoke' : '') +
+                (tags.replyId == msgItem.message_id ? ' reply' : '')
             "
             style="cursor: pointer">
             <span
               :class="
                 'sname s' +
-                  msg.sender.role +
-                  (runtimeData.loginInfo.uin == msg.sender.user_id
+                  msgItem.sender.role +
+                  (runtimeData.loginInfo.uin == msgItem.sender.user_id
                     ? ' smine'
                     : '')
               "
-              @click="copy(msg.sender.user_id)">
+              @click="copy(msgItem.sender.user_id)">
               {{
-                msg.sender.card
-                  ? msg.sender.card
-                  : msg.sender.nickname
+                msgItem.sender.card
+                  ? msgItem.sender.card
+                  : msgItem.sender.nickname
               }}{{ hasReply(msg) ?? ''
               }}{{
-                msg.sub_type == 'friend'
+                msgItem.sub_type == 'friend'
                   ? runtimeData.loginInfo.uin ==
-                    msg.sender.user_id
+                    msgItem.sender.user_id
                     ? runtimeData.loginInfo.nickname
                     : runtimeData.chatInfo.show.name
                   : ''
-              }}{{ msg.sender.user_id == 0 ? '' : ': ' }}
+              }}{{ msgItem.sender.user_id == 0 ? '' : ': ' }}
             </span>
             <span
               class="smsg"
-              @click="copy(msg.message_id)">{{
+              @click="copy(msgItem.message_id)">{{
                 getMsgRawTxt(msg)
               }}</span>
             <br>
           </div>
-          <div v-else-if="msg.post_type == 'notice'">
+          <div v-else-if="msgItem.post_type == 'notice'">
             <span
-              v-if="msg.sub_type == 'recall'"
+              v-if="msgItem.sub_type == 'recall'"
               style="color: yellow">::
               <span style="color: yellow; opacity: 0.7">{{
-                getRecallName(msg.operator_id)
+                getRecallName(msgItem.operator_id)
               }}</span>
               recalled a message.</span>
           </div>
-          <div v-else-if="msg.commandLine">
+          <div v-else-if="msgItem.commandLine">
             <div
               v-if="index == 2"
               class="line-head">
               <div>
                 <span>
                   <font-awesome-icon
-                    :icon="['fas', 'folder-open']" />{{ runtimeData.chatInfo.show.name }}
+                    :icon="['fas', 'folder-open']" />
+                  {{ runtimeData.chatInfo.show.name }}
                 </span>
                 <span style="color: var(--color-main-0)">
                   <font-awesome-icon
-                    :icon="['fas', 'plug']" />{{ runtimeData.sysConfig.address }}
+                    :icon="['fas', 'plug']" />
+                  {{ runtimeData.sysConfig.address }}
                 </span>
               </div>
               <div style="flex: 1" />
@@ -99,24 +99,22 @@
                     :icon="['fas', 'code-branch']" />
                 </span>
                 <span>
-                  {{ msg.time.time
+                  {{ msgItem.time.time
                   }}<font-awesome-icon
                     :icon="['fas', 'clock']" />
                 </span>
               </div>
             </div>
             <a class="command-start">• </a>
-            <span>{{ msg.str }}</span>
+            <span>{{ msgItem.str }}</span>
           </div>
-          <div v-else-if="msg.commandOut">
+          <div v-else-if="msgItem.commandOut">
             <div
-              v-if="msg.html"
-              v-html="msg.html" />
+              v-if="msgItem.html"
+              v-html="msgItem.html" />
             <span
               v-else
-              :style="'color:' + msg.color">{{
-                msg.str
-              }}</span>
+              :style="'color:' + msgItem.color">{{ msgItem.str }}</span>
           </div>
         </template>
       </div>
@@ -125,10 +123,9 @@
           <div>
             <span>
               <font-awesome-icon
-                :icon="['fas', 'folder-open']" />{{ runtimeData.chatInfo.show.name
-              }}{{
-                tags.replyName ? ' -> ' + tags.replyName : ''
-              }}
+                :icon="['fas', 'folder-open']" />
+              {{ runtimeData.chatInfo.show.name }}
+              {{ tags.replyName ? ' -> ' + tags.replyName : '' }}
             </span>
             <span style="color: var(--color-main-0)">
               <font-awesome-icon :icon="['fas', 'plug']" />{{
@@ -169,7 +166,7 @@
 <script lang="ts">
     import app from '@renderer/main'
     import SendUtil from '@renderer/function/sender'
-    import packageInfo from '../../../package.json'
+    import packageInfo from '../../../../../package.json'
     import Option from '@renderer/function/option'
 
     import { nextTick } from 'vue'
@@ -370,7 +367,7 @@
                                     },
                                 )
                                 if (item[2] && item[2] != 'clear') {
-                                    // 根据 item[2] 寻找这条消息 的 msg.sender.card ? msg.sender.card : msg.sender.nickname
+                                    // 根据 item[2] 寻找这条消息 的名字
                                     const msg = runtimeData.messageList.filter(
                                         (msg) => {
                                             return msg.message_id == item[2]
@@ -519,7 +516,7 @@
                 },
                 cd: {
                     info: 'Alias for "cd /[id]"',
-                    fun: (raw: string, itemInfo: string[]) => {
+                    fun: (_: string, itemInfo: string[]) => {
                         let id = '0'
                         if (
                             itemInfo.length == 1 &&
@@ -666,7 +663,7 @@
                 }
             },
 
-            updateList(newLength: number, oldLength: number) {
+            updateList(_: number, oldLength: number) {
                 if (this.tags.fistget && oldLength == 0) {
                     this.tags.fistget = false
                     this.addCommandOutF(':: joining chat ..', 'yellow')
@@ -679,7 +676,7 @@
                         'var(--color-font)',
                     )
                     this.addCommandOutF(
-                        `Welcome to Stapxs QQ Lite ${packageInfo.version} (Vue ${packageInfo.dependencies.vue}-${this.runMode})\n\n`,
+                        `Welcome to Stapxs QQ Lite ${packageInfo.version} (Vue ${packageInfo.devDependencies.vue}-${this.runMode})\n\n`,
                         'var(--color-font)',
                     )
                 }

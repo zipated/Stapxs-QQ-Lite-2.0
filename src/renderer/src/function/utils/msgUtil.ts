@@ -25,7 +25,7 @@ export function getMsgData(
     msg: { [key: string]: any },
     map: string | { [key: string]: any },
 ) {
-    let back = undefined
+    let back = undefined as any
     // 解析数据
     if (map != undefined) {
         if (typeof map == 'string' || map.source != undefined) {
@@ -34,7 +34,7 @@ export function getMsgData(
                     msg,
                     replaceJPValue(typeof map == 'string' ? map : map.source),
                 )
-                if (typeof map != 'string' && map.list != undefined) {
+                if (back && typeof map != 'string' && map.list != undefined) {
                     const backList = [] as any[]
                     back.forEach((item) => {
                         const itemObj = {} as any
@@ -107,19 +107,18 @@ function replaceJPValue(jpStr: string) {
  * @returns 表情图片
  */
 export function getFace(id: number) {
-    // eslint-disable-next-line
-    try {
-        return require('./../../assets/img/qq-face/gif/s' + id + '.gif')
-    } catch {}
-    // eslint-disable-next-line
-    try {
-        return require('./../../assets/img/qq-face/gif/s' + id + '.png')
-    } catch {}
-    // eslint-disable-next-line
-    try {
-        return require('./../../assets/img/qq-face/static/s' + id + '.png')
-    } catch {}
-    return false
+    const pathList = import.meta.glob('@renderer/assets/img/qq-face/public/*/s*.*')
+    for(const path in pathList) {
+        if (path.includes(`/${id}.gif`)) {
+            return path
+        }
+    }
+    for(const path in pathList) {
+        if (path.includes(`/${id}.png`)) {
+            return path
+        }
+    }
+    return ''
 }
 
 /**
@@ -371,8 +370,8 @@ export function parseCQ(data: any) {
         list.forEach((item) => {
             if (item.match(reg) !== null) {
                 const info: { [key: string]: any } = { type: RegExp.$1 }
-                RegExp.$2.split(',').forEach((key) => {
-                    const kv = []
+                RegExp.$2.split(',').forEach((key: string) => {
+                    const kv = [] as string[]
                     kv.push(key.substring(0, key.indexOf('=')))
                     // 对 html 转义字符进行反转义
                     const a = document.createElement('a')

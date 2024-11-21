@@ -128,7 +128,7 @@
 
     export default defineComponent({
         name: 'ChatSystemNotice',
-        components: {},
+        emits: ['userClick'],
         data() {
             return {
                 trueLang: getTrueLang(),

@@ -4,6 +4,7 @@
  * @Date: 2022/09/26
  * @Version: 1.0
 -->
+ <!-- eslint-disable max-len -->
 
 <template>
   <div class="opt-main">
@@ -165,7 +166,11 @@
         },
         props: {
             show: Boolean,
-            config: {} as { [key: string]: string | number | boolean },
+            config: {
+                type: Object,
+                default: () => ({} as
+                    { [key: string]: string | number | boolean }),
+            },
         },
         data() {
             return {

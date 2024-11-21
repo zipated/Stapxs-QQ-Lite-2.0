@@ -159,6 +159,7 @@
         name: 'VueMessages',
         components: { FriendBody, BcMenu },
         props: ['chat'],
+        emits: ['userClick', 'loadHistory'],
         data() {
             return {
                 runtimeData: runtimeData,

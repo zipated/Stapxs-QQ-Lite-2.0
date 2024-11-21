@@ -79,7 +79,7 @@ export class Logger {
     private print(type: LogType, args: string, data: any, hidden: boolean) {
         const error = new Error()
         // 从调用栈中获取调用者信息
-        let from = undefined
+        let from = undefined as string | undefined
         const stack = error.stack
         if (stack) {
             const stackArr = stack.split('\n')

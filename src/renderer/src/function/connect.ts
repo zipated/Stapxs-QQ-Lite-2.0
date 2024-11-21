@@ -130,7 +130,7 @@ export class Connector {
 
     static onclose(
         code: number,
-        message: string | undefined,
+        _: string | undefined,
         address: string,
         token: string | undefined,
     ) {
