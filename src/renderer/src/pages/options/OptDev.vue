@@ -356,7 +356,7 @@
                     runtimeData.reader &&
                     runtimeData.tags.release
                 ) {
-                    const process = window.electron.process
+                    const process = window.electron?.process
                     switch (process && process.platform) {
                         case 'linux': {
                             // archlinux

@@ -1,5 +1,6 @@
 import { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import ViteYaml from '@modyfi/vite-plugin-yaml'
@@ -23,7 +24,18 @@ export default defineConfig({
         plugins: [
             vue(),
             vueDevTools(),
-            ViteYaml()
+            ViteYaml(),
+            VitePWA({ registerType: 'autoUpdate' })
         ],
+        build: {
+            rollupOptions: {
+                input: {
+                    main: resolve('src/renderer/index.html')
+                },
+                external: [
+                    resolve('src/renderer/src/assets/img/qq-face/docs')
+                ]
+            }
+        }
     },
 })

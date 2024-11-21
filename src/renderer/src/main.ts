@@ -12,8 +12,6 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 
 import { faSquare } from '@fortawesome/free-regular-svg-icons'
 
-import './registerServiceWorker'
-
 import 'viewerjs/dist/viewer.css'
 
 import './assets/css/view.css'

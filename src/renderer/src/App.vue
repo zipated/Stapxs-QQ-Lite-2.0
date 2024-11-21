@@ -411,7 +411,7 @@
             window.onload = async () => {
                 // 初始化全局参数
                 runtimeData.tags.isElectron = window.electron != undefined
-                runtimeData.reader = window.electron.ipcRenderer
+                runtimeData.reader = window.electron?.ipcRenderer
                 if (runtimeData.reader) {
                     runtimeData.tags.platform =
                         await runtimeData.reader.invoke('sys:getPlatform')

@@ -411,7 +411,7 @@
             },
 
             getAppendChatView() {
-                const chatView = import.meta.glob('@renderer/pages/chat-view/*.vue')
+                const chatView = import.meta.glob('@renderer/pages/chat-view/*.vue', { eager: true })
                 const chatViewList: string[] = []
                 Object.keys(chatView).forEach((key: string) => {
                     const name = key.split('/').pop()?.split('.')[0]

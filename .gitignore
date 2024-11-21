@@ -1,5 +1,8 @@
 node_modules
+dev-dist
 dist
 out
 .DS_Store
 *.log*
+
+yarn.lock

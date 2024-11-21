@@ -74,7 +74,7 @@ export function openLink(url: string, external = false) {
                     {
                         text: app.config.globalProperties.$t('打开…'),
                         fun: () => {
-                            const shell = window.electron.shell
+                            const shell = window.electron?.shell
                             if (shell) {
                                 shell.openExternal(url)
                             }
@@ -92,7 +92,7 @@ export function openLink(url: string, external = false) {
             }
             runtimeData.popBoxList.push(popInfo)
         } else {
-            const shell = window.electron.shell
+            const shell = window.electron?.shell
             if (shell) {
                 shell.openExternal(url)
             }
@@ -264,7 +264,7 @@ export async function loadWinColor() {
 }
 
 export function updateWinColor(color: string) {
-    const process = window.electron.process
+    const process = window.electron?.process
     if (process && process.platform == 'win32') {
         const red = parseInt(color.substr(0, 2), 16)
         const green = parseInt(color.substr(2, 2), 16)

@@ -39,12 +39,13 @@ export function getTrueLang(): string {
  * @param name 文件名
  */
 export function getPortableFileLang(name: string) {
-    const files = import.meta.glob('@renderer/assets/l10n/*.po', { eager: true, as: 'raw' })
+    const files = import.meta.glob('@renderer/assets/l10n/*.po',
+        { eager: true, query: '?raw', import: 'default' })
     const filePath = Object.keys(files).find(
         (item) => item.includes(name))
     const final = {} as { [key: string]: string }
     if(filePath) {
-        const file = files[filePath]
+        const file = files[filePath] as string
         const items = PO.parse(file).items
         for(const item of items) {
             final[item.msgid] = item.msgstr[0] == '' ? item.msgid : item.msgstr[0]
