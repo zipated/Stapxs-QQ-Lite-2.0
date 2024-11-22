@@ -1,8 +1,11 @@
+.DS_Store
 node_modules
+*.log*
+yarn.lock
+
+out
+
 dev-dist
 dist
-out
-.DS_Store
-*.log*
-
-yarn.lock
+dist_electron
+stats.html

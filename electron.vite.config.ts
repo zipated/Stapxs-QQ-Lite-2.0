@@ -1,9 +1,6 @@
-import { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
-import { VitePWA } from 'vite-plugin-pwa'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import ViteYaml from '@modyfi/vite-plugin-yaml'
+
+import * as viteConfig from './vite.config.ts'
 
 export default defineConfig({
     main: {
@@ -13,29 +10,12 @@ export default defineConfig({
         plugins: [externalizeDepsPlugin()],
     },
     renderer: {
-        server: {
-            port: 8080
-        },
-        resolve: {
-            alias: {
-                '@renderer': resolve('src/renderer/src'),
-            },
-        },
-        plugins: [
-            vue(),
-            vueDevTools(),
-            ViteYaml(),
-            VitePWA({ registerType: 'autoUpdate' })
-        ],
+        server: viteConfig.default.server,
+        resolve: viteConfig.default.resolve,
+        plugins: viteConfig.default.plugins,
         build: {
-            rollupOptions: {
-                input: {
-                    main: resolve('src/renderer/index.html')
-                },
-                external: [
-                    resolve('src/renderer/src/assets/img/qq-face/docs')
-                ]
-            }
+            ...viteConfig.default.build,
+            outDir: 'out/renderer',
         }
     },
 })

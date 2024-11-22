@@ -1,10 +1,11 @@
 import path from 'path'
 import Store from 'electron-store'
+import fs from 'fs'
 
 import windowStateKeeper from 'electron-window-state'
 import packageInfo from '../../package.json'
 import { regIpcListener } from './function/ipc.ts'
-import { Menu, session, app, protocol, BrowserWindow } from 'electron'
+import { Menu, session, app, protocol, BrowserWindow, dialog } from 'electron'
 import { touchBar } from './function/touchbar.ts'
 import log4js from 'log4js'
 import { join } from 'path'
@@ -105,7 +106,14 @@ async function createWindow() {
         // 打开开发者工具
         win.webContents.openDevTools()
     } else {
-        win.loadFile(join(__dirname, '../renderer/index.html'))
+        const startUrl = join(__dirname, '../renderer/index.html')
+        // 判断文件是否存在
+        if(!fs.existsSync(startUrl)) {
+            dialog.showErrorBox('错误', '找不到文件：\n' + startUrl)
+            app.quit()
+        }
+        logger.info('加载应用：' + startUrl)
+        win.loadFile(startUrl)
     }
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
