@@ -140,7 +140,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: ${{ needs.init.outputs.version }}-${{ matrix.os }}
-                  path: dist_electron/out
+                  path: dist_electron
 
     # ========================= 发布构建结果 =========================
     release:

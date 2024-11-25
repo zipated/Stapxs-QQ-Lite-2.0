@@ -69,5 +69,3 @@ linux:
 
 # 其他配置
 npmRebuild: false
-electronDownload:
-    mirror: https://npmmirror.com/mirrors/electron/
