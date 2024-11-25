@@ -41,7 +41,7 @@ jobs:
             - name: Load Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 18.x
+                  node-version: 20.x
             # 更新依赖
             - name: Install
               run: yarn
@@ -76,7 +76,7 @@ jobs:
             - name: Load Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 18.x
+                  node-version: 20.x
             # 更新依赖
             - name: Install
               run: yarn
@@ -84,7 +84,7 @@ jobs:
             - name: Build
               run: yarn build
               env:
-                  NODEJS_ENV: github-actions
+                  BUILD_ENV: github-actions
 
             # 部署 Web 版本
             - name: Deploy
@@ -117,7 +117,7 @@ jobs:
             - name: Load Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 18.x
+                  node-version: 20.x
             # 更新依赖
             - name: Install
               run: yarn
@@ -125,16 +125,14 @@ jobs:
             # 构建 electron 版本（Windows）
             - name: Build Electron (Windows)
               if: matrix.os == 'windows-2019'
-              run: yarn electron:build --win
+              run: yarn build:win
               env:
-                  NODEJS_ENV: github-actions
                   GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
             # 构建 electron 版本（Linux）
             - name: Build Electron (Linux)
               if: matrix.os == 'ubuntu-latest'
-              run: yarn electron:build --linux
+              run: yarn build:linux
               env:
-                  NODEJS_ENV: github-actions
                   GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
             # 上传构建结果

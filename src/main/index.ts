@@ -5,7 +5,7 @@ import fs from 'fs'
 import windowStateKeeper from 'electron-window-state'
 import packageInfo from '../../package.json'
 import { regIpcListener } from './function/ipc.ts'
-import { Menu, session, app, protocol, BrowserWindow, dialog } from 'electron'
+import { Menu, session, app, protocol, BrowserWindow } from 'electron'
 import { touchBar } from './function/touchbar.ts'
 import log4js from 'log4js'
 import { join } from 'path'
@@ -25,7 +25,7 @@ const isDev = import.meta.env.DEV
 
 async function createWindow() {
     if(new Store().get('opt_log_level')) {
-        logLevel = (String) (new Store().get('opt_log_level')) ?? 'info'
+        logLevel = (new Store().get('opt_log_level') ?? 'info') as string
     }
     logger.level = logLevel
 
@@ -106,14 +106,7 @@ async function createWindow() {
         // 打开开发者工具
         win.webContents.openDevTools()
     } else {
-        const startUrl = join(__dirname, '../renderer/index.html')
-        // 判断文件是否存在
-        if(!fs.existsSync(startUrl)) {
-            dialog.showErrorBox('错误', '找不到文件：\n' + startUrl)
-            app.quit()
-        }
-        logger.info('加载应用：' + startUrl)
-        win.loadFile(startUrl)
+        win.loadURL('app://./renderer/index.html')
     }
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -190,6 +183,23 @@ app.on('ready', async () => {
         app.setAppUserModelId('Stapx QQ Lite')              // 设置应用 ID
         app.setAsDefaultProtocolClient('stapx-qq-lite')     // 设置为默认协议
     }
+    // 注册 customFileProtocol 到 app 协议
+    protocol.handle('app', async (request) => {
+        const url = request.url.replace('app://', ''); // 移除协议部分
+        // 实际路径在 __dirname 的上一层
+        const filePath = path.join(__dirname, '..', url);
+
+        // 确认文件存在并返回内容
+        try {
+            const fileContent = await fs.promises.readFile(filePath);
+            return new Response(fileContent, {
+                headers: { 'Content-Type': getMimeType(filePath) },
+            });
+        } catch (err) {
+            logger.error(`Failed to load file: ${filePath}`, err)
+            return new Response('File not found', { status: 404 });
+        }
+    })
     createWindow()
 })
 
@@ -209,4 +219,22 @@ if (isDevelopment) {
             app.quit()
         })
     }
+}
+
+// ================================
+
+const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'application/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+};
+
+function getMimeType(filePath) {
+    const ext = path.extname(filePath).toLowerCase();
+    return mimeTypes[ext] || 'application/octet-stream';
 }

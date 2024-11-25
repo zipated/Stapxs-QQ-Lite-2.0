@@ -7,11 +7,14 @@ import ViteYaml from '@modyfi/vite-plugin-yaml'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vite.dev/config/
+/** @type {import('vite').UserConfig} */
 export default defineConfig({
+    root: './src/renderer',
+    base: process.env.BUILD_ENV == 'github-actions'
+        ? '/Stapxs-QQ-Lite-2.0/' : undefined,
     server: {
         port: 8080
     },
-    root: './src/renderer',
     plugins: [
         vue(),
         vueDevTools(),
