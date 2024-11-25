@@ -710,7 +710,6 @@
     .danmu > a {
         color: var(--color-font-1);
         background: var(--color-card-2);
-        font-size: 0.9rem;
         margin-right: 10px;
         padding: 2px;
         border-radius: 7px;

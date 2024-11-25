@@ -235,14 +235,18 @@ export function downloadFile(
         }
     }
     if (runtimeData.tags.isElectron) {
-        new FileDownloader({
-            url: url,
-            autoStart: true,
-            process: onprocess,
-            nameCallback: function () {
-                return name
-            },
-        })
+        try {
+            new FileDownloader({
+                url: url,
+                autoStart: true,
+                process: onprocess,
+                nameCallback: function () {
+                    return name
+                },
+            })
+        } catch (e) {
+            logger.error(e as Error, '下载文件失败')
+        }
     } else {
         if (runtimeData.reader) {
             runtimeData.reader.on('sys:downloadBack', (_, params) => {
@@ -439,16 +443,14 @@ export function loadAppendStyle() {
             logger.info('UI 2.0 附加样式加载完成')
         })
     }
-    try {
-        if(platform != undefined) {
-            import(`@renderer/assets/css/append/append_${platform}.css`).then(
-                () => {
-                    logger.info(`${platform} 平台附加样式加载完成`)
-                },
-            )
-    }
-    } catch (e) {
-        logger.info('未找到对应平台的附加样式')
+    if(platform != undefined) {
+        import(`@renderer/assets/css/append/append_${platform}.css`)
+            .then(() => {
+                logger.info(`${platform} 平台附加样式加载完成`)
+            })
+            .catch(() => {
+                logger.info('未找到对应平台的附加样式')
+            })
     }
     let subVersion = runtimeData.tags.release?.split('.') as any
     subVersion = subVersion ? Number(subVersion[2]) : 0

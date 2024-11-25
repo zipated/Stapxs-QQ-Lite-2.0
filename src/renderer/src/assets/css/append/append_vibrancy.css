@@ -61,9 +61,8 @@ body {
     margin-left: -25px;
 }
 .opt-main > div:last-child {
-    margin-left: -65px !important;
     background: var(--color-bg);
-    margin: -5px -5px 0 5px;
+    margin: -5px -5px 0 -65px !important;
     box-shadow: -5px 0px 4px -5px var(--color-shader);
     transition: margin 0.3s;
     height: calc(100% + 7px);

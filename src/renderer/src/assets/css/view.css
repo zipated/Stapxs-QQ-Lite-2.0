@@ -1,6 +1,6 @@
 html,
 body {
-    font-family: 'Arial', 'Helvetica', 'sans-serif';
+    font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;
     background: var(--color-main);
     user-select: none;
     overflow: hidden;
@@ -673,7 +673,6 @@ textarea:focus {
     margin-left: 5px;
     margin-top: 3px;
     height: 1rem;
-    height: 1rem;
 }
 
 .pop-box {
@@ -971,7 +970,6 @@ textarea:focus {
     color: var(--color-font-2);
 }
 .qq-err-card > div:last-child {
-    margin: 0 -8px;
     padding: 10px;
     color: var(--color-font);
     margin: 0 -8px -3px -8px;

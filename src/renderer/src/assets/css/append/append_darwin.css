@@ -1,5 +1,6 @@
 body {
-    font: 14px -apple-system !important;
+    font: 14px -apple-system, Helvetica, Arial,
+        Verdana, Tahoma, sans-serif !important;
 }
 
 .main-body > ul {

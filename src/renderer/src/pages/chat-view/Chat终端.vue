@@ -930,7 +930,8 @@
 <style>
     .shell-pan a,
     .shell-pan span {
-        font-family: 'FiraCode Nerd Font';
+        font-family: 'FiraCode Nerd Font', Helvetica, Arial,
+             Verdana, Tahoma, sans-serif;
         color: var(--color-font);
         white-space: pre-wrap;
     }
@@ -1008,7 +1009,8 @@
         opacity: 0;
     }
     .shell-msg pre {
-        font-family: 'FiraCode Nerd Font';
+        font-family: 'FiraCode Nerd Font', Helvetica, Arial,
+            Verdana, Tahoma, sans-serif;
         line-height: 7px;
         font-size: 6px;
     }
@@ -1017,7 +1019,8 @@
         margin-bottom: 40px;
     }
     .shell-input > input {
-        font-family: 'FiraCode Nerd Font';
+        font-family: 'FiraCode Nerd Font', Helvetica, Arial,
+             Verdana, Tahoma, sans-serif;
         caret-color: var(--color-main);
         width: calc(100% - 2rem);
         background: transparent;

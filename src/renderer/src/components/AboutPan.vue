@@ -34,7 +34,6 @@
       </svg>
       <div>
         <span>{{ $t('Stapxs QQ Lite') }}</span>
-        <a>2.0</a>
       </div>
       <span style="text-align: center">{{
         $t('一个兼容 OneBot 的非官方网页版 QQ 客户端')

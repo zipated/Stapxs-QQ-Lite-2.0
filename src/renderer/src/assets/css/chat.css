@@ -771,11 +771,10 @@ input {
 }
 .bulletins > div.base > span {
     background: var(--color-card-1);
-    margin-top: calc(-1rem - 5px);
+    margin-top: 10px;
     border-radius: 7px;
     text-align: center;
     font-size: 0.8rem;
-    margin-top: 10px;
     display: block;
     padding: 5px;
 }
