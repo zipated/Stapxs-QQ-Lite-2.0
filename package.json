@@ -10,15 +10,10 @@
     "type": "module",
     "scripts": {
         "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
-        "typecheck": "tsc --noEmit -p tsconfig.node.json --composite false && vue-tsc --noEmit -p tsconfig.web.json --composite false",
-        "start": "vite preview",
-        "start:electron": "electron-vite preview",
         "dev": "vite dev",
         "dev:electron": "electron-vite dev",
+        "dev:ios": "vite build && capacitor sync && capacitor run ios",
         "build": "vite build",
-        "build:electron": "electron-vite build",
-        "postinstall": "electron-builder install-app-deps",
-        "build:unpack": "electron-vite build && electron-builder --dir",
         "build:win": "electron-vite build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux"
@@ -33,6 +28,10 @@
         "ws": "^8.18.0"
     },
     "devDependencies": {
+        "@capacitor/app": "^6.0.2",
+        "@capacitor/cli": "^6.2.0",
+        "@capacitor/core": "^6.2.0",
+        "@capacitor/ios": "^6.2.0",
         "@electron-toolkit/eslint-config": "^1.0.2",
         "@electron-toolkit/eslint-config-ts": "^2.0.0",
         "@electron-toolkit/tsconfig": "^1.0.1",

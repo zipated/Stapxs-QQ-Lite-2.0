@@ -410,6 +410,8 @@
             // 页面加载完成后
             window.onload = async () => {
                 // 初始化全局参数
+                runtimeData.tags.isCapacitor = window.Capacitor != undefined
+                         && window.Capacitor.isNativePlatform()
                 runtimeData.tags.isElectron = window.electron != undefined
                 runtimeData.reader = window.electron?.ipcRenderer
                 if (runtimeData.reader) {

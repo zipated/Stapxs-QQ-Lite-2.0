@@ -31,6 +31,7 @@ export interface RunTimeDataElem {
             index: number
         }
         loginWaveTimer?: any
+        isCapacitor: boolean
         isElectron: boolean
         platform: string | undefined
         release: string | undefined
