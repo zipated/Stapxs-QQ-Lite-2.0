@@ -398,4 +398,9 @@
             display: none;
         }
     }
+    @media (max-width: 500px) {
+        .exp-header > span {
+            display: block !important;
+        }
+    }
 </style>

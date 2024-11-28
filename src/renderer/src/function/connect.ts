@@ -39,7 +39,7 @@ export class Connector {
         // Electron 默认使用后端连接模式
         if (runtimeData.tags.isElectron) {
             logger.add(LogType.WS, '使用后端连接模式')
-            const reader = runtimeData.reader
+            const reader = runtimeData.plantform.reader
             if (reader) {
                 reader.send('onebot:connect', {
                     address: address,
@@ -183,7 +183,7 @@ export class Connector {
      */
     static close() {
         if (runtimeData.tags.isElectron) {
-            const reader = runtimeData.reader
+            const reader = runtimeData.plantform.reader
             if (reader) {
                 reader.send('onebot:close')
             }
@@ -218,7 +218,7 @@ export class Connector {
     static sendRaw(json: string) {
         // 发送
         if (runtimeData.tags.isElectron) {
-            const reader = runtimeData.reader
+            const reader = runtimeData.plantform.reader
             if (reader) {
                 reader.send('onebot:send', json)
             }

@@ -45,24 +45,28 @@
           "
           @click="changeTab('主页', 'Home', false)">
           <font-awesome-icon :icon="['fas', 'home']" />
+          <span>{{ $t('主页') }}</span>
         </li>
         <li
           id="bar-msg"
           :class="tags.page == 'Messages' ? 'active' : ''"
           @click="changeTab('信息', 'Messages', true)">
           <font-awesome-icon :icon="['fas', 'envelope']" />
+          <span>{{ $t('信息') }}</span>
         </li>
         <li
           id="bar-friends"
           :class="tags.page == 'Friends' ? 'active' : ''"
           @click="changeTab('列表', 'Friends', true)">
           <font-awesome-icon :icon="['fas', 'user']" />
+          <span>{{ $t('列表') }}</span>
         </li>
         <div class="side-bar-space" />
         <li
           :class="tags.page == 'Options' ? 'active' : ''"
           @click="changeTab('设置', 'Options', false)">
           <font-awesome-icon :icon="['fas', 'gear']" />
+          <span>{{ $t('设置') }}</span>
         </li>
       </ul>
       <div
@@ -413,12 +417,17 @@
                 runtimeData.tags.isCapacitor = window.Capacitor != undefined
                          && window.Capacitor.isNativePlatform()
                 runtimeData.tags.isElectron = window.electron != undefined
-                runtimeData.reader = window.electron?.ipcRenderer
-                if (runtimeData.reader) {
+                runtimeData.plantform.reader = window.electron?.ipcRenderer
+                if (runtimeData.plantform.reader) {
                     runtimeData.tags.platform =
-                        await runtimeData.reader.invoke('sys:getPlatform')
+                        await runtimeData.plantform.reader.invoke('sys:getPlatform')
                     runtimeData.tags.release =
-                        await runtimeData.reader.invoke('sys:getRelease')
+                        await runtimeData.plantform.reader.invoke('sys:getRelease')
+                }
+                if(runtimeData.tags.isCapacitor) {
+                    runtimeData.tags.platform = window.Capacitor.getPlatform()
+                    runtimeData.plantform.capacitor = window.Capacitor
+                    runtimeData.plantform.pulgins = window.Capacitor.Plugins
                 }
                 app.config.globalProperties.$viewer = this.viewerBody
                 // 初始化波浪动画
@@ -454,13 +463,18 @@
                     if (app) app.classList.add('withBar')
                 }
                 Option.runAS('opt_auto_gtk', Option.get('opt_auto_gtk'))
-
                 // 基础初始化完成
                 logger.debug('欢迎使用 Stapxs QQ Lite！')
                 logger.debug('当前启动模式为: ' + this.dev ? 'development' : 'production')
                 logger.debug('Electron 环境: ' + runtimeData.tags.isElectron)
+                logger.debug('Capacitor 环境: ' + runtimeData.tags.isCapacitor)
                 // 加载额外样式
                 App.loadAppendStyle()
+                const baseApp = document.getElementById('base-app')
+                if(baseApp) {
+                    baseApp.style.setProperty('--append-fs-adaptation',
+                        (Option.get('fs_adaptation') > 0 ? Option.get('fs_adaptation') : 0) + 'px')
+                }
                 // 加载密码保存和自动连接
                 loginInfo.address = runtimeData.sysConfig.address
                 if (
@@ -509,8 +523,8 @@
              * electron 窗口操作
              */
             controllWin(name: string) {
-                if (runtimeData.reader) {
-                    runtimeData.reader.send('win:' + name)
+                if (runtimeData.plantform.reader) {
+                    runtimeData.plantform.reader.send('win:' + name)
                 }
             },
 
@@ -646,8 +660,8 @@
                 Connector.send('get_system_msg', {}, 'getSystemMsg')
 
                 // 清理通知
-                if (runtimeData.reader) {
-                    runtimeData.reader.send('sys:closeAllNotice', data.id)
+                if (runtimeData.plantform.reader) {
+                    runtimeData.plantform.reader.send('sys:closeAllNotice', data.id)
                 }
             },
 

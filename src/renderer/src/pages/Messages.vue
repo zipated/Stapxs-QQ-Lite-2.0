@@ -25,7 +25,7 @@
             @click="cleanList" />
         </div>
         <div class="small">
-          <span v-show="runtimeData.tags.openSideBar">{{
+          <span>{{
             $t('消息')
           }}</span>
           <div @click="openLeftBar">
@@ -175,7 +175,7 @@
         },
         mounted() {
             library.add(faCheckToSlot, faThumbTack, faTrashCan, faGripLines)
-            if (runtimeData.tags.isElectron && runtimeData.reader) {
+            if (runtimeData.tags.isElectron && runtimeData.plantform.reader) {
                 this.$watch(
                     () => runtimeData.onMsgList.length,
                     () => {
@@ -209,7 +209,7 @@
                                       '/0',
                             })
                         })
-                        runtimeData.reader?.send('sys:flushTouchBar', list)
+                        runtimeData.plantform.reader?.send('sys:flushTouchBar', list)
                     },
                 )
             }

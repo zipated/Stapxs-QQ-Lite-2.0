@@ -32,8 +32,8 @@ export class Notify {
         }
         // 发送消息
         if (isElectron) {
-            if (runtimeData.reader)
-                runtimeData.reader.send('sys:sendNotice', info)
+            if (runtimeData.plantform.reader)
+                runtimeData.plantform.reader.send('sys:sendNotice', info)
         } else {
             // Safari：在 iOS 下，如果页面没有被创建为主屏幕，通知无法被调用
             // 最见鬼的是它不是方法返回失败，而且整个 Notification 对象都没有
@@ -61,8 +61,8 @@ export class Notify {
     public notifySingle(info: NotifyInfo) {
         const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
-            if (runtimeData.reader)
-                runtimeData.reader.send('sys:sendNotice', info)
+            if (runtimeData.plantform.reader)
+                runtimeData.plantform.reader.send('sys:sendNotice', info)
         } else {
             // Safari：在 iOS 下，如果页面没有被创建为主屏幕，通知无法被调用
             // 最见鬼的是它不是方法返回失败，而且整个 Notification 对象都没有
@@ -90,8 +90,8 @@ export class Notify {
     public closeAll(userId: string) {
         const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
-            if (runtimeData.reader)
-                runtimeData.reader.send('sys:closeAllNotice', userId)
+            if (runtimeData.plantform.reader)
+                runtimeData.plantform.reader.send('sys:closeAllNotice', userId)
         } else {
             const keys = Object.keys(Notify.notifyList)
             keys.forEach((key) => {
@@ -109,7 +109,7 @@ export class Notify {
     public clear() {
         const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
-            if (runtimeData.reader) runtimeData.reader.send('sys:clearNotice')
+            if (runtimeData.plantform.reader) runtimeData.plantform.reader.send('sys:clearNotice')
         } else {
             const keys = Object.keys(Notify.notifyList)
             keys.forEach((key) => {
@@ -127,8 +127,8 @@ export class Notify {
     private close(tag: string) {
         const isElectron = runtimeData.tags.isElectron
         if (isElectron) {
-            if (runtimeData.reader)
-                runtimeData.reader.send('sys:closeNotice', tag)
+            if (runtimeData.plantform.reader)
+                runtimeData.plantform.reader.send('sys:closeNotice', tag)
         } else {
             Notify.notifyList[tag]?.close()
         }

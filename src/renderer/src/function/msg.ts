@@ -1674,8 +1674,8 @@ function newMsg(_: string, data: any) {
                     new Notify().notify(msgInfo)
                 }
                 // MacOS：刷新 touchbar
-                if (runtimeData.tags.isElectron && runtimeData.reader) {
-                    runtimeData.reader.send('sys:newMessage', {
+                if (runtimeData.tags.isElectron && runtimeData.plantform.reader) {
+                    runtimeData.plantform.reader.send('sys:newMessage', {
                         id: id,
                         image: msgInfo.icon,
                         name: msgInfo.title,
@@ -1747,6 +1747,7 @@ function updateSysInfo(
 // ==============================================================
 
 const baseRuntime = {
+    plantform: {} as any,
     tags: {
         firstLoad: false,
         canLoadHistory: true,
@@ -1754,6 +1755,7 @@ const baseRuntime = {
         viewer: { index: 0 },
         msgType: BotMsgType.Array,
         isElectron: false,
+        isCapacitor: false,
         platform: undefined,
         release: undefined,
         connectSsl: false,

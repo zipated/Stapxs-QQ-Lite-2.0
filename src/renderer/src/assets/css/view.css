@@ -98,6 +98,9 @@ textarea:focus {
 
 #app,
 #base-app {
+    --append-fs-adaptation: 0;
+
+    overflow: hidden;
     height: 100%;
 }
 #base-app {
@@ -137,6 +140,16 @@ textarea:focus {
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    flex-direction: column;
+}
+.main-body > ul > li > svg {
+    padding-bottom: 10px !important;
+}
+.main-body > ul > li > span {
+    font-size: 0.85rem;
+    text-align: center;
+    color: var(--color-font);
+    display: none;
 }
 .main-body > ul > li:first-child {
     margin-top: 10px;
@@ -276,6 +289,7 @@ textarea:focus {
 }
 
 .friend-view {
+    overflow: hidden;
     flex-direction: row;
     user-select: text;
     display: flex;
@@ -310,6 +324,9 @@ textarea:focus {
     overflow: hidden;
     display: flex;
     width: 300px;
+}
+.friend-list .small {
+    display: none;
 }
 .friend-list > div:first-child {
     margin: 15px;
@@ -355,7 +372,6 @@ textarea:focus {
     align-items: center;
     display: flex;
     width: 100%;
-    margin-top: 10px;
     background: var(--color-card-2);
     border-bottom: 1px solid var(--color-font-2);
     border-radius: 7px;
@@ -1080,10 +1096,13 @@ textarea:focus {
     /* 二级侧栏 */
     .friend-list {
         transition: width 0.3s;
-        width: 80px !important;
+        width: 80px;
     }
     .friend-list.open {
-        width: 300px !important;
+        width: 300px;
+    }
+    .friend-list.open .small {
+        display: flex;
     }
     .friend-list > div:first-child > div.base {
         display: none;
@@ -1140,6 +1159,12 @@ textarea:focus {
     .friend-list > div:last-child.open > div > div,
     .friend-list > div:last-child.open > div.list > div > div > div {
         display: block;
+    }
+    .friend-list > div:first-child > div.small > span {
+        display: none;
+    }
+    .friend-list.open > div:first-child > div.small > span {
+        display: flex;
     }
     .friend-body {
         background: transparent !important;
@@ -1206,10 +1231,35 @@ textarea:focus {
         display: none;
     }
     /* 二级侧栏 */
-    .friend-list.open {
+    .friend-list {
         width: 100% !important;
     }
-    .friend-list-space.open {
+    .friend-list .small {
+        display: flex !important;
+    }
+    .friend-body > div {
+        display: block !important;
+    }
+    .friend-view > div:last-child {
+        display: none !important;
+    }
+    .friend-list > div:last-child > div:not(.list),
+    .friend-list > div:last-child > div.list > div > div {
+        padding: 10px !important;
+        margin: 10px !important;
+    }
+    .friend-list > div:first-child > div.small > div {
+        display: none;
+    }
+    .friend-list > div:first-child > div.small > span {
+        display: flex !important;
+        margin-right: 0;
+    }
+    .friend-list > div:first-child > div.small > div.reload,
+    .friend-list > div:first-child > div.small > label {
+        display: flex !important;
+    }
+    .friend-list-space {
         overflow: hidden;
         width: 0;
     }

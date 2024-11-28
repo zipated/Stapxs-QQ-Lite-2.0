@@ -6,8 +6,6 @@ input {
 }
 
 .chat-pan {
-    --append-fs-adaptation: 0px;
-
     background-color: var(--color-card);
     background-repeat: no-repeat;
     background-position: center;
@@ -18,6 +16,7 @@ input {
     pointer-events: none;
     transition: all 0.3s;
     position: absolute;
+    overflow: hidden;
     display: flex;
     height: 100%;
     left: 371px;
@@ -113,6 +112,9 @@ input {
     padding-top: 90px;
     z-index: 1;
     flex: 1;
+}
+.chat-pan > div.chat > div {
+    height: calc(100% - var(--append-fs-adaptation));
 }
 .chat-pan > div.chat::-webkit-scrollbar {
     background: transparent;
@@ -392,7 +394,8 @@ input {
 .msg-menu {
     position: absolute;
     overflow: hidden;
-    height: 100%;
+    height: calc(100% - var(--append-fs-adaptation)) !important;
+    top: 0;
     width: 100%;
     z-index: 10;
 }
@@ -484,7 +487,7 @@ input {
 
 .mumber-info {
     position: absolute;
-    height: 100%;
+    height: calc(100% - var(--append-fs-adaptation));
     width: 100%;
 }
 .mumber-info span,

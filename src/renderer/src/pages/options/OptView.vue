@@ -399,8 +399,8 @@
             },
 
             restartapp() {
-                if (runtimeData.reader) {
-                    runtimeData.reader.send('win:relaunch')
+                if (runtimeData.plantform.reader) {
+                    runtimeData.plantform.reader.send('win:relaunch')
                 }
             },
 

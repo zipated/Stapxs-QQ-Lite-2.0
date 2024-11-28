@@ -1,0 +1,59 @@
+html {
+    -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+    background: var(--color-card-1);
+}
+.main-body > ul {
+    background: rgba(var(--color-card-rgb), 0.7);
+    backdrop-filter: blur(10px);
+}
+.chat-pan {
+    z-index: 21;
+}
+.chat-pan > div.info > svg {
+    display: none;
+}
+
+.main-body > ul {
+    justify-content: space-evenly;
+}
+.main-body > ul > li > span {
+    display: block !important;
+}
+.hiden-home {
+    margin-left: -140px;
+}
+.main-body > ul > li:first-child {
+    margin-top: 0;
+}
+.main-body > ul > li.active > span,
+.main-body > ul > li.active > svg {
+    background-color: transparent;
+    color: var(--color-main);
+}
+
+.chat-pan > div.chat {
+    margin-bottom: -60px;
+    padding-bottom: 60px;
+}
+.chat-pan > div.chat > div:first-child > div:last-child {
+    padding-bottom: 60px;
+}
+.chat-pan > div.more > div:nth-child(2) {
+    background: rgba(var(--color-card-rgb), 0.7);
+    backdrop-filter: blur(50px);
+}
+.chat-pan > div.more > div:nth-child(2) > div:first-child {
+    border-radius: 999px;
+}
+.chat-pan > div.more > div:nth-child(2) > div:nth-child(2) {
+    background: transparent;
+    border: 1px solid var(--color-font-2);
+    opacity: 0.7;
+    border-radius: 999px;
+}
+.chat-pan > div.more > div:nth-child(2) > div:nth-child(2) > div {
+    display: none;
+}
