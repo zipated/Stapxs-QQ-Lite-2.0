@@ -12,16 +12,17 @@
         "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
         "dev": "vite dev",
         "dev:electron": "electron-vite dev",
-        "dev:ios": "capacitor sync ios && capacitor run ios",
+        "dev:ios": "capacitor sync && capacitor run ios",
         "build": "vite build",
         "build:win": "electron-vite build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux",
-        "build:ios": "vite build && capacitor sync ios && capacitor open ios"
+        "build:ios": "vite build && capacitor sync && capacitor open ios"
     },
     "dependencies": {
         "@electron-toolkit/preload": "^3.0.0",
         "@electron-toolkit/utils": "^3.0.0",
+        "capacitor-onebot-connctor": "./ssqq.capacitor-onebot-connector",
         "electron-store": "^10.0.0",
         "electron-window-state": "^5.0.3",
         "log4js": "^6.9.1",

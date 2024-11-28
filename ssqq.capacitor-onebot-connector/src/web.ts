@@ -3,8 +3,8 @@ import { WebPlugin } from '@capacitor/core';
 import type { OnebotPlugin } from './definitions';
 
 export class OnebotWeb extends WebPlugin implements OnebotPlugin {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
-  }
+    async connect(_: { url: string; }): Promise<{ success: boolean; }> {
+        console.warn('本插件不提供 Web 端实现。');
+        return Promise.resolve({ success: true });
+    }
 }

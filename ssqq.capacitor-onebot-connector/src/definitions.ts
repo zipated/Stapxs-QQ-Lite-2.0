@@ -1,3 +1,4 @@
 export interface OnebotPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  connect(options: { url: string }): Promise<{ success: boolean }>;
+  send(options: { data: string }): Promise<{ success: boolean }>;
 }

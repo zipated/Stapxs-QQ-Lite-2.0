@@ -348,7 +348,7 @@
 
     import { defineComponent, defineAsyncComponent } from 'vue'
     import { Connector, login as loginInfo } from '@renderer/function/connect'
-    import { Logger, popList, PopInfo } from '@renderer/function/base'
+    import { Logger, popList, PopInfo, LogType } from '@renderer/function/base'
     import { runtimeData } from '@renderer/function/msg'
     import { BaseChatInfoElem } from '@renderer/function/elements/information'
     import * as App from './function/utils/appUtil'
@@ -466,8 +466,10 @@
                 // 基础初始化完成
                 logger.debug('欢迎使用 Stapxs QQ Lite！')
                 logger.debug('当前启动模式为: ' + this.dev ? 'development' : 'production')
-                logger.debug('Electron 环境: ' + runtimeData.tags.isElectron)
-                logger.debug('Capacitor 环境: ' + runtimeData.tags.isCapacitor)
+                logger.add(LogType.DEBUG, 'Electron 环境: '
+                    + runtimeData.tags.isElectron, window.electron)
+                logger.add(LogType.DEBUG, 'Capacitor 环境: '
+                    + runtimeData.tags.isCapacitor, window.Capacitor)
                 // 加载额外样式
                 App.loadAppendStyle()
                 const baseApp = document.getElementById('base-app')

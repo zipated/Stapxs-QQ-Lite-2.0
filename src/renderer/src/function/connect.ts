@@ -48,6 +48,26 @@ export class Connector {
                 return
             }
         }
+        // Capacitor 默认使用后端连接模式
+        if (runtimeData.tags.isCapacitor) {
+            logger.add(LogType.WS, '使用后端连接模式')
+            const Onebot = runtimeData.plantform.capacitor.Plugins.Onebot
+            if(Onebot) {
+                Onebot.connect({ url: `${address}?access_token=${token}` })
+                // 注册回调监听
+                Onebot.addListener('onebot:event', (data) => {
+                    const msg = JSON.parse(data.data)
+                    switch(data.type) {
+                        case 'onopen': Connector.onopen(address, token); break
+                        case 'onmessage': Connector.onmessage(data.data); break
+                        case 'onclose': Connector.onclose(msg.code, msg.reason, address, token); break
+                        case 'onerror': popInfo.add(PopType.ERR, $t('连接失败') + ': ' + msg.type, false); break
+                        default: break
+                    }
+                })
+            }
+            return
+        }
 
         // PS：只有在未设定 wss 类型的情况下才认为是首次连接
         if (wss == undefined) retry = 0
@@ -221,6 +241,11 @@ export class Connector {
             const reader = runtimeData.plantform.reader
             if (reader) {
                 reader.send('onebot:send', json)
+            }
+        } else if(runtimeData.tags.isCapacitor) {
+            const Onebot = runtimeData.plantform.capacitor.Plugins.Onebot
+            if(Onebot) {
+                Onebot.send({ data: json })
             }
         } else {
             if (websocket) websocket.send(json)
