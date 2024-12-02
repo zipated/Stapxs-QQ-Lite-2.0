@@ -7,4 +7,9 @@ export class OnebotWeb extends WebPlugin implements OnebotPlugin {
         console.warn('本插件不提供 Web 端实现。');
         return Promise.resolve({ success: true });
     }
+
+    async send(_: { data: string; }): Promise<{ success: boolean; }> {
+        console.warn('本插件不提供 Web 端实现。');
+        return Promise.resolve({ success: true });
+    }
 }

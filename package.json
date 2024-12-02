@@ -12,17 +12,18 @@
         "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
         "dev": "vite dev",
         "dev:electron": "electron-vite dev",
-        "dev:ios": "capacitor sync && capacitor run ios",
+        "dev:ios": "capacitor sync ios && capacitor run ios",
+        "dev:android": "capacitor sync android && capacitor run android",
         "build": "vite build",
         "build:win": "electron-vite build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux",
-        "build:ios": "vite build && capacitor sync && capacitor open ios"
+        "build:ios": "vite build && capacitor sync ios && capacitor open ios",
+        "build:android": "vite build && capacitor sync android && capacitor open android"
     },
     "dependencies": {
         "@electron-toolkit/preload": "^3.0.0",
         "@electron-toolkit/utils": "^3.0.0",
-        "capacitor-onebot-connctor": "./ssqq.capacitor-onebot-connector",
         "electron-store": "^10.0.0",
         "electron-window-state": "^5.0.3",
         "log4js": "^6.9.1",
@@ -30,6 +31,7 @@
         "ws": "^8.18.0"
     },
     "devDependencies": {
+        "@capacitor/android": "^6.2.0",
         "@capacitor/app": "^6.0.2",
         "@capacitor/cli": "^6.2.0",
         "@capacitor/core": "^6.2.0",
@@ -51,6 +53,7 @@
         "@vue/eslint-config-typescript": "^13.0.0",
         "animejs": "^3.2.2",
         "browser-image-compression": "^2.0.2",
+        "capacitor-onebot-connctor": "./ssqq.capacitor-onebot-connector",
         "detect-browser": "^5.3.0",
         "electron": "^31.0.2",
         "electron-builder": "^24.13.3",

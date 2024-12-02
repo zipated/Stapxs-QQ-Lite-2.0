@@ -1035,10 +1035,21 @@
             if (safeArea) {
                 const chatPan = document.getElementById('chat-pan')
                 if(chatPan) {
-                    chatPan.style.paddingTop = (safeArea.top + 10) + 'px'
-                    // calc(100% - 75px - var(--append-fs-adaptation))
-                    chatPan.style.height = `calc(100% - ${safeArea.top + 10}px - var(--append-fs-adaptation))`
-                    // Chat 面板下其他需要调整的元素
+                    chatPan.style.height = 'calc(100% + 10px - var(--append-fs-adaptation))'
+                    // 聊天标题安全区调整
+                    const info= chatPan.getElementsByClassName('info')
+                    if(info && info.length > 0) {
+                        (info[0] as HTMLDivElement).style.paddingTop =
+                            (safeArea.top + 15) + 'px'
+                    }
+                    // 输入框安全区调整
+                    // const more = document.getElementById('send-more')
+                    // if(more && (more as HTMLDivElement)
+                        // .children.length > 1) {
+                    //     (more as HTMLDivElement).children[1]
+                    //         .style.paddingBottom = safeArea.bottom + 'px'
+                    // }
+                    // 出界元素调整
                     const bg = chatPan.getElementsByClassName('bg')
                     const mg = chatPan.getElementsByClassName('merge-pan')
                     if(bg && bg.length > 0) {
@@ -2731,11 +2742,21 @@
                     const moveX = Math.abs(x - this.tags.chatTouch.startX)
                     const moveY = Math.abs(y - this.tags.chatTouch.startY)
                     const width = document.body.clientWidth
-                    if((moveX > moveY || moveX > 20)
-                        && x - this.tags.chatTouch.startX > 0) {
+                    const heightAllow = document.body.clientHeight * 0.05
+
+                    const allowMove = moveX > moveY
+                        && moveY < heightAllow
+                        && x - this.tags.chatTouch.startX > 0
+                        console.log(allowMove)
+                    if(allowMove) {
                         chatPan.style.transform =
                                 'translateX(' + (x - this.tags.chatTouch.startX) + 'px)'
                         this.tags.chatTouch.openSuccess = moveX > width / 3
+                        // 禁用滚动
+                        const chat = chatPan.getElementsByClassName('chat')[0] as HTMLDivElement
+                        if(chat) {
+                            chat.style.overflowY = 'hidden'
+                        }
                     }
                 }
             },
@@ -2743,6 +2764,7 @@
             // 聊天面板右滑结束
             chatMoveEnd() {
                 this.tags.chatTouch.startX = -1
+                this.tags.chatTouch.startY = -1
                 const chatPan = document.getElementById('chat-pan')
                 if(chatPan) {
                     if(!this.tags.chatTouch.openSuccess) {
@@ -2756,6 +2778,11 @@
                     setTimeout(() => {
                         chatPan.style.transform = ''
                     }, 100)
+                    // 恢复滚动
+                    const chat = chatPan.getElementsByClassName('chat')[0] as HTMLDivElement
+                    if(chat) {
+                        chat.style.overflowY = 'scroll'
+                    }
                 }
                 this.tags.chatTouch.openSuccess = false
                 this.tags.chatTouch.onScroll = false

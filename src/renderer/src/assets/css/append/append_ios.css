@@ -1,6 +1,9 @@
 html {
     -webkit-tap-highlight-color: transparent;
 }
+.ss-card {
+    border-radius: 15px;
+}
 
 #app {
     background: var(--color-card-1);
@@ -9,6 +12,30 @@ html {
     background: rgba(var(--color-card-rgb), 0.7);
     backdrop-filter: blur(10px);
 }
+
+/* 联系人列表 */
+.friend-list .small {
+    display: none !important;
+}
+.friend-list .base {
+    display: flex !important;
+}
+.friend-list .base > span {
+    font-size: 1.5rem;
+}
+.friend-list .base > svg {
+    height: 1.3rem !important;
+}
+.friend-list > div:first-child label {
+    height: calc(1rem + 25px);
+    margin-top: 10px;
+    display: flex;
+}
+.friend-list > div:first-child label > input {
+    font-size: 1rem;
+}
+
+/* 聊天面板 */
 .chat-pan {
     z-index: 21;
 }
@@ -34,15 +61,20 @@ html {
     color: var(--color-main);
 }
 
+.chat-pan > div.info {
+    margin: 0 0 15px 0;
+    width: calc(100% - 50px);
+    padding: 15px 25px;
+}
 .chat-pan > div.chat {
     margin-bottom: -60px;
     padding-bottom: 60px;
 }
 .chat-pan > div.chat > div:first-child > div:last-child {
-    padding-bottom: 60px;
+    padding-bottom: 70px;
 }
 .chat-pan > div.more > div:nth-child(2) {
-    background: rgba(var(--color-card-rgb), 0.7);
+    background: rgba(var(--color-card-1-rgb), 0.8);
     backdrop-filter: blur(50px);
 }
 .chat-pan > div.more > div:nth-child(2) > div:first-child {
@@ -53,7 +85,39 @@ html {
     border: 1px solid var(--color-font-2);
     opacity: 0.7;
     border-radius: 999px;
+    height: 45px;
 }
 .chat-pan > div.more > div:nth-child(2) > div:nth-child(2) > div {
     display: none;
+}
+
+.msg-menu-body {
+    max-width: 35%;
+    width: 35%;
+}
+.chat-pan > div.new-msg {
+    margin: -50px 20px 20px auto;
+}
+
+.message-body > div {
+    border-radius: 20px;
+    padding: 7px 15px;
+    margin-top: 10px;
+}
+.msg-img {
+    border-radius: 20px;
+}
+.msg-img.alone {
+    max-width: calc(100% + 30px);
+    margin: -10px -15px;
+}
+
+/* 设置面板 */
+.tab-main>div:first-child {
+    width: fit-content;
+    margin: 10px auto 20px auto !important;
+    border-radius: 999px;
+}
+.opt-tab .tab-bar {
+    margin: -17px -10px -17px -50px;
 }
