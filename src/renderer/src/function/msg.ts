@@ -1740,6 +1740,7 @@ function updateSysInfo(
 // ==============================================================
 
 const baseRuntime = {
+    plantform: {} as any,
     tags: {
         firstLoad: false,
         canLoadHistory: true,
@@ -1747,6 +1748,7 @@ const baseRuntime = {
         viewer: { index: 0 },
         msgType: BotMsgType.Array,
         isElectron: false,
+        isCapacitor: false,
         platform: undefined,
         release: undefined,
         connectSsl: false,

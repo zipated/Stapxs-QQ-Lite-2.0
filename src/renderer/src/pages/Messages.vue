@@ -25,7 +25,7 @@
             @click="cleanList" />
         </div>
         <div class="small">
-          <span v-show="runtimeData.tags.openSideBar">{{
+          <span>{{
             $t('消息')
           }}</span>
           <div @click="openLeftBar">
