@@ -409,6 +409,7 @@ export function createIpc() {
             runtimeData.popBoxList.push(popInfo)
         })
         runtimeData.plantform.reader.on('app:changeTab', (_, name) => {
+            window.focus()
             document.getElementById('bar-' + name.toLowerCase())?.click()
         })
         runtimeData.plantform.reader.on('app:openLink', (_, link) => {

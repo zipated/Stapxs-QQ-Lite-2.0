@@ -217,6 +217,10 @@ export class Notify {
                 jumpToChat(userId, msgId)
             }
             this.close(tag)
+            // MacOS：刷新 touchbar
+            if (runtimeData.tags.isElectron && runtimeData.reader) {
+                runtimeData.reader.send('sys:newMessage')
+            }
         }
     }
 

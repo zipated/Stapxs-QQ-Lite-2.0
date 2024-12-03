@@ -534,7 +534,7 @@ export function orderOnMsgList(list: (UserFriendElem & UserGroupElem)[]) {
     ) => {
         if (a.time == b.time || a.time == undefined || b.time == undefined) {
             if (a.py_start == undefined || b.py_start == undefined) {
-                return 0
+                return 1
             }
             return b.py_start.charCodeAt(0) - a.py_start.charCodeAt(0)
         }
