@@ -108,6 +108,7 @@ textarea:focus {
 }
 #base-app.no-touch {
     transform: rotate(180deg);
+    padding-bottom: 30px;
 }
 #base-app.withBar {
     height: calc(100% - 40px);

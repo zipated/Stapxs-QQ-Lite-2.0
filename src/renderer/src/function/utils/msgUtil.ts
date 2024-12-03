@@ -107,15 +107,17 @@ function replaceJPValue(jpStr: string) {
  * @returns 表情图片
  */
 export function getFace(id: number) {
-    const pathList = import.meta.glob('@renderer/assets/img/qq-face/public/*/s*.*')
+    const pathList = import.meta.glob('@renderer/assets/img/qq-face/public/*/s*.*',
+        { eager: true }
+    )
     for(const path in pathList) {
         if (path.includes(`/s${id}.gif`)) {
-            return path
+            return (pathList[path] as any).default
         }
     }
     for(const path in pathList) {
         if (path.includes(`/s${id}.png`)) {
-            return path
+            return (pathList[path] as any).default
         }
     }
     return ''

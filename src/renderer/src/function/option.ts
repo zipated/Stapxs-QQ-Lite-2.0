@@ -98,13 +98,16 @@ function setMsgType(value: any) {
 
 /**
  * 修改移动端缩放比例
- * @param value 数值（0.1 - 5）
+ * @param value 数值（0.5 - 1.5）
  */
 function changeInitialScale(value: number) {
     const viewport = document.getElementById('viewport')
-    if (viewport && value && value >= 0.1 && value <= 5) {
+    if (viewport && value && value >= 0.5 && value <= 1.5) {
         (viewport as any).content =
             `width=device-width, initial-scale=${value}, maximum-scale=5, user-scalable=0`
+    } else {
+        (viewport as any).content =
+            'width=device-width, initial-scale=0.85, maximum-scale=5, user-scalable=0'
     }
 }
 
