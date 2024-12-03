@@ -374,8 +374,8 @@
                                     info += '    Install Type     -> aur\n'
                                 } else {
                                     // 也有可能是 stapxs-qq-lite，这是我自己打的原生包
-                                    pacmanInfo =
-                                        await runtimeData.plantform.reader.invoke(
+                                    pacmanInfo = await runtimeData.
+                                        plantform.reader.invoke(
                                             'sys:runCommand',
                                             'pacman -Q stapxs-qq-lite',
                                         )

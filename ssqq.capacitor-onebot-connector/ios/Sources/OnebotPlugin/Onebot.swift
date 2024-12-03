@@ -28,6 +28,10 @@ import os
         client?.sendMessage(data)
     }
 
+    @objc public func close() {
+        client?.disconnect()
+    }
+
     private class WebSocketClient: NSObject, URLSessionDelegate {
         var onEvent: ((String, String) -> Void)
 
@@ -38,14 +42,23 @@ import os
         private let url: URL
         private var isConnected = false
 
+        private var address: String
+        private var token: String?
+
         // 重试相关
         private var retryAttempts = 0
-        private let maxRetryAttempts = 5
+        private let maxRetryAttempts = 4
         private let retryDelay: TimeInterval = 5.0
 
         init(url: URL, onEvent: @escaping (String, String) -> Void) {
             self.url = url
             self.onEvent = onEvent
+            // 这儿需将 address 和 token 拆开; token 的部分不一定有
+            // ws://192.168.99.100:3001/?token=123456
+            self.address = self.url.absoluteString
+            if let urlComponents = URLComponents(url: self.url, resolvingAgainstBaseURL: false) {
+                self.token = urlComponents.queryItems?.first(where: { $0.name == "token" })?.value
+            }
             let configuration = URLSessionConfiguration.default
             self.urlSession = URLSession(configuration: configuration, delegate: nil, delegateQueue: OperationQueue())
             super.init()
@@ -62,21 +75,12 @@ import os
             webSocketTask?.sendPing { [weak self] error in
                 guard let self = self else { return }
 
-                if let error = error {
-                    self.logger.error("连接失败，尝试重连：\(error.localizedDescription)")
-                    self.handleConnectionFailure(error)
-                } else {
+                if error == nil {
                     self.logger.info("连接成功")
-                    // 这儿需将 address 和 token 拆开; token 的部分不一定有
-                    // ws://192.168.99.100:3001/?token=123456
-                    let address = self.url.absoluteString
-                    var token: String? = nil
-                    if let urlComponents = URLComponents(url: self.url, resolvingAgainstBaseURL: false) {
-                        token = urlComponents.queryItems?.first(where: { $0.name == "token" })?.value
-                    }
+                    retryAttempts = 0
                     // 拼为 json 字符串
                     let data = try! JSONSerialization.data(
-                        withJSONObject: ["address": address, "token": token], options: [])
+                        withJSONObject: ["address": self.address, "token": self.token], options: [])
                     self.onEvent("onopen", String(data: data, encoding: .utf8)!)
                 }
             }
@@ -115,22 +119,47 @@ import os
 
         func disconnect() {
             isConnected = false
-            webSocketTask?.cancel(with: .goingAway, reason: nil)
+            // 正常关闭（1000）
+            webSocketTask?.cancel(with: .normalClosure, reason: nil)
         }
 
         private func handleConnectionFailure(_ error: Error) {
-            isConnected = false
-            print("连接失败: \(error.localizedDescription)")
+            let code = webSocketTask?.closeCode.rawValue ?? -1
 
-            // 尝试重连
-            if retryAttempts < maxRetryAttempts {
-                retryAttempts += 1
-                print("重试连接 (\(retryAttempts)/\(maxRetryAttempts))...")
-                DispatchQueue.global().asyncAfter(deadline: .now() + retryDelay) { [weak self] in
-                    self?.connect()
-                }
+            print("连接失败（\(code)）: \(error.localizedDescription)")
+            isConnected = false
+
+            if code != 1005 && code != 1015 {
+                let data = try! JSONSerialization.data(
+                            withJSONObject: [
+                                "code": code,
+                                "message": error.localizedDescription,
+                                "address": self.address,
+                                "token": self.token as Any
+                            ], options: [])
+                self.onEvent("onclose", String(data: data, encoding: .utf8)!)
             } else {
-                print("达到最大重试次数，放弃连接")
+                let data = try! JSONSerialization.data(
+                            withJSONObject: [
+                                "code": -1,
+                                "message": error.localizedDescription,
+                                "address": self.address,
+                                "token": self.token as Any
+                            ], options: [])
+                self.onEvent("onclose", String(data: data, encoding: .utf8)!)
+            }
+
+            if code != 1000 {
+                // 尝试重连
+                if retryAttempts < maxRetryAttempts {
+                    retryAttempts += 1
+                    print("重试连接 (\(retryAttempts)/\(maxRetryAttempts))...")
+                    DispatchQueue.global().asyncAfter(deadline: .now() + retryDelay) { [weak self] in
+                        self?.connect()
+                    }
+                } else {
+                    print("达到最大重试次数，放弃连接")
+                }
             }
         }
     }

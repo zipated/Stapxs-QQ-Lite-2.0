@@ -2,7 +2,11 @@ import app from '@renderer/main'
 import { NotifyInfo, NotificationElem } from './elements/system'
 import { jumpToChat } from './utils/appUtil'
 import { runtimeData } from './msg'
-import { LocalNotificationSchema, LocalNotificationsPlugin } from '@capacitor/local-notifications'
+import {
+    LocalNotificationSchema,
+    LocalNotificationsPlugin,
+    DeliveredNotifications
+} from '@capacitor/local-notifications'
 
 export class Notify {
     // 针对 MSG 类型的通知，记录用户的通知数量
@@ -50,8 +54,6 @@ export class Notify {
                         },
                         sound: runtimeData.tags.platform === 'ios' ? 'beep.wav' : 'beep.mp3',
                         actionTypeId: 'msgQuickReply',
-                        // 需要支持快速回复
-                        quickReply: true,
                         extra: {
                             userId: info.tag.split('/')[0],
                             msgId: info.tag.split('/')[1],
@@ -86,9 +88,26 @@ export class Notify {
      */
     public notifySingle(info: NotifyInfo) {
         const isElectron = runtimeData.tags.isElectron
+        const isCapacitor = runtimeData.tags.isCapacitor
         if (isElectron) {
             if (runtimeData.plantform.reader)
                 runtimeData.plantform.reader.send('sys:sendNotice', info)
+        } else if (isCapacitor) {
+            const Notice = runtimeData.plantform.capacitor.Plugins
+                .LocalNotifications as LocalNotificationsPlugin
+                if(Notice) {
+                    const data = {
+                        title: info.title,
+                        body: info.body,
+                        // id 为随机数，不会被覆盖；主要用于应用的通知
+                        id: Math.floor(Math.random() * 100000),
+                        schedule: {
+                            at: new Date(Date.now() + 100)
+                        },
+                        sound: runtimeData.tags.platform === 'ios' ? 'beep.wav' : 'beep.mp3'
+                    } as LocalNotificationSchema
+                    Notice.schedule({ notifications: [data] })
+                }
         } else {
             // Safari：在 iOS 下，如果页面没有被创建为主屏幕，通知无法被调用
             // 最见鬼的是它不是方法返回失败，而且整个 Notification 对象都没有
@@ -115,9 +134,22 @@ export class Notify {
      */
     public closeAll(userId: string) {
         const isElectron = runtimeData.tags.isElectron
+        const isCapacitor = runtimeData.tags.isCapacitor
         if (isElectron) {
             if (runtimeData.plantform.reader)
                 runtimeData.plantform.reader.send('sys:closeAllNotice', userId)
+        } else if(isCapacitor) {
+            const Notice = runtimeData.plantform.capacitor.Plugins
+                .LocalNotifications as LocalNotificationsPlugin
+            if(Notice) {
+                const list = Notice.getDeliveredNotifications() as
+                    unknown as DeliveredNotifications
+                list.notifications.forEach((item) => {
+                    if (item.extra.userId === userId) {
+                        Notice.cancel({ notifications: [{ id: item.id }] })
+                    }
+                })
+            }
         } else {
             const keys = Object.keys(Notify.notifyList)
             keys.forEach((key) => {
@@ -134,8 +166,15 @@ export class Notify {
      */
     public clear() {
         const isElectron = runtimeData.tags.isElectron
+        const isCapacitor = runtimeData.tags.isCapacitor
         if (isElectron) {
             if (runtimeData.plantform.reader) runtimeData.plantform.reader.send('sys:clearNotice')
+        } else if(isCapacitor) {
+            const Notice = runtimeData.plantform.capacitor.Plugins
+                .LocalNotifications as LocalNotificationsPlugin
+            if(Notice) {
+                Notice.removeAllDeliveredNotifications()
+            }
         } else {
             const keys = Object.keys(Notify.notifyList)
             keys.forEach((key) => {
@@ -145,6 +184,7 @@ export class Notify {
     }
 
     // ==============================
+    // PS: 以下为 Web 端通知的方法
 
     /**
      * 关闭一条通知

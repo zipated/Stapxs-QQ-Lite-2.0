@@ -60,15 +60,10 @@ export class Connector {
                     switch(data.type) {
                         case 'onopen': Connector.onopen(address, token); break
                         case 'onmessage': Connector.onmessage(data.data); break
-                        case 'onclose': Connector.onclose(msg.code, msg.reason, address, token); break
+                        case 'onclose': Connector.onclose(msg.code, msg.message, address, token); break
                         case 'onerror': popInfo.add(PopType.ERR, $t('连接失败') + ': ' + msg.type, false); break
                         default: break
                     }
-                })
-                Onebot.addListener('onebot:jumpChat', (data) => {
-                    console.log(data)
-                    // const msg = JSON.parse(data.data)
-                    // jumpToChat(msg.userId, msg.groupId)
                 })
             }
             return
@@ -211,6 +206,11 @@ export class Connector {
             const reader = runtimeData.plantform.reader
             if (reader) {
                 reader.send('onebot:close')
+            }
+        } else if(runtimeData.tags.isCapacitor) {
+            const Onebot = runtimeData.plantform.capacitor.Plugins.Onebot
+            if(Onebot) {
+                Onebot.close()
             }
         } else {
             popInfo.add(

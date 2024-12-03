@@ -61,7 +61,7 @@ html {
 .chat-pan {
     z-index: 21;
     box-shadow: 0 0 5px var(--color-shader);
-    height: calc(100% + 25px - var(--safe-area-bottom));
+    height: calc(100% + 35px - var(--safe-area-bottom));
 }
 .chat-pan > div.info {
     margin: 0 0 15px 0;

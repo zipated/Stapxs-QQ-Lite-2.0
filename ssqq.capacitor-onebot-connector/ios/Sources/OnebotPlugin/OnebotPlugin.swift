@@ -12,6 +12,7 @@ public class OnebotPlugin: CAPPlugin, CAPBridgedPlugin {
     public let jsName = "Onebot"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "connect", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "close", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "send", returnType: CAPPluginReturnPromise)
     ]
     private let implementation = Onebot()
@@ -40,6 +41,12 @@ public class OnebotPlugin: CAPPlugin, CAPBridgedPlugin {
         let url = call.getString("url") ?? ""
         call.resolve([
             "value": implementation.connect(url)
+        ])
+    }
+
+    @objc func close(_ call: CAPPluginCall) {
+        call.resolve([
+            "value": implementation.close()
         ])
     }
 
