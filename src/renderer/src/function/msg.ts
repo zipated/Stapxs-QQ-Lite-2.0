@@ -1674,7 +1674,8 @@ function newMsg(_: string, data: any) {
                     new Notify().notify(msgInfo)
                 }
                 // MacOS：刷新 touchbar
-                if (runtimeData.tags.isElectron && runtimeData.plantform.reader) {
+                if (runtimeData.tags.isElectron
+                        && runtimeData.plantform.reader) {
                     runtimeData.plantform.reader.send('sys:newMessage', {
                         id: id,
                         image: msgInfo.icon,

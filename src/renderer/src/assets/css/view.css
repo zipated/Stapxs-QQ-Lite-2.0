@@ -98,7 +98,7 @@ textarea:focus {
 
 #app,
 #base-app {
-    --append-fs-adaptation: 0;
+    --safe-area-bottom: 0;
 
     overflow: hidden;
     height: 100%;
@@ -640,7 +640,7 @@ textarea:focus {
 .app-msg {
     flex-direction: column-reverse;
     justify-content: flex-start;
-    height: calc(100% - 20px);
+    height: calc(100% - 20px - var(--safe-area-bottom));
     width: calc(100% - 20px);
     pointer-events: none;
     position: absolute;
@@ -1204,7 +1204,7 @@ textarea:focus {
     }
     /* 应用消息 */
     .app-msg {
-        height: calc(100% - 20px - 70px);
+        height: calc(100% - 90px - var(--safe-area-bottom));
         padding-left: 20px;
     }
     .app-msg > div {

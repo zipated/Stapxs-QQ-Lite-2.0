@@ -376,7 +376,7 @@ export function createIpc() {
                 data.id,
                 data.type,
                 parseMsg(
-                    '[SQ:0]' + data.content,
+                    data.content,
                     [{ type: 'reply', id: String(data.msg) }],
                     [],
                 ),

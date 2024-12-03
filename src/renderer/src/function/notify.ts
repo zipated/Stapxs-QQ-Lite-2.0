@@ -2,6 +2,7 @@ import app from '@renderer/main'
 import { NotifyInfo, NotificationElem } from './elements/system'
 import { jumpToChat } from './utils/appUtil'
 import { runtimeData } from './msg'
+import { LocalNotificationSchema, LocalNotificationsPlugin } from '@capacitor/local-notifications'
 
 export class Notify {
     // 针对 MSG 类型的通知，记录用户的通知数量
@@ -16,6 +17,7 @@ export class Notify {
     public notify(info: NotifyInfo) {
         const $t = app.config.globalProperties.$t
         const isElectron = runtimeData.tags.isElectron
+        const isCapacitor = runtimeData.tags.isCapacitor
         // 判断当前 userId 是否已存在通知
         const userId = info.tag.split('/')[0]
         if (Notify.userNotifyList[userId] === undefined) {
@@ -34,6 +36,30 @@ export class Notify {
         if (isElectron) {
             if (runtimeData.plantform.reader)
                 runtimeData.plantform.reader.send('sys:sendNotice', info)
+        } else if(isCapacitor) {
+            const Notice = runtimeData.plantform.capacitor.Plugins
+                .LocalNotifications as LocalNotificationsPlugin
+                if(Notice) {
+                    const data = {
+                        title: info.title,
+                        body: info.body,
+                        // id 相同的通知会被覆盖，这里使用用户 ID 作为通知 ID 便于覆盖
+                        id: Number(info.tag.split('/')[0]),
+                        schedule: {
+                            at: new Date(Date.now() + 100)
+                        },
+                        sound: runtimeData.tags.platform === 'ios' ? 'beep.wav' : 'beep.mp3',
+                        actionTypeId: 'msgQuickReply',
+                        // 需要支持快速回复
+                        quickReply: true,
+                        extra: {
+                            userId: info.tag.split('/')[0],
+                            msgId: info.tag.split('/')[1],
+                            chatType: info.type
+                        }
+                    } as LocalNotificationSchema
+                    Notice.schedule({ notifications: [data] })
+                }
         } else {
             // Safari：在 iOS 下，如果页面没有被创建为主屏幕，通知无法被调用
             // 最见鬼的是它不是方法返回失败，而且整个 Notification 对象都没有

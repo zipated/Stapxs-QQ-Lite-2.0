@@ -65,6 +65,11 @@ export class Connector {
                         default: break
                     }
                 })
+                Onebot.addListener('onebot:jumpChat', (data) => {
+                    console.log(data)
+                    // const msg = JSON.parse(data.data)
+                    // jumpToChat(msg.userId, msg.groupId)
+                })
             }
             return
         }

@@ -19,6 +19,7 @@
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux",
         "build:ios": "vite build && capacitor sync ios && capacitor open ios",
+        "build:ioscil": "vite build && capacitor sync ios && xcodebuild -workspace ios/App.xcworkspace -scheme App -configuration Release -sdk iphoneos",
         "build:android": "vite build && capacitor sync android && capacitor open android"
     },
     "dependencies": {
@@ -36,6 +37,7 @@
         "@capacitor/cli": "^6.2.0",
         "@capacitor/core": "^6.2.0",
         "@capacitor/ios": "^6.2.0",
+        "@capacitor/local-notifications": "^6.1.1",
         "@electron-toolkit/eslint-config": "^1.0.2",
         "@electron-toolkit/eslint-config-ts": "^2.0.0",
         "@electron-toolkit/tsconfig": "^1.0.1",

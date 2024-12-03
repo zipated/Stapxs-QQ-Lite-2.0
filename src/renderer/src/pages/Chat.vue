@@ -1028,41 +1028,6 @@
                     }
                 },
             )
-            // 平台特定刷新
-            if(runtimeData.tags.platform == 'ios') {
-            const safeArea = await runtimeData.plantform.
-                pulgins.SafeArea?.getSafeArea()
-            if (safeArea) {
-                const chatPan = document.getElementById('chat-pan')
-                if(chatPan) {
-                    chatPan.style.height = 'calc(100% + 10px - var(--append-fs-adaptation))'
-                    // 聊天标题安全区调整
-                    const info= chatPan.getElementsByClassName('info')
-                    if(info && info.length > 0) {
-                        (info[0] as HTMLDivElement).style.paddingTop =
-                            (safeArea.top + 15) + 'px'
-                    }
-                    // 输入框安全区调整
-                    // const more = document.getElementById('send-more')
-                    // if(more && (more as HTMLDivElement)
-                        // .children.length > 1) {
-                    //     (more as HTMLDivElement).children[1]
-                    //         .style.paddingBottom = safeArea.bottom + 'px'
-                    // }
-                    // 出界元素调整
-                    const bg = chatPan.getElementsByClassName('bg')
-                    const mg = chatPan.getElementsByClassName('merge-pan')
-                    if(bg && bg.length > 0) {
-                        (bg[1] as HTMLDivElement).style.height =
-                            `calc(100% - ${safeArea.bottom}px - var(--append-fs-adaptation))`
-                    }
-                    if(mg && mg.length > 0) {
-                        (mg[0] as HTMLDivElement).style.height =
-                            `calc(100% - ${safeArea.bottom}px - var(--append-fs-adaptation))`
-                    }
-                }
-            }
-        }
         },
         methods: {
             /**
@@ -2747,15 +2712,36 @@
                     const allowMove = moveX > moveY
                         && moveY < heightAllow
                         && x - this.tags.chatTouch.startX > 0
-                        console.log(allowMove)
                     if(allowMove) {
-                        chatPan.style.transform =
-                                'translateX(' + (x - this.tags.chatTouch.startX) + 'px)'
-                        this.tags.chatTouch.openSuccess = moveX > width / 3
-                        // 禁用滚动
-                        const chat = chatPan.getElementsByClassName('chat')[0] as HTMLDivElement
-                        if(chat) {
-                            chat.style.overflowY = 'hidden'
+                        if(this.tags.openChatInfo) {
+                            // 聊天信息面板返回
+                            const infoPan = chatPan.getElementsByClassName('chat-info-pan')[0] as HTMLDivElement
+                            if(infoPan) {
+                                infoPan.style.transition = 'all 0s'
+                                infoPan.style.transform =
+                                    'translateX(' + (x - this.tags.chatTouch.startX) + 'px)'
+                                this.tags.chatTouch.openSuccess =
+                                    moveX > width / 3
+                            }
+                        } else if(this.mergeList != undefined) {
+                            // 合并转发面板返回
+                            const mergePan = chatPan.getElementsByClassName('merge-pan')[0] as HTMLDivElement
+                            if(mergePan) {
+                                mergePan.style.transition = 'all 0s'
+                                mergePan.style.transform =
+                                    'translateX(' + (x - this.tags.chatTouch.startX) + 'px)'
+                                this.tags.chatTouch.openSuccess =
+                                    moveX > width / 3
+                            }
+                        } else {
+                            // 聊天面板底层返回
+                            chatPan.style.transform = 'translateX(' + (x - this.tags.chatTouch.startX) + 'px)'
+                            this.tags.chatTouch.openSuccess = moveX > width / 3
+                            // 禁用滚动
+                            const chat = chatPan.getElementsByClassName('chat')[0] as HTMLDivElement
+                            if(chat) {
+                                chat.style.overflowY = 'hidden'
+                            }
                         }
                     }
                 }
@@ -2768,10 +2754,35 @@
                 const chatPan = document.getElementById('chat-pan')
                 if(chatPan) {
                     if(!this.tags.chatTouch.openSuccess) {
-                        runtimeData.tags.openSideBar = false
+                        if(this.tags.openChatInfo) {
+                            const infoPan = chatPan.getElementsByClassName('chat-info-pan')[0] as HTMLDivElement
+                            if(infoPan) {
+                                infoPan.style.transition = 'transform 0.3s'
+                                infoPan.style.transform = ''
+                            }
+                        } else if(this.mergeList != undefined) {
+                            const mergePan = chatPan.getElementsByClassName('merge-pan')[0] as HTMLDivElement
+                            if(mergePan) {
+                                mergePan.style.transform = ''
+                            }
+                        } else {
+                            runtimeData.tags.openSideBar = false
+                        }
                     } else {
-                        runtimeData.tags.openSideBar = true
-                        new Logger().add(LogType.UI, '右滑打开侧边栏触发完成')
+                        if(this.tags.openChatInfo) {
+                            this.openChatInfoPan()
+                        } else if(this.mergeList != undefined) {
+                            this.closeMergeMsg()
+                            setTimeout(() => {
+                                const mergePan = chatPan.getElementsByClassName('merge-pan')[0] as HTMLDivElement
+                                if(mergePan) {
+                                    mergePan.style.transform = ''
+                                }
+                            }, 500)
+                         } else {
+                            runtimeData.tags.openSideBar = true
+                            new Logger().add(LogType.UI, '右滑打开侧边栏触发完成')
+                        }
                     }
                     // 恢复过渡效果，完成撒手之后的剩余动画
                     chatPan.style.transition = ''
