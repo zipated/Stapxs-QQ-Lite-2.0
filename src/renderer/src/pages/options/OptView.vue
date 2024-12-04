@@ -235,17 +235,17 @@
         <div class="ss-range">
           <input
             v-model="runtimeData.sysConfig.initial_scale"
-            :style="`background-size: ${initialScaleShow / 0.05}% 100%;`"
+            :style="`background-size: ${(initialScaleShow - 0.5) / 0.01}% 100%;`"
             type="range"
             min="0.5"
             max="1.5"
-            step="0.05"
+            step="0.01"
             name="initial_scale"
             @change="scaleSave"
             @input="setInitialScaleShow">
           <span
             :style="`color: var(--color-font${
-              initialScaleShow / 0.05 > 50 ? '-r' : ''})`">
+              initialScaleShow / 0.05 })`">
             {{ initialScaleShow }}</span>
         </div>
       </div>
@@ -345,7 +345,7 @@
                     '玄素黑',
                 ],
                 browser: detect() as BrowserInfo,
-                initialScaleShow: 0.1,
+                initialScaleShow: 0.5,
                 fsAdaptationShow: 0,
                 chatview_name: '',
             }
