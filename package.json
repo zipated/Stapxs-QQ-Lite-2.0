@@ -10,16 +10,20 @@
     "type": "module",
     "scripts": {
         "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
+
         "dev": "vite dev",
         "dev:electron": "electron-vite dev",
         "dev:ios": "capacitor sync ios && capacitor run ios",
         "dev:android": "capacitor sync android && capacitor run android",
+
+        "open:ios": "vite build && capacitor sync ios && capacitor open ios",
+        "open:android": "vite build && capacitor sync android && capacitor open android",
+
         "build": "vite build",
         "build:win": "electron-vite build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
         "build:linux": "electron-vite build && electron-builder --linux",
-        "build:ios": "vite build && capacitor sync ios && capacitor open ios",
-        "build:android": "vite build && capacitor sync android && capacitor open android"
+        "build:ios": "sh ./scripts/build-export-ipa.sh"
     },
     "dependencies": {
         "@electron-toolkit/preload": "^3.0.0",

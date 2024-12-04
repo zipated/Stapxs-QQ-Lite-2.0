@@ -17,23 +17,6 @@
         }}
       </div>
       <div class="opt-item">
-        <font-awesome-icon :icon="['fas', 'heart']" />
-        <div>
-          <span>{{ $t('发送心跳包') }}</span>
-          <span>{{ $t('没救了，拖出去吧') }}</span>
-        </div>
-        <label class="ss-switch">
-          <input
-            v-model="runtimeData.sysConfig.connect_beat"
-            type="checkbox"
-            name="connect_beat"
-            @change="save">
-          <div>
-            <div />
-          </div>
-        </label>
-      </div>
-      <div class="opt-item">
         <font-awesome-icon :icon="['fas', 'clipboard-list']" />
         <div>
           <span>{{ $t('消息类型') }}</span>
@@ -49,8 +32,8 @@
           title="msg_type"
           @change="save">
           <option
-            v-for="item in BotMsgType"
-            v-show="typeof item == 'number'"
+            v-for="item in Object.values(BotMsgType)
+              .filter(value => typeof value === 'number')"
             :key="item"
             :value="item">
             {{ getBotTypeName(item) }}

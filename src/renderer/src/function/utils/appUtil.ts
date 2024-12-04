@@ -447,18 +447,6 @@ export async function loadAppendStyle() {
             .catch(() => {
                 logger.info('未找到对应平台的附加样式')
             })
-        if(platform == 'ios') {
-            const safeArea = await runtimeData.plantform.
-                pulgins.SafeArea?.getSafeArea()
-            if (safeArea) {
-                const app = document.getElementById('app')
-                if (app) {
-                    app.style.paddingTop = safeArea.top + 'px'
-                    app.style.height = 'calc(100% - ' + safeArea.top + 'px)'
-                }
-            }
-            runtimeData.sysConfig.fs_adaptation = safeArea.bottom - 10
-        }
     }
 
     // UI 2.0 附加样式

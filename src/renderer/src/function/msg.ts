@@ -1629,6 +1629,12 @@ function newMsg(_: string, data: any) {
                 isGroupNotice ||
                 Option.get('notice_all') === true)
         ) {
+            logger.add(LogType.DEBUG, '通知判定：', {
+                notShow: id !== showId,
+                notFocus: !document.hasFocus(),
+                hidden: document.hidden,
+                isImportant: isImportant
+            })
             // (发送者没有被打开 || 窗口没有焦点 || 窗口被最小化 || 在特别关心列表里) 这些情况需要进行消息通知
             if (
                 id !== showId ||

@@ -250,7 +250,7 @@
         </div>
       </div>
       <div
-        v-if="isMobile()"
+        v-if="isMobile() && !runtimeData.tags.isCapacitor"
         class="opt-item">
         <font-awesome-icon :icon="['fas', 'border-top-left']" />
         <div>
@@ -393,7 +393,7 @@
                 save(event)
                 // 5 秒后自动取消防止误操作导致无法恢复
                 const timerId = setTimeout(() => {
-                    event.target.value = 0.85
+                    (event.target as HTMLInputElement).value = '0.85'
                     runtimeData.sysConfig.initial_scale = 0.85
                     this.initialScaleShow = 0.85
                     save(event)

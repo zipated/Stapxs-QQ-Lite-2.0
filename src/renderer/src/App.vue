@@ -495,6 +495,8 @@
                             baseApp.style.setProperty('--safe-area-bottom', safeArea.bottom + 'px')
                             baseApp.style.setProperty('--safe-area-left', safeArea.left + 'px')
                             baseApp.style.setProperty('--safe-area-right', safeArea.right + 'px')
+                            // 图片查看器安全区域
+                            document.documentElement.style.setProperty('--safe-area--viewer-top', safeArea.top + 'px')
                         }
                     }
                 }
@@ -598,7 +600,7 @@
                     document.getElementById('connect_btn')?.classList.add('afd')
                 }
                 // 其他状态监听
-                if(runtimeData.tags.isElectron && runtimeData.reader) {
+                if(runtimeData.tags.isElectron) {
                     this.$watch(() => runtimeData.onMsgList.length, () => {
                         const list = [] as
                             { id: number, name: string, image?: string }[]
@@ -609,7 +611,7 @@
                                 image: item.user_id ? 'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + item.user_id : 'https://p.qlogo.cn/gh/' + item.group_id + '/' + item.group_id + '/0'
                             })
                         })
-                        runtimeData.reader?.send('sys:flushOnMessage', list)
+                        runtimeData.plantform.reader?.send('sys:flushOnMessage', list)
                     })
                 }
             }
