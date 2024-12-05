@@ -337,7 +337,7 @@ textarea:focus {
     border-radius: 7px 7px 0 0;
     align-items: center;
     font-size: 1rem;
-    padding: 10px 10px 0 10px;
+    padding: 10px;
     display: flex;
     color: var(--color-font);
 }
