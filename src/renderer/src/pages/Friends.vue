@@ -316,9 +316,9 @@
                     this.runtimeData.showList = [] as any[]
                 }
                 // macOS: 刷新 TouchBar
-                if(runtimeData.tags.isElectron && runtimeData.reader) {
+                if(runtimeData.tags.isElectron) {
                     // list 只需要 id 和 name
-                    runtimeData.reader.send('sys:flushFriendSearch',
+                    runtimeData.plantform.reader?.send('sys:flushFriendSearch',
                         this.runtimeData.showList.map((item) => {
                             return {
                                 id: item.user_id ? item.user_id : item.group_id,
@@ -421,9 +421,6 @@
 
     @media (max-width: 700px) {
         .exp-header:not(.open) {
-            padding: 10px 5px;
-        }
-        .exp-header:not(.open) > span {
             display: none;
         }
     }

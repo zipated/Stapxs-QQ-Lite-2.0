@@ -62,7 +62,7 @@
             <span
               class="smsg"
               @click="copy(msgItem.message_id)">{{
-                getMsgRawTxt(msg)
+                getMsgRawTxt(msgItem)
               }}</span>
             <br>
           </div>

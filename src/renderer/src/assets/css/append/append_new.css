@@ -730,7 +730,7 @@ body {
         height: 60px !important;
     }
     .friend-list {
-        width: 75px !important;
+        width: 75px;
     }
     .chat-pan {
         height: calc(100% - 60px);
@@ -749,6 +749,7 @@ body {
         padding: 0 7px 0 5px !important;
     }
     .friend-list > div:first-child > div.small {
+        margin-left: 15px;
         margin-top: 10px;
         height: 44px;
     }

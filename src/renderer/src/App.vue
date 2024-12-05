@@ -500,8 +500,9 @@
                         }
                     }
                 }
-                // Capacitor：通知相关初始化
+                // Capacitor：相关初始化
                 if(runtimeData.tags.isCapacitor) {
+                    // 通知
                     const Notice = runtimeData.plantform.capacitor.Plugins
                         .LocalNotifications as LocalNotificationsPlugin
                     const permission = await Notice.checkPermissions()
@@ -561,6 +562,10 @@
                             }
                         })
                     }
+                    // 键盘
+                    const Keyboard = runtimeData.plantform
+                        .capacitor.Plugins.Keyboard
+                        Keyboard.setAccessoryBarVisible({ isVisible: false })
                 }
                 // 加载密码保存和自动连接
                 loginInfo.address = runtimeData.sysConfig.address

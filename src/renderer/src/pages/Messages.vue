@@ -75,7 +75,7 @@
         name="onmsg"
         tag="div"
         :class="runtimeData.tags.openSideBar ? ' open' : ''"
-        style="overflow-y: scroll">
+        style="overflow-x: hidden">
         <!-- 系统信息 -->
         <FriendBody
           v-if="

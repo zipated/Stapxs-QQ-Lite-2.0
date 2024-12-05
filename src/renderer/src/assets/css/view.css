@@ -354,7 +354,6 @@ textarea:focus {
     background: var(--color-main);
     color: var(--color-font-r);
     align-items: center;
-    margin-right: 10px;
     border-radius: 7px;
     text-wrap: nowrap;
     padding: 0 20px;
@@ -1144,6 +1143,10 @@ textarea:focus {
     .friend-list.open > div:first-child > div.small > label {
         display: flex !important;
     }
+
+    .friend-list.open > div:first-child > div.small > div:last-child {
+        margin-left: 10px;
+    }
     .friend-list > div:first-child > div.small > div > svg {
         color: var(--color-font-r);
         height: 17px;
@@ -1250,9 +1253,6 @@ textarea:focus {
         padding: 10px !important;
         margin: 10px !important;
     }
-    .friend-list > div:first-child > div.small > div {
-        display: none;
-    }
     .friend-list > div:first-child > div.small > span {
         display: flex !important;
         margin-right: 0;
@@ -1260,6 +1260,9 @@ textarea:focus {
     .friend-list > div:first-child > div.small > div.reload,
     .friend-list > div:first-child > div.small > label {
         display: flex !important;
+    }
+    .friend-list > div:first-child > div.small > div:last-child {
+        margin-left: 10px;
     }
     .friend-list-space {
         overflow: hidden;

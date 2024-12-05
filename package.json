@@ -10,15 +10,12 @@
     "type": "module",
     "scripts": {
         "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
-
         "dev": "vite dev",
         "dev:electron": "electron-vite dev",
-        "dev:ios": "capacitor sync ios && capacitor run ios",
-        "dev:android": "capacitor sync android && capacitor run android",
-
+        "dev:ios": "vite build && capacitor sync ios && capacitor run ios",
+        "dev:android": "vite build && capacitor sync android && capacitor run android",
         "open:ios": "vite build && capacitor sync ios && capacitor open ios",
         "open:android": "vite build && capacitor sync android && capacitor open android",
-
         "build": "vite build",
         "build:win": "electron-vite build && electron-builder --win",
         "build:mac": "electron-vite build && electron-builder --mac",
@@ -40,6 +37,7 @@
         "@capacitor/cli": "^6.2.0",
         "@capacitor/core": "^6.2.0",
         "@capacitor/ios": "^6.2.0",
+        "@capacitor/keyboard": "^6.0.3",
         "@capacitor/local-notifications": "^6.1.1",
         "@electron-toolkit/eslint-config": "^1.0.2",
         "@electron-toolkit/eslint-config-ts": "^2.0.0",
