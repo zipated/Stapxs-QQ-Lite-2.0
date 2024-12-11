@@ -1227,6 +1227,7 @@ textarea:focus {
 @media (max-width: 500px) {
     /* 全局通用弹窗 */
     .pop-box-body {
+        min-width: unset;
         width: calc(100% - 80px);
         transform: unset !important;
         margin: 20px;

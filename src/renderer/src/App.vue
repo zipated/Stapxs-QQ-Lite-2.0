@@ -351,11 +351,6 @@
     import { Logger, popList, PopInfo, LogType } from '@renderer/function/base'
     import { runtimeData } from '@renderer/function/msg'
     import { BaseChatInfoElem } from '@renderer/function/elements/information'
-    import {
-        LocalNotificationsPlugin,
-        LocalNotificationSchema,
-        ActionType
-    } from '@capacitor/local-notifications'
     import * as App from './function/utils/appUtil'
 
     import Options from '@renderer/pages/Options.vue'
@@ -363,8 +358,6 @@
     import Messages from '@renderer/pages/Messages.vue'
     import Chat from '@renderer/pages/Chat.vue'
     import { Notify } from './function/notify'
-    import { sendMsgRaw } from './function/utils/msgUtil'
-    import { parseMsg } from './function/sender'
 
     export default defineComponent({
         name: 'App',
@@ -477,6 +470,8 @@
                     + runtimeData.tags.isElectron, window.electron)
                 logger.add(LogType.DEBUG, 'Capacitor 环境: '
                     + runtimeData.tags.isCapacitor, window.Capacitor)
+                // 加载移动平台特性
+                App.loadMobile()
                 // 加载额外样式
                 App.loadAppendStyle()
                 const baseApp = document.getElementById('base-app')
@@ -499,73 +494,6 @@
                             document.documentElement.style.setProperty('--safe-area--viewer-top', safeArea.top + 'px')
                         }
                     }
-                }
-                // Capacitor：相关初始化
-                if(runtimeData.tags.isCapacitor) {
-                    // 通知
-                    const Notice = runtimeData.plantform.capacitor.Plugins
-                        .LocalNotifications as LocalNotificationsPlugin
-                    const permission = await Notice.checkPermissions()
-                    if(permission.display.indexOf('prompt') != -1) {
-                        await Notice.requestPermissions()
-                    } else if(permission.display.indexOf('denied') != -1) {
-                        logger.error(null, '通知权限已被拒绝')
-                    } else {
-                        logger.debug('通知权限已开启')
-                        // 注册通知类型
-                        Notice.registerActionTypes({
-                            types:[{
-                                id: 'msgQuickReply',
-                                actions: [{
-                                    id: 'REPLY_ACTION',
-                                    title: '快速回复',
-                                    requiresAuthentication: true,
-                                    input: true,
-                                    inputButtonTitle: '发送',
-                                    inputPlaceholder: '输入回复内容……'
-                                }]
-                            }] as ActionType[]
-                        })
-                        // 注册相关事件
-                        Notice.addListener('localNotificationActionPerformed', (info) => {
-                            const notification =
-                                info.notification as LocalNotificationSchema
-                            if(info.actionId == 'tap') {
-                                // PS：通知被点击后会自动被关闭，所以这里不需要处理
-                                App.jumpToChat(notification.extra.userId,
-                                    notification.extra.msgId)
-                            } else if(info.actionId == 'REPLY_ACTION') {
-                                // 快速回复
-                                sendMsgRaw(
-                                    notification.extra.userId,
-                                    notification.extra.chatType,
-                                    parseMsg(
-                                        info.inputValue ?? '',
-                                        [{ type: 'reply', id: String(notification.extra.msgId) }],
-                                        [],
-                                    ),
-                                    true
-                                )
-                                // 去消息列表内寻找，去除新消息标记
-                                for (let i = 0; i <
-                                    runtimeData.onMsgList.length; i++) {
-                                    if (
-                                        runtimeData.onMsgList[i].group_id
-                                            == notification.extra.userId ||
-                                        runtimeData.onMsgList[i].user_id
-                                            == notification.extra.userId
-                                    ) {
-                                        runtimeData.onMsgList[i].new_msg = false
-                                        break
-                                    }
-                                }
-                            }
-                        })
-                    }
-                    // 键盘
-                    const Keyboard = runtimeData.plantform
-                        .capacitor.Plugins.Keyboard
-                        Keyboard.setAccessoryBarVisible({ isVisible: false })
                 }
                 // 加载密码保存和自动连接
                 loginInfo.address = runtimeData.sysConfig.address
@@ -613,7 +541,7 @@
                             list.push({
                                 id: item.user_id ? item.user_id : item.group_id,
                                 name: item.group_name ? item.group_name : item.remark === item.nickname ? item.nickname : item.remark + '（' + item.nickname + '）',
-                                image: item.user_id ? 'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + item.user_id : 'https://p.qlogo.cn/gh/' + item.group_id + '/' + item.group_id + '/0'
+                                image: item.user_id ? 'https://q1.qlogo.cn/g?b=qq&s=0&nk=' + item.user_id : 'http://p.qlogo.cn/gh/' + item.group_id + '/' + item.group_id + '/0'
                             })
                         })
                         runtimeData.plantform.reader?.send('sys:flushOnMessage', list)

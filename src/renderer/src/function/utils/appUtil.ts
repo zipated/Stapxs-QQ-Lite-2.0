@@ -9,6 +9,12 @@ import AboutPan from '@renderer/components/AboutPan.vue'
 import UpdatePan from '@renderer/components/UpdatePan.vue'
 import WelPan from '@renderer/components/WelPan.vue'
 
+
+import {
+    LocalNotificationsPlugin,
+    LocalNotificationSchema,
+    ActionType
+} from '@capacitor/local-notifications'
 import { LogType, Logger, PopInfo, PopType } from '@renderer/function/base'
 import { Connector, login } from '@renderer/function/connect'
 import { runtimeData } from '@renderer/function/msg'
@@ -449,6 +455,12 @@ export async function loadAppendStyle() {
             })
     }
 
+    // 移动平台附加样式
+    if(runtimeData.tags.isCapacitor) {
+        import('@renderer/assets/css/append/append_mobile.css').then(() => {
+            logger.info('移动平台附加样式加载完成')
+        })
+    }
     // UI 2.0 附加样式
     if (runtimeData.tags.isElectron) {
         import('@renderer/assets/css/append/append_new.css').then(() => {
@@ -488,6 +500,76 @@ export async function loadAppendStyle() {
                 }
             })
         }
+    }
+}
+
+export async function loadMobile() {
+    // Capacitor：相关初始化
+    if(runtimeData.tags.isCapacitor) {
+        // 通知
+        const Notice = runtimeData.plantform.capacitor.Plugins
+            .LocalNotifications as LocalNotificationsPlugin
+        const permission = await Notice.checkPermissions()
+        if(permission.display.indexOf('prompt') != -1) {
+            await Notice.requestPermissions()
+        } else if(permission.display.indexOf('denied') != -1) {
+            logger.error(null, '通知权限已被拒绝')
+        } else {
+            logger.debug('通知权限已开启')
+            // 注册通知类型
+            Notice.registerActionTypes({
+                types:[{
+                    id: 'msgQuickReply',
+                    actions: [{
+                        id: 'REPLY_ACTION',
+                        title: '快速回复',
+                        requiresAuthentication: true,
+                        input: true,
+                        inputButtonTitle: '发送',
+                        inputPlaceholder: '输入回复内容……'
+                    }]
+                }] as ActionType[]
+            })
+            // 注册相关事件
+            Notice.addListener('localNotificationActionPerformed', (info) => {
+                const notification =
+                    info.notification as LocalNotificationSchema
+                if(info.actionId == 'tap') {
+                    // PS：通知被点击后会自动被关闭，所以这里不需要处理
+                    jumpToChat(notification.extra.userId,
+                        notification.extra.msgId)
+                } else if(info.actionId == 'REPLY_ACTION') {
+                    // 快速回复
+                    sendMsgRaw(
+                        notification.extra.userId,
+                        notification.extra.chatType,
+                        parseMsg(
+                            info.inputValue ?? '',
+                            [{ type: 'reply', id: String(notification.extra.msgId) }],
+                            [],
+                        ),
+                        true
+                    )
+                    // 去消息列表内寻找，去除新消息标记
+                    for (let i = 0; i <
+                        runtimeData.onMsgList.length; i++) {
+                        if (
+                            runtimeData.onMsgList[i].group_id
+                                == notification.extra.userId ||
+                            runtimeData.onMsgList[i].user_id
+                                == notification.extra.userId
+                        ) {
+                            runtimeData.onMsgList[i].new_msg = false
+                            break
+                        }
+                    }
+                }
+            })
+        }
+        // 键盘
+        const Keyboard = runtimeData.plantform
+            .capacitor.Plugins.Keyboard
+            Keyboard.setAccessoryBarVisible({ isVisible: false })
     }
 }
 

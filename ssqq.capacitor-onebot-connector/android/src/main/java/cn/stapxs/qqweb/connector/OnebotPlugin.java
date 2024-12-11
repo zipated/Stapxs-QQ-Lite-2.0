@@ -9,14 +9,39 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "Onebot")
 public class OnebotPlugin extends Plugin {
 
-    private Onebot implementation = new Onebot();
+    private Onebot.WebSocketClient webSocketClient = null;
+    private final Onebot implementation = new Onebot();
+
+    public void sendNotify(String type, String data) {
+        JSObject ret = new JSObject();
+        ret.put("type", type);
+        ret.put("data", data);
+        this.notifyListeners("onebot:event", ret);
+    }
 
     @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
+    public void connect(PluginCall call) {
+        String value = call.getString("url");
 
         JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
+        webSocketClient = implementation.connect(this, webSocketClient, value);
+        ret.put("value", true);
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void send(PluginCall call) {
+        String value = call.getString("data");
+
+        JSObject ret = new JSObject();
+        ret.put("value", implementation.send(webSocketClient, value));
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void close(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("value", implementation.close(webSocketClient));
         call.resolve(ret);
     }
 }
