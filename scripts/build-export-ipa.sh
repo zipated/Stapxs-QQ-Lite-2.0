@@ -1,4 +1,4 @@
-rm -r dist_capacitor
+rm -rf dist_capacitor
 
 xcodebuild clean build \
     -workspace src/mobile/ios/App/App.xcworkspace \

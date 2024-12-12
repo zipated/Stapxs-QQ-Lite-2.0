@@ -53,6 +53,9 @@ html {
 .friend-body > div:nth-child(1).new {
     transform: scaleY(0.5) !important;
 }
+.exp-header:not(.open) {
+    display: flex !important;
+}
 
 /* 聊天面板 */
 .viewer-footer > div {

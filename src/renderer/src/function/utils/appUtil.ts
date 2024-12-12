@@ -506,6 +506,12 @@ export async function loadAppendStyle() {
 export async function loadMobile() {
     // Capacitor：相关初始化
     if(runtimeData.tags.isCapacitor) {
+        // initial-scale 缩放固定为 0.9
+        const viewport = document.getElementById('viewport')
+        if (viewport) {
+            (viewport as any).content =
+                'width=device-width, initial-scale=0.9, maximum-scale=5, user-scalable=0'
+        }
         // 通知
         const Notice = runtimeData.plantform.capacitor.Plugins
             .LocalNotifications as LocalNotificationsPlugin

@@ -225,7 +225,7 @@
     <div class="ss-card">
       <header>{{ $t('页面') }}</header>
       <div
-        v-if="isMobile()"
+        v-if="isMobile() && !runtimeData.tags.isCapacitor"
         class="opt-item">
         <font-awesome-icon :icon="['fas', 'up-down-left-right']" />
         <div>
@@ -235,7 +235,7 @@
         <div class="ss-range">
           <input
             v-model="runtimeData.sysConfig.initial_scale"
-            :style="`background-size: ${(initialScaleShow - 0.5) / 0.01}% 100%;`"
+            :style="`background-size: ${(initialScaleShow - 0.5) / 0.01}% 100%`"
             type="range"
             min="0.5"
             max="1.5"
