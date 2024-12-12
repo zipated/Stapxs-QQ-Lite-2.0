@@ -494,9 +494,7 @@ export function regIpcListener() {
             }
             if (menuIndex > -1) {
                 const item =
-                    itemIndex > -1
-                        ? template[menuIndex].submenu[itemIndex]
-                        : template[menuIndex]
+                    itemIndex > -1? template[menuIndex].submenu[itemIndex]: template[menuIndex]
                 switch (action) {
                     case 'label':
                         item.label = value

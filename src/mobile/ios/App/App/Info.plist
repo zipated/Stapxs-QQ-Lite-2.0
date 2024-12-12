@@ -52,8 +52,6 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
-    <key>NSRemoteNotificationType</key>
-    <string>Stapxs QQ Lite 需要您的同意，才能将新消息的通知推送给您。</string>
     <key>UlUserNotificationSettings</key>
     <dict>
         <key>UIUserNotificationTypeAlert</key>
@@ -63,5 +61,9 @@
         <key>UIUserNotificationTypeSound</key>
         <true/>
     </dict>
+    <key>NSRemoteNotificationType</key>
+    <string>Stapxs QQ Lite 需要您的同意，才能将新消息的通知推送给你</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Stapxs QQ Lite 需要访问局域网以自动发现可用的服务</string>
 </dict>
 </plist>

@@ -32,8 +32,6 @@ module.exports = {
         }],
         // html 标签闭合
         'vue/html-closing-bracket-spacing': ['warn', {
-            'startTag': 'never',
-            'endTag': 'never',
             'selfClosingTag': 'always'
         }],
         // 每行最大属性数

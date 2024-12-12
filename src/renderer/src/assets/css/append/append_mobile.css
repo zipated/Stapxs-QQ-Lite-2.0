@@ -13,13 +13,26 @@ html {
     backdrop-filter: blur(35px);
 }
 
-.main-body > div > div {
+.main-body > div {
     margin-top: var(--safe-area-top);
+    height: calc(100% - 75px - var(--safe-area-top) - var(--safe-area-bottom));
 }
 
 .opt-main-tab,
 .main-body > div > div[name="主页"] {
-    margin-top: 0 !important;
+    height: calc(100% + var(--safe-area-top) + var(--safe-area-bottom)) !important;
+    margin-top: calc(1px - var(--safe-area-top) - var(--safe-area-bottom)) !important;
+}
+
+.login-pan-card {
+    background: transparent;
+    box-shadow: unset;
+}
+.login-pan-card:hover {
+    box-shadow: unset !important;
+}
+.wave-pan {
+    display: none;
 }
 
 /* 联系人列表 */
@@ -224,6 +237,10 @@ html {
 }
 
 /* 设置面板 */
+.opt-tab {
+    height: calc(100% - 145px);
+    margin-top: 30px;
+}
 .opt-tab > div:first-child {
     box-shadow: unset !important;
     margin: 0 -10px 0 -10px !important;

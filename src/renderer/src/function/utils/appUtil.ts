@@ -519,7 +519,7 @@ export async function loadMobile() {
                 case 'onmessage': Connector.onmessage(data.data); break
                 case 'onclose': Connector.onclose(msg.code, msg.message, login.address, login.token); break
                 case 'onerror': popInfo.add(PopType.ERR, $t('连接失败') + ': ' + msg.type, false); break
-                case 'onServiceFound': login.quickLogin.push({ address: msg.address, port: msg.port }); break
+                case 'onServiceFound': if(login.quickLogin != null) login.quickLogin.push({ address: msg.address, port: msg.port }); break
                 default: break
             }
         })
@@ -589,6 +589,21 @@ export async function loadMobile() {
         }
         // 键盘
         Keyboard.setAccessoryBarVisible({ isVisible: false })
+        Keyboard.addListener('keyboardWillShow', () => {
+            const mainBody = document.getElementsByClassName('main-body')[0]
+            if(mainBody) {
+                const tabBar = document.getElementsByTagName('ul')[0]
+                if(tabBar) {
+                    tabBar.style.setProperty('padding-bottom', '10px', 'important')
+                }
+            }
+        })
+        Keyboard.addListener('keyboardWillHide', () => {
+            const tabBar = document.getElementsByTagName('ul')[0]
+            if(tabBar) {
+                tabBar.style.paddingBottom = ''
+            }
+        })
         // 启用服务查找
         logger.debug('启用服务查找……')
         Onebot.findService()

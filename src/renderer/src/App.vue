@@ -51,18 +51,33 @@
                             <font-awesome-icon :icon="['fas', 'circle-nodes']" />
                             <p>{{ $t('连接到 OneBot') }}</p>
                             <form @submit.prevent @submit="connect">
-                                <template>
+                                <template v-if="loginInfo.quickLogin == null || loginInfo.quickLogin.length == 0">
                                     <label>
                                         <font-awesome-icon :icon="['fas', 'link']" />
                                         <input id="sev_address" v-model="loginInfo.address" :placeholder="$t('连接地址')"
                                             class="ss-input" autocomplete="off">
                                     </label>
-                                    <label>
-                                        <font-awesome-icon :icon="['fas', 'lock']" />
-                                        <input id="access_token" v-model="loginInfo.token" :placeholder="$t('连接密钥')"
-                                            class="ss-input" type="password" autocomplete="off">
-                                    </label>
                                 </template>
+                                <div v-else class="ss-card quick-login">
+                                    <div class="title">
+                                        <font-awesome-icon :icon="['fas', 'link']" />
+                                        <span>{{ $t('来自局域网的服务') }}</span>
+                                        <a @click="cancelQUickLogin">{{ $t('取消') }}</a>
+                                    </div>
+                                    <div class="list">
+                                        <div v-for="item in loginInfo.quickLogin" :key="item.address + ':' + item.port"
+                                            :class="(tags.quickLoginSelect == item.address + ':' + item.port) ? 'select' : ''"
+                                            @click="selectQuickLogin(item.address + ':' + item.port)">
+                                            <span>{{ item.address }}:{{ item.port }}</span>
+                                            <div><div /></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <label>
+                                    <font-awesome-icon :icon="['fas', 'lock']" />
+                                    <input id="access_token" v-model="loginInfo.token" :placeholder="$t('连接密钥')"
+                                        class="ss-input" type="password" autocomplete="off">
+                                </label>
                                 <div style="display: flex">
                                     <label class="default">
                                         <input id="in_" v-model="tags.savePassword" type="checkbox"
@@ -244,6 +259,7 @@ export default defineComponent({
                 showChat: false,
                 isSavePwdClick: false,
                 savePassword: false,
+                quickLoginSelect: ''
             },
             viewerOpt: {
                 inline: false,
@@ -428,7 +444,17 @@ export default defineComponent({
          * 发起连接
          */
         connect() {
+            if(this.tags.quickLoginSelect != '') {
+                // PS：快速连接的地址只会是局域网，所以默认 ws 协议
+                this.loginInfo.address = 'ws://' + this.tags.quickLoginSelect
+            }
             Connector.create(this.loginInfo.address, this.loginInfo.token)
+        },
+        selectQuickLogin(address: string) {
+            this.tags.quickLoginSelect = address
+        },
+        cancelQUickLogin() {
+            loginInfo.quickLogin = null
         },
 
         /**
