@@ -1577,9 +1577,7 @@ function newMsg(_: string, data: any) {
                 runtimeData.onMsgList[index].message_id = data.message_id
                 if (data.message_type === 'group') {
                     const name =
-                        data.sender.card && data.sender.card !== ''
-                            ? data.sender.card
-                            : data.sender.nickname
+                        data.sender.card && data.sender.card !== ''? data.sender.card: data.sender.nickname
                     runtimeData.onMsgList[index].raw_msg =
                         name + ': ' + getMsgRawTxt(data)
                 } else {
@@ -1659,14 +1657,10 @@ function newMsg(_: string, data: any) {
 
                     title: data.group_name ?? data.sender.nickname,
                     body:
-                        data.message_type === 'group'
-                            ? data.sender.nickname + ':' + raw
-                            : raw,
+                        data.message_type === 'group'? data.sender.nickname + ':' + raw: raw,
                     tag: `${id}/${data.message_id}`,
                     icon:
-                        data.message_type === 'group'
-                            ? `https://p.qlogo.cn/gh/${id}/${id}/0`
-                            : `https://q1.qlogo.cn/g?b=qq&s=0&nk=${id}`,
+                        data.message_type === 'group'? `https://p.qlogo.cn/gh/${id}/${id}/0`: `https://q1.qlogo.cn/g?b=qq&s=0&nk=${id}`,
                     image: undefined as any,
                     type: data.group_id ? 'group' : 'user',
                     is_important: isImportant,

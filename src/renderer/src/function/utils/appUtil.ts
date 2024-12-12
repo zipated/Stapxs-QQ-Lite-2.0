@@ -504,8 +504,25 @@ export async function loadAppendStyle() {
 }
 
 export async function loadMobile() {
+    const $t = app.config.globalProperties.$t
     // Capacitor：相关初始化
     if(runtimeData.tags.isCapacitor) {
+        const Onebot = runtimeData.plantform.capacitor.Plugins.Onebot
+        const Notice = runtimeData.plantform.capacitor.Plugins
+            .LocalNotifications as LocalNotificationsPlugin
+        const Keyboard = runtimeData.plantform.capacitor.Plugins.Keyboard
+        // 注册回调监听
+        Onebot.addListener('onebot:event', (data) => {
+            const msg = JSON.parse(data.data)
+            switch(data.type) {
+                case 'onopen': Connector.onopen(login.address, login.token); break
+                case 'onmessage': Connector.onmessage(data.data); break
+                case 'onclose': Connector.onclose(msg.code, msg.message, login.address, login.token); break
+                case 'onerror': popInfo.add(PopType.ERR, $t('连接失败') + ': ' + msg.type, false); break
+                case 'onServiceFound': login.quickLogin.push({ address: msg.address, port: msg.port }); break
+                default: break
+            }
+        })
         // initial-scale 缩放固定为 0.9
         const viewport = document.getElementById('viewport')
         if (viewport) {
@@ -513,8 +530,6 @@ export async function loadMobile() {
                 'width=device-width, initial-scale=0.9, maximum-scale=5, user-scalable=0'
         }
         // 通知
-        const Notice = runtimeData.plantform.capacitor.Plugins
-            .LocalNotifications as LocalNotificationsPlugin
         const permission = await Notice.checkPermissions()
         if(permission.display.indexOf('prompt') != -1) {
             await Notice.requestPermissions()
@@ -573,9 +588,10 @@ export async function loadMobile() {
             })
         }
         // 键盘
-        const Keyboard = runtimeData.plantform
-            .capacitor.Plugins.Keyboard
-            Keyboard.setAccessoryBarVisible({ isVisible: false })
+        Keyboard.setAccessoryBarVisible({ isVisible: false })
+        // 启用服务查找
+        logger.debug('启用服务查找……')
+        Onebot.findService()
     }
 }
 
@@ -642,8 +658,7 @@ function showReleaseLog(data: any, isUpdated: boolean) {
         message: msg,
         updated: isUpdated,
     }
-    const buttonGoUpdate = runtimeData.tags.isElectron
-        ? [
+    const buttonGoUpdate = runtimeData.tags.isElectron? [
               {
                   text: $t('知道了'),
                   fun: () => runtimeData.popBoxList.shift(),
@@ -653,8 +668,7 @@ function showReleaseLog(data: any, isUpdated: boolean) {
                   master: true,
                   fun: () => openLink(data.html_url, true),
               },
-          ]
-        : [
+          ]: [
               {
                   text: $t('查看…'),
                   fun: () => openLink(data.html_url),
@@ -668,8 +682,7 @@ function showReleaseLog(data: any, isUpdated: boolean) {
     const popInfo = {
         template: UpdatePan,
         templateValue: toRaw(info),
-        button: isUpdated
-            ? [
+        button: isUpdated? [
                   {
                       text: $t('查看…'),
                       fun: () => openLink(data.html_url, true),
@@ -681,8 +694,7 @@ function showReleaseLog(data: any, isUpdated: boolean) {
                           runtimeData.popBoxList.shift()
                       },
                   },
-              ]
-            : buttonGoUpdate,
+              ]: buttonGoUpdate,
     }
     runtimeData.popBoxList.push(popInfo)
 }
@@ -798,11 +810,9 @@ export function checkNotice() {
                                 {
                                     text:
                                         notice.pops.length > 1 &&
-                                        i != notice.pops.length - 1
-                                            ? app.config.globalProperties.$t(
+                                        i != notice.pops.length - 1? app.config.globalProperties.$t(
                                                   '继续',
-                                              )
-                                            : app.config.globalProperties.$t(
+                                              ): app.config.globalProperties.$t(
                                                   '确定',
                                               ),
                                     master: true,

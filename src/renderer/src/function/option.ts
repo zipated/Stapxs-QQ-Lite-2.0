@@ -448,9 +448,7 @@ export function saveAll(config = {} as { [key: string]: any }) {
         const saveConfig = config
         Object.keys(config).forEach((key) => {
             const isObject = typeof config[key] == 'object'
-            saveConfig[key] = isObject
-                ? JSON.stringify(config[key])
-                : config[key]
+            saveConfig[key] = isObject? JSON.stringify(config[key]): config[key]
         })
         runtimeData.plantform.reader.send('opt:saveAll', saveConfig)
     }
