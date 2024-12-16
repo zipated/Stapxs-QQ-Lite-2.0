@@ -366,6 +366,9 @@ export function updateMenu(config: { id: string; action: string; value: any }) {
 
 export function createIpc() {
     if (runtimeData.plantform.reader) {
+        runtimeData.plantform.reader.on('sys:serviceFound', (_, data) => {
+            setQuickLogin(data.address, data.port)
+        })
         runtimeData.plantform.reader.on('bot:flushUser', () => {
             reloadUsers()
             popInfo.add(
@@ -503,6 +506,11 @@ export async function loadAppendStyle() {
     }
 }
 
+function setQuickLogin(address: string, port: number) {
+    if(login.quickLogin != null)
+        login.quickLogin.push({ address: address, port: port })
+}
+
 export async function loadMobile() {
     const $t = app.config.globalProperties.$t
     // Capacitor：相关初始化
@@ -519,7 +527,7 @@ export async function loadMobile() {
                 case 'onmessage': Connector.onmessage(data.data); break
                 case 'onclose': Connector.onclose(msg.code, msg.message, login.address, login.token); break
                 case 'onerror': popInfo.add(PopType.ERR, $t('连接失败') + ': ' + msg.type, false); break
-                case 'onServiceFound': if(login.quickLogin != null) login.quickLogin.push({ address: msg.address, port: msg.port }); break
+                case 'onServiceFound': setQuickLogin(msg.address, msg.port); break
                 default: break
             }
         })
@@ -604,9 +612,6 @@ export async function loadMobile() {
                 tabBar.style.paddingBottom = ''
             }
         })
-        // 启用服务查找
-        logger.debug('启用服务查找……')
-        Onebot.findService()
     }
 }
 

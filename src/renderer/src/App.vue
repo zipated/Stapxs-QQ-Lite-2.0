@@ -384,6 +384,14 @@ export default defineComponent({
             if (runtimeData.sysConfig.auto_connect == true) {
                 this.connect()
             }
+            // 服务发现
+            if (runtimeData.tags.isElectron) {
+                runtimeData.plantform.reader.send('sys:scanNetwork')
+            }
+            if(runtimeData.tags.isCapacitor) {
+                const Onebot = runtimeData.plantform.capacitor.Plugins.Onebot
+                Onebot.findService()
+            }
             // =============================================================
             // 初始化完成
             // UM：加载 Umami 统计功能
