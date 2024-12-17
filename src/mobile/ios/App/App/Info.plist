@@ -62,7 +62,7 @@
         <true/>
     </dict>
     <key>NSRemoteNotificationType</key>
-    <string>Stapxs QQ Lite 需要您的同意，才能将新消息的通知推送给你</string>
+    <string>Stapxs QQ Lite 需要能的同意才能推送新的通知消息</string>
     <key>NSLocalNetworkUsageDescription</key>
     <string>Stapxs QQ Lite 需要访问局域网以自动发现可用的服务</string>
 </dict>

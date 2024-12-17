@@ -1,153 +1,54 @@
 package cn.stapxs.qqweb.connector;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
 import com.getcapacitor.JSObject;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.CapacitorPlugin;
 
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
+@CapacitorPlugin(name = "Onebot")
+public class OnebotPlugin extends Plugin {
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
+    private WebSocketClient webSocketClient;
+    private final Onebot implementation = new Onebot();
 
-public class Onebot {
-    public WebSocketClient connect(OnebotPlugin plugin, WebSocketClient webSocketClient, String value) {
-        WebSocketClient client = null;
-        if(webSocketClient == null) {
-            client = new WebSocketClient(plugin);
-            client.connect(value);
-        }
-        return client;
+    public void sendNotify(String type, String data) {
+        JSObject ret = new JSObject();
+        ret.put("type", type);
+        ret.put("data", data);
+        this.notifyListeners("onebot:event", ret);
     }
 
-    public Boolean send(WebSocketClient webSocketClient, String value) {
-        if(webSocketClient != null) {
-            webSocketClient.sendMessage(value);
-        }
-        return true;
+    @PluginMethod
+    public void connect(PluginCall call) {
+        String value = call.getString("url");
+
+        JSObject ret = new JSObject();
+        webSocketClient = implementation.connect(this, webSocketClient, value);
+        ret.put("value", true);
+        call.resolve(ret);
     }
 
-    public Boolean close(WebSocketClient webSocketClient) {
-        if(webSocketClient != null) {
-            webSocketClient.close();
-        }
-        return true;
+    @PluginMethod
+    public void send(PluginCall call) {
+        String value = call.getString("data");
+
+        JSObject ret = new JSObject();
+        ret.put("value", implementation.send(webSocketClient, value));
+        call.resolve(ret);
     }
 
-    public static class WebSocketClient {
+    @PluginMethod
+    public void close(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("value", implementation.close(webSocketClient));
+        call.resolve(ret);
+    }
 
-        private final OkHttpClient client;
-        private WebSocket webSocket;
-
-        private final OnebotPlugin plugin;
-
-        private String address;
-        private String token;
-
-        public WebSocketClient(OnebotPlugin plugin) {
-            this.plugin = plugin;
-            client = new OkHttpClient.Builder()
-                .readTimeout(0, TimeUnit.MILLISECONDS) // 保持连接
-                .build();
-        }
-
-        public void connect(String serverUrl) {
-            Request request;
-            try {
-                request = new Request.Builder()
-                    .url(serverUrl)
-                    .build();
-            } catch (Exception ex) {
-                Log.e("Onebot", "连接失败：" + ex.getMessage());
-                closeBack(-1, "连接失败：" + ex.getMessage());
-                return;
-            }
-
-            try {
-                String baseUrl = serverUrl;
-                baseUrl = serverUrl.replaceFirst("wss", "https");
-                baseUrl = serverUrl.replaceFirst("ws", "http");
-                URL url = new URL(baseUrl);
-                String query = url.getQuery();
-                address = serverUrl.split("\\?")[0];
-                if (query != null) {
-                    String[] params = query.split("&");
-                    for (String param : params) {
-                        String[] keyValue = param.split("=");
-                        if (keyValue.length == 2 && keyValue[0].equals("token")) {
-                            token = keyValue[1];
-                            break;
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                Log.e("Onebot", "URL 解析失败：" + ex.getMessage());
-                closeBack(-1, "URL 解析失败：" + ex.getMessage());
-                return;
-            }
-
-            webSocket = client.newWebSocket(request, new WebSocketListener() {
-                @Override
-                public void onOpen(
-                    @NonNull WebSocket webSocket,
-                    @NonNull Response response) {
-                    JSObject ret = new JSObject();
-                    ret.put("address", address);
-                    ret.put("token", token);
-                    plugin.sendNotify("onopen", ret.toString());
-                }
-
-                @Override
-                public void onMessage(
-                    @NonNull WebSocket webSocket,
-                    @NonNull String text) {
-                    plugin.sendNotify("onmessage", text);
-                }
-
-                @Override
-                public void onClosed(
-                    @NonNull WebSocket webSocket,
-                    int code, @NonNull String reason) {
-                    Log.d("Onebot", "WebSocket已关闭: " + code + " / " + reason);
-                    closeBack(code, "WebSocket已关闭: " + code + " / " + reason);
-                }
-
-                @Override
-                public void onFailure(
-                    @NonNull WebSocket webSocket,
-                    @NonNull Throwable t, Response response) {
-                    Log.d("Onebot", "WebSocket连接失败: " + t.getMessage());
-                    closeBack(-1, "WebSocket连接失败: " + t.getMessage());
-                }
-            });
-        }
-
-        public void sendMessage(String message) {
-            if (webSocket != null) {
-                webSocket.send(message);
-            } else {
-                Log.d("Onebot", "WebSocket未连接，无法发送消息");
-            }
-        }
-
-        public void close() {
-            if (webSocket != null) {
-                webSocket.close(1000, "客户端关闭连接");
-            }
-        }
-
-        private void closeBack(int code, String error) {
-            JSObject ret = new JSObject();
-            ret.put("code", code);
-            ret.put("message", error);
-            ret.put("address", address);
-            ret.put("token", token);
-            plugin.sendNotify("onclose", ret.toString());
-        }
+    @PluginMethod
+    public void findService(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("value", implementation.findService(this));
+        call.resolve(ret);
     }
 }
