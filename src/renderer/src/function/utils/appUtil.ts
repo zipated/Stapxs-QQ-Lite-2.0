@@ -15,6 +15,9 @@ import {
     LocalNotificationSchema,
     ActionType
 } from '@capacitor/local-notifications'
+import {
+    KeyboardInfo
+} from '@capacitor/keyboard'
 import { LogType, Logger, PopInfo, PopType } from '@renderer/function/base'
 import { Connector, login } from '@renderer/function/connect'
 import { runtimeData } from '@renderer/function/msg'
@@ -519,6 +522,8 @@ export async function loadMobile() {
         const Notice = runtimeData.plantform.capacitor.Plugins
             .LocalNotifications as LocalNotificationsPlugin
         const Keyboard = runtimeData.plantform.capacitor.Plugins.Keyboard
+        const StatusBar = runtimeData.plantform.capacitor.Plugins.StatusBar
+        const NavigationBar = runtimeData.plantform.capacitor.Plugins.NavigationBar
         // 注册回调监听
         Onebot.addListener('onebot:event', (data) => {
             const msg = JSON.parse(data.data)
@@ -597,13 +602,23 @@ export async function loadMobile() {
         }
         // 键盘
         Keyboard.setAccessoryBarVisible({ isVisible: false })
-        Keyboard.addListener('keyboardWillShow', () => {
-            const mainBody = document.getElementsByClassName('main-body')[0]
+        Keyboard.addListener('keyboardWillShow', async (info: KeyboardInfo) => {
+            const keyboardHeight = info.keyboardHeight
+
+            const mainBody = document.getElementsByClassName('main-body')[0] as HTMLElement
             if(mainBody) {
+                // 调整下菜单高度
                 const tabBar = document.getElementsByTagName('ul')[0]
                 if(tabBar) {
                     tabBar.style.setProperty('padding-bottom', '10px', 'important')
                 }
+            }
+            // 调整整个 HTML 的高度
+            // PS：仅用于解决 Android 在全屏沉浸式下键盘遮挡问题
+            const html = document.getElementsByTagName('html')[0]
+            if(html && runtimeData.tags.platform == 'android') {
+                const safeArea = await runtimeData.plantform.pulgins.SafeArea?.getSafeArea()
+                html.style.height = `calc(100% - ${keyboardHeight + safeArea.top}px)`
             }
         })
         Keyboard.addListener('keyboardWillHide', () => {
@@ -611,7 +626,17 @@ export async function loadMobile() {
             if(tabBar) {
                 tabBar.style.paddingBottom = ''
             }
+            // 调整整个 HTML 的高度
+            // PS：仅用于解决 Android 在全屏沉浸式下键盘遮挡问题
+            const html = document.getElementsByTagName('html')[0]
+            if(html && runtimeData.tags.platform == 'android') {
+                html.style.height = 'calc(100%)'
+            }
         })
+        // 状态栏（Android）
+        NavigationBar.setTransparency({ isTransparent: true })
+        StatusBar.setOverlaysWebView({ overlay: true })
+        StatusBar.setBackgroundColor({ color: '#ffffff00' })
     }
 }
 

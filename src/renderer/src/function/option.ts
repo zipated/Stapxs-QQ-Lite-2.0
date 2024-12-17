@@ -261,6 +261,11 @@ function changeColorMode(mode: string) {
     }
     // 记录
     runtimeData.tags.darkMode = mode === 'dark'
+    // Capacitor: 状态栏颜色（Android）
+    if(runtimeData.tags.isCapacitor) {
+        const StatusBar = runtimeData.plantform.capacitor.Plugins.StatusBar
+        StatusBar.setStyle({ style: mode.toUpperCase() })
+    }
 }
 
 /**

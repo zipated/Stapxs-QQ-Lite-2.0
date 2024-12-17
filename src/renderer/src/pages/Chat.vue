@@ -1028,6 +1028,15 @@
                     }
                 },
             )
+            // Capacitor：系统返回操作（Android）
+            if(runtimeData.tags.isCapacitor && runtimeData.tags.platform === 'android') {
+                const BaseAPI = runtimeData.plantform.capacitor.Plugins.App
+                BaseAPI.addListener('backButton', () => {
+                    // PS：这儿复用了触屏操作的逻辑……所以看起来怪怪的
+                    this.tags.chatTouch.openSuccess = true
+                    this.chatMoveEnd()
+                })
+            }
         },
         methods: {
             /**

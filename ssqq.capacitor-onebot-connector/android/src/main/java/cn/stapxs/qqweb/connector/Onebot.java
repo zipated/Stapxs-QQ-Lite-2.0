@@ -1,54 +1,34 @@
 package cn.stapxs.qqweb.connector;
 
-import com.getcapacitor.JSObject;
-import com.getcapacitor.Plugin;
-import com.getcapacitor.PluginCall;
-import com.getcapacitor.PluginMethod;
-import com.getcapacitor.annotation.CapacitorPlugin;
+import android.content.Context;
 
-@CapacitorPlugin(name = "Onebot")
-public class OnebotPlugin extends Plugin {
-
-    private WebSocketClient webSocketClient;
-    private final Onebot implementation = new Onebot();
-
-    public void sendNotify(String type, String data) {
-        JSObject ret = new JSObject();
-        ret.put("type", type);
-        ret.put("data", data);
-        this.notifyListeners("onebot:event", ret);
+public class Onebot {
+    public WebSocketClient connect(OnebotPlugin plugin, WebSocketClient webSocketClient, String value) {
+        WebSocketClient client = null;
+        if(webSocketClient == null) {
+            client = new WebSocketClient(plugin);
+            client.connect(value);
+        }
+        return client;
     }
 
-    @PluginMethod
-    public void connect(PluginCall call) {
-        String value = call.getString("url");
-
-        JSObject ret = new JSObject();
-        webSocketClient = implementation.connect(this, webSocketClient, value);
-        ret.put("value", true);
-        call.resolve(ret);
+    public Boolean send(WebSocketClient webSocketClient, String value) {
+        if(webSocketClient != null) {
+            webSocketClient.sendMessage(value);
+        }
+        return true;
     }
 
-    @PluginMethod
-    public void send(PluginCall call) {
-        String value = call.getString("data");
-
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.send(webSocketClient, value));
-        call.resolve(ret);
+    public Boolean close(WebSocketClient webSocketClient) {
+        if(webSocketClient != null) {
+            webSocketClient.close();
+        }
+        return true;
     }
 
-    @PluginMethod
-    public void close(PluginCall call) {
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.close(webSocketClient));
-        call.resolve(ret);
-    }
-
-    @PluginMethod
-    public void findService(PluginCall call) {
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.findService(this));
-        call.resolve(ret);
+    public Boolean findService(OnebotPlugin plugin) {
+        ScanNetwork scanNetwork = new ScanNetwork(plugin.getBridge().getContext(), plugin);
+        scanNetwork.scanNetwork();
+        return true;
     }
 }

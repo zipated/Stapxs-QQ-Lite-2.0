@@ -1,5 +1,7 @@
 package cn.stapxs.qqweb.connector;
 
+import android.util.Log;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -61,7 +63,7 @@ public class OnebotPlugin extends Plugin {
     @PluginMethod
     public void findService(PluginCall call) {
         JSObject ret = new JSObject();
-        ret.put("value", implementation.findService(this.bridge.getContext()));
+        ret.put("value", implementation.findService(this));
         call.resolve(ret);
     }
 }
